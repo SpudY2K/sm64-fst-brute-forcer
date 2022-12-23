@@ -1281,21 +1281,6 @@ bool find_10k_route(int solIdx, int f, int d, int h) {
     return foundSolution;
 }
 
-void test_pu_solution() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-
-    if (idx < 8 * nPUSolutions) {
-        int solIdx = idx % nPUSolutions;
-        idx        = idx / nPUSolutions;
-        int f      = idx % 2;
-        idx        = idx / 2;
-        int d      = idx % 2;
-        idx        = idx / 2;
-        int h      = idx;
-        find_10k_route(solIdx, f, d, h);
-    }
-}
-
 void find_pu_slide_setup(struct PlatformSolution* sol, int solIdx) {
     float floorHeight;
     int floorIdx = find_floor(

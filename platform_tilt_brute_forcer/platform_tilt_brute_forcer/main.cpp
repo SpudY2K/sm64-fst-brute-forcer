@@ -3217,7 +3217,11 @@ int main(int argc, char* argv[]) {
         printf("\n");
     }
 
-    init_reverse_atan<<<1, 1>>>();
+    
+}
+// Old code, for reference
+#if 0
+init_reverse_atan<<<1, 1>>>();
     init_mag_set<<<1, 1>>>();
     initialise_floors<<<1, 1>>>();
     set_platform_pos<<<1, 1>>>(platformPos[0], platformPos[1], platformPos[2]);
@@ -3428,4 +3432,4 @@ int main(int argc, char* argv[]) {
     }
     
     wf.close();
-}
+#endif
