@@ -3,7 +3,7 @@
   "material-icon-theme.files.associations": {
     "*.cl": "shader"
   },
-  "workbench.colorCustomizations": {
-    "editorError.foreground": "#00000000"
-  }
+//   "workbench.colorCustomizations": {
+//     "editorError.foreground": "#00000000"
+//   }
 }

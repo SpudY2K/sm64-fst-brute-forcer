@@ -1,15 +1,15 @@
 #ifndef GEO_H_CL
 #define GEO_H_CL
 
-#include "globals.h.cl"
+#include "structs.h.cl"
 
 constexpr int total_floorsG = 350;
-constant SurfaceG floorsG[total_floorsG];
+extern global const SurfaceG floorsG[total_floorsG];
 
-float platform_pos[3];
-short startTriangles[2][3][3];
-float startNormals[2][3];
-bool squishCeilings[4];
+extern global float platform_pos[3];
+extern global short startTriangles[2][3][3];
+extern global float startNormals[2][3];
+extern global bool squishCeilings[4];
 
 constexpr float oneUpPlatformNormalYLeft = 0.351623833;
 constexpr float oneUpPlatformNormalXLeft = -0.9361413717;

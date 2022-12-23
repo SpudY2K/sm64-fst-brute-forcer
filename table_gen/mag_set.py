@@ -23,7 +23,7 @@ for (i, x) in enumerate(magCheck):
         mag = (mag / np.float32(64.0)) * (mag / 64.0) * np.float32(32.0)
         magSet.append(mag)
 
-print("constant float magSet[] = {")
+print(f"constant float magSet[{len(magSet)}] = {{")
 print(", ".join([f"{i:10f}" for i in magSet]))
 print("}")
         

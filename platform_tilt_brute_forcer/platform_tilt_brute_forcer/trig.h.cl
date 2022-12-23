@@ -1,9 +1,9 @@
 #ifndef TRIG_H_CL
 #define TRIG_H_CL
 
-constant float gSineTableG[4096];
-constant float gCosineTableG[4096];
-constant short gArctanTableG[8192];
+extern constant float gSineTableG[4096];
+extern constant float gCosineTableG[4096];
+extern constant short gArctanTableG[8192];
 
 inline short atan2_lookupG(float z, float x) {
     return (x == 0)? 0x0000 : gArctanTableG[ushort(float(float(z / x) * 1024.0 + 0.5))];

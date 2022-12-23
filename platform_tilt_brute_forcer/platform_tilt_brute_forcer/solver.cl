@@ -24,7 +24,7 @@ bool test_stick_position(
     int trueX = (x == 0) ? 0 : ((x < 0) ? x - 6 : x + 6);
     int trueY = (y == 0) ? 0 : ((y < 0) ? y - 6 : y + 6);
 
-    float mag = sqrtf(x * x + y * y);
+    float mag = sqrt(float(x * x + y * y));
 
     float xS = x;
     float yS = y;
@@ -43,14 +43,14 @@ bool test_stick_position(
     float xVel2a = xVel1;
     float zVel2a = zVel1;
 
-    float oldSpeed = sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+    float oldSpeed = sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
     xVel2a +=
         zVel2a * (intendedMag / 32.0f) * gSineTableG[intendedDYaw >> 4] * 0.05f;
     zVel2a -=
         xVel2a * (intendedMag / 32.0f) * gSineTableG[intendedDYaw >> 4] * 0.05f;
 
-    float newSpeed = sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+    float newSpeed = sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
     xVel2a = xVel2a * oldSpeed / newSpeed;
     zVel2a = zVel2a * oldSpeed / newSpeed;
@@ -64,7 +64,7 @@ bool test_stick_position(
     xVel2a *= lossFactor;
     zVel2a *= lossFactor;
 
-    float vel2a = -sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+    float vel2a = -sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
     bool speedTest = true;
 
@@ -86,14 +86,14 @@ bool test_stick_position(
                     xVel2a = vel1a * gSineTableG[angle >> 4];
                     zVel2a = vel1a * gCosineTableG[angle >> 4];
 
-                    oldSpeed = sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+                    oldSpeed = sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
                     xVel2a += zVel2a * (intendedMag / 32.0f) *
                         gSineTableG[intendedDYaw >> 4] * 0.05f;
                     zVel2a -= xVel2a * (intendedMag / 32.0f) *
                         gSineTableG[intendedDYaw >> 4] * 0.05f;
 
-                    newSpeed = sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+                    newSpeed = sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
                     xVel2a = xVel2a * oldSpeed / newSpeed;
                     zVel2a = zVel2a * oldSpeed / newSpeed;
@@ -107,11 +107,11 @@ bool test_stick_position(
                     xVel2a *= lossFactor;
                     zVel2a *= lossFactor;
 
-                    float vel2b = -sqrtf(xVel2a * xVel2a + zVel2a * zVel2a);
+                    float vel2b = -sqrt(xVel2a * xVel2a + zVel2a * zVel2a);
 
                     if (vel2b > endSpeed) {
                         vel1a =
-                            fmaxf(vel1a + 0.25f, nextafterf(vel1a, INFINITY));
+                            fmax(vel1a + 0.25f, nextafter(vel1a, INFINITY));
                     }
                     else {
                         if (vel2b == endSpeed) {
@@ -218,12 +218,12 @@ bool test_stick_position(
             (int) (short) testOneUpPlatformPosition[2] <= oneUpPlatformZMax &&
             testOneUpPlatformPosition[1] < returnPosition[1] &&
             testOneUpPlatformPosition[1] >
-                fmaxf(-2971.0f, returnPosition[1] - 78.0f)) {
+                fmax(-2971.0f, returnPosition[1] - 78.0f)) {
             testStartPosition[0] = testStartPosition[0] - xShift;
             testStartPosition[2] = testStartPosition[2] - zShift;
 
             float marioMinY =
-                fmaxf(-2971.0f, testOneUpPlatformPosition[1] - 78.0f);
+                fmax(-2971.0f, testOneUpPlatformPosition[1] - 78.0f);
 
             float intersectionPoints[2][3];
             int intersections = 0;
@@ -313,9 +313,9 @@ bool test_stick_position(
                 intersectionPoints[1][1] = ay + (by - ay) * cutPoints[1];
                 intersectionPoints[1][2] = az + (bz - az) * cutPoints[1];
 
-                if (fmaxf(intersectionPoints[0][1], intersectionPoints[1][1]) >
+                if (fmax(intersectionPoints[0][1], intersectionPoints[1][1]) >
                         marioMinY &&
-                    fminf(intersectionPoints[0][1], intersectionPoints[1][1]) <
+                    fmin(intersectionPoints[0][1], intersectionPoints[1][1]) <
                         testOneUpPlatformPosition[1]) {
                     if (intersectionPoints[0][1] < marioMinY) {
                         double ratio = (marioMinY - intersectionPoints[0][1]) /
@@ -556,8 +556,8 @@ int calculate_camera_yaw(
     float dy = currentPosition[1] + 125.0f;
     float dz = currentPosition[2] - cameraPos[2];
 
-    float cameraDist  = sqrtf(dx * dx + dy * dy + dz * dz);
-    float cameraPitch = atan2sG(sqrtf(dx * dx + dz * dz), dy);
+    float cameraDist  = sqrt(dx * dx + dy * dy + dz * dz);
+    float cameraPitch = atan2sG(sqrt(dx * dx + dz * dz), dy);
     float cameraYaw   = atan2sG(dz, dx);
 
     // The camera will pan ahead up to about 30% of the camera's distance to
@@ -611,8 +611,8 @@ int calculate_camera_yaw(
     dy = cameraFocus[1] - lakituPosition[1];
     dz = cameraFocus[2] - lakituPosition[2];
 
-    cameraDist  = sqrtf(dx * dx + dy * dy + dz * dz);
-    cameraPitch = atan2sG(sqrtf(dx * dx + dz * dz), dy);
+    cameraDist  = sqrt(dx * dx + dy * dy + dz * dz);
+    cameraPitch = atan2sG(sqrt(dx * dx + dz * dz), dy);
     cameraYaw   = atan2sG(dz, dx);
 
     if (cameraPitch > 15872) {
@@ -753,7 +753,7 @@ bool test_one_up_position(
 
                         double targetDYaw =
                             65536.0 * (atan2(n1, m1) / (2.0 * M_PI));
-                        double targetMag = sqrtf(m1 * m1 + n1 * n1);
+                        double targetMag = sqrt(m1 * m1 + n1 * n1);
 
                         double stickAngle = fmod(
                             65536.0 +
@@ -1338,14 +1338,14 @@ void find_pu_slide_setup(struct PlatformSolution* sol, int solIdx) {
                     float xVel1a = xVel0;
                     float zVel1a = zVel0;
 
-                    float oldSpeed = sqrtf(xVel1a * xVel1a + zVel1a * zVel1a);
+                    float oldSpeed = sqrt(xVel1a * xVel1a + zVel1a * zVel1a);
 
                     xVel1a +=
                         zVel1a * (mag / 32.0f) * gSineTableG[j1 >> 4] * 0.05f;
                     zVel1a -=
                         xVel1a * (mag / 32.0f) * gSineTableG[j1 >> 4] * 0.05f;
 
-                    float newSpeed = sqrtf(xVel1a * xVel1a + zVel1a * zVel1a);
+                    float newSpeed = sqrt(xVel1a * xVel1a + zVel1a * zVel1a);
 
                     xVel1a = xVel1a * oldSpeed / newSpeed;
                     zVel1a = zVel1a * oldSpeed / newSpeed;
@@ -1402,7 +1402,7 @@ void find_pu_slide_setup(struct PlatformSolution* sol, int solIdx) {
 
 void platform_logic(
     float* platform_normal, float* mario_pos, short (&triangles)[2][3][3],
-    float (&normals)[2][3], float (&mat)[4][4]) {
+    float (&normals)[2][3], float (&mat)[4][4], float* platform_pos) {
     float dx;
     float dy;
     float dz;
@@ -1426,7 +1426,7 @@ void platform_logic(
     mat[1][2] = platform_normal[2];
 
     float invsqrt = 1.0f /
-        sqrtf(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
+        sqrt(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
               mat[1][2] * mat[1][2]);
 
     mat[1][0] *= invsqrt;
@@ -1438,7 +1438,7 @@ void platform_logic(
     mat[0][2] = mat[1][0] * 0.0f - 0.0f * mat[1][1];
 
     invsqrt = 1.0f /
-        sqrtf(mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+        sqrt(mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
               mat[0][2] * mat[0][2]);
 
     mat[0][0] *= invsqrt;
@@ -1450,7 +1450,7 @@ void platform_logic(
     mat[2][2] = mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
 
     invsqrt = 1.0f /
-        sqrtf(mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+        sqrt(mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
               mat[2][2] * mat[2][2]);
 
     mat[2][0] *= invsqrt;
@@ -1473,7 +1473,7 @@ void platform_logic(
     dx = mx - (float) platform_pos[0];
     dy = 500.0f;
     dz = mz - (float) platform_pos[2];
-    d  = sqrtf(dx * dx + dy * dy + dz * dz);
+    d  = sqrt(dx * dx + dy * dy + dz * dz);
 
     // Normalizing
     d = 1.0 / d;
@@ -1505,7 +1505,7 @@ void platform_logic(
     mat[1][2] = platform_normal[2];
 
     invsqrt = 1.0f /
-        sqrtf(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
+        sqrt(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
               mat[1][2] * mat[1][2]);
 
     mat[1][0] *= invsqrt;
@@ -1517,7 +1517,7 @@ void platform_logic(
     mat[0][2] = mat[1][0] * 0.0f - 0.0f * mat[1][1];
 
     invsqrt = 1.0f /
-        sqrtf(mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+        sqrt(mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
               mat[0][2] * mat[0][2]);
 
     mat[0][0] *= invsqrt;
@@ -1529,7 +1529,7 @@ void platform_logic(
     mat[2][2] = mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
 
     invsqrt = 1.0f /
-        sqrtf(mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+        sqrt(mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
               mat[2][2] * mat[2][2]);
 
     mat[2][0] *= invsqrt;

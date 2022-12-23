@@ -4,6 +4,9 @@
 #include "geo.h.cl"
 #include "structs.h.cl"
 
+extern constant ushort gReverseArctanTable[65536];
+extern constant int
+
 bool test_stick_position(
     int solIdx, int x, int y, float endSpeed, float vel1, float xVel1,
     float zVel1, int angle, int cameraYaw, float* startPosition,
