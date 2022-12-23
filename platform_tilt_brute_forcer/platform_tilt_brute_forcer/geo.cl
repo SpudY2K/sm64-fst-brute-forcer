@@ -1,9 +1,9 @@
 #include "geo.h.cl"
 
-global float platform_pos[3];
-global short startTriangles[2][3][3];
-global float startNormals[2][3];
-global bool squishCeilings[4];
+global float platform_pos[3] = {};
+global short startTriangles[2][3][3] = {};
+global float startNormals[2][3] = {};
+global bool squishCeilings[4] = {};
 
 constant SurfaceG floorsG[total_floorsG] = {
     SurfaceG(1536, 5478, -262, 922, 5478, -262, 922, 5478, 403);
