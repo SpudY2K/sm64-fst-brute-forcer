@@ -17,18 +17,13 @@ add_executable(main
 )
 
 set_target_properties(main PROPERTIES
-  CXX_STANDARD 17
-  CXX_STANDARD_REQUIRED yes
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
   PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+target_compile_features(main PRIVATE cxx_std_20)
 
-if (SUPPORTS_MARCH_NATIVE)
-  message(STATUS "Compiler supports -march=native")
-  target_compile_options(main PUBLIC "-march=native")
-else()
-  message(STATUS "Compiler does not support -march=native")
-endif()
+enable_march_native(main)
+
 if (SUPPORTS_IPO)
   message(STATUS "Link-time optimization supported")
   set_target_properties(main PROPERTIES
@@ -37,6 +32,8 @@ if (SUPPORTS_IPO)
 else()
   message(STATUS "Link-time optimization not supported")
 endif()
+
+
 if (OpenMP_FOUND)
   message(STATUS "OpenMP supported")
   target_link_libraries(main PUBLIC OpenMP::OpenMP_CXX)

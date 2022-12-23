@@ -5,8 +5,9 @@ project(sm64-platform-max-tilt-bruteforcer
   LANGUAGES CXX
 )
 
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-march=native" SUPPORTS_MARCH_NATIVE)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include(CompilerConfig)
+
 include(CheckIPOSupported)
 check_ipo_supported(RESULT SUPPORTS_IPO)
 find_package(OpenMP)

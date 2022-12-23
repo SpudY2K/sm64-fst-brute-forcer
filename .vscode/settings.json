@@ -1,3 +1,9 @@
 {
-  "editor.tabSize": 4
+  "editor.tabSize": 4,
+  "material-icon-theme.files.associations": {
+    "*.cl": "shader"
+  },
+  "workbench.colorCustomizations": {
+    "editorError.foreground": "#00000000"
+  }
 }
