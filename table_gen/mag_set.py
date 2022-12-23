@@ -1,11 +1,6 @@
 import itertools as itool
 import numpy as np
 import math
-import struct
-
-
-def to_float32(x: float):
-    return struct.unpack('f', struct.pack('f', x))[0]
 
 magCheck = [False for _ in range(4097)]
 magSet = []
@@ -24,6 +19,6 @@ for (i, x) in enumerate(magCheck):
         magSet.append(mag)
 
 print(f"constant float magSet[{len(magSet)}] = {{")
-print(", ".join([f"{i:10f}" for i in magSet]))
+print(", ".join([f"{i:.9f}" for i in magSet]))
 print("}")
         

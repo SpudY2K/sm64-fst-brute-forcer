@@ -1,12 +1,6 @@
 #ifndef STRUCTS_H_CL
 #define STRUCTS_H_CL
 
-#define MAX_10K_SOLUTIONS 50000
-#define MAX_PU_SOLUTIONS 50000000
-#define MAX_PLAT_SOLUTIONS 200000
-
-#include "trig.h.cl"
-
 struct TenKSolution {
     int puSolutionIdx;
     int startFloorIdx;
@@ -45,6 +39,7 @@ struct PlatformSolution {
 
 class SurfaceG {
 public:
+    short vertices[3][3];
     float normal[3];
     float origin_offset;
     float lower_y;
@@ -55,9 +50,16 @@ public:
     float min_z;
     float max_z;
 
-    short vertices[3][3];
+    SurfaceG(
+        short x0, short y0, short z0, short x1, short y1, short z1, short x2,
+        short y2, short z2) {
+        short verts[3][3] = {{x0, y0, z0}, {x1, y1, z1}, {x2, y2, z2}};
+        set_vertices(verts);
+    }
 
     SurfaceG(short verts[3][3]) { set_vertices(verts); }
+
+    SurfaceG() {}
 
     void set_vertices(short verts[3][3]) {
         for (int i = 0; i < 3; ++i) {
@@ -67,14 +69,14 @@ public:
         }
 
         lower_y =
-            fmin(fmin(vertices[0][1], vertices[1][1]), vertices[2][1]) - 5;
+            min(min(vertices[0][1], vertices[1][1]), vertices[2][1]) - 5;
         upper_y =
-            fmax(fmax(vertices[0][1], vertices[1][1]), vertices[2][1]) + 5;
+            max(max(vertices[0][1], vertices[1][1]), vertices[2][1]) + 5;
 
-        min_x = fmin(fmin(vertices[0][0], vertices[1][0]), vertices[2][0]);
-        max_x = fmax(fmax(vertices[0][0], vertices[1][0]), vertices[2][0]);
-        min_z = fmin(fmin(vertices[0][2], vertices[1][2]), vertices[2][2]);
-        max_z = fmax(fmax(vertices[0][2], vertices[1][2]), vertices[2][2]);
+        min_x = min(min(vertices[0][0], vertices[1][0]), vertices[2][0]);
+        max_x = max(max(vertices[0][0], vertices[1][0]), vertices[2][0]);
+        min_z = min(min(vertices[0][2], vertices[1][2]), vertices[2][2]);
+        max_z = max(max(vertices[0][2], vertices[1][2]), vertices[2][2]);
 
         calculate_normal();
     }
@@ -107,19 +109,4 @@ public:
               normal[2] * vertices[0][2]);
     }
 };
-
-extern constant float normal_offsets[4][3];
-
-extern constant short default_triangles[2][3][3];
-
-extern global struct PlatformSolution platSolutions[MAX_PLAT_SOLUTIONS];
-extern global int nPlatSolutions;
-
-extern global struct PUSolution puSolutions[MAX_PU_SOLUTIONS];
-extern global int nPUSolutions;
-
-extern global struct TenKSolution tenKSolutions[MAX_10K_SOLUTIONS];
-extern global int n10KSolutions;
-
-
 #endif
