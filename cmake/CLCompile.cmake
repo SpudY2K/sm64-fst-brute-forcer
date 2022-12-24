@@ -19,8 +19,10 @@ function(add_opencl_spirv target output)
   # create lists of files
   set(dep_list)
   set(comp_list)
-  foreach(n RANGE 2 ${ARGC})
-    file(REAL_PATH ${ARGV${n}} true_path)
+  math(EXPR last_arg "${ARGC} - 1")
+  foreach(n RANGE 2 ${last_arg})
+    message(STATUS "Processing file ${ARGV${n}}")
+    file(REAL_PATH "${ARGV${n}}" true_path)
     list(APPEND dep_list ${true_path})
     
     # check if the file is a .cl or .h.cl file
@@ -37,14 +39,35 @@ function(add_opencl_spirv target output)
   elseif (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
     set(spv_arch "spirv64")
   endif()
-    
+  
+  if (NOT IS_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spirv")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/spirv")
+  endif()
+  
   add_custom_command(
-    OUTPUT $<TARGET_FILE_DIR:${target}>/${bin_path}
-    COMMAND clang -target ${spv_arch} -cl-std=clc++ -O3 -o $<TARGET_FILE_DIR:${target}>/${bin_path} -- ${comp_list}
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/spirv/${output}"
+    COMMAND clang -target ${spv_arch} -cl-std=clc++2021 -O0 -o "${CMAKE_CURRENT_BINARY_DIR}/spirv/${output}" -- ${comp_list}
     DEPENDS ${dep_list}
   )
-  
-  set(spv_target_name "spv_compile_${target}_${output}")
-  add_custom_target(${spv_target_name} DEPENDS $<TARGET_FILE_DIR:${target}>/${bin_path})
-  add_dependencies(${target} ${spv_target_name})
+  add_custom_target("spirv_${target}_${output}"
+    COMMAND ${CMAKE_COMMAND} -DSCRIPT_OPTION=checked-copy -P ${CMAKE_CURRENT_FUNCTION_LIST_FILE}
+      "${CMAKE_CURRENT_BINARY_DIR}/spirv/${output}" "$<TARGET_FILE_DIR:${target}>/${output}"
+    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/spirv/${output}"
+  )
+  add_dependencies(${target} "spirv_${target}_${output}")
 endfunction()
+
+if (CMAKE_SCRIPT_MODE_FILE AND NOT CMAKE_PARENT_LIST_FILE)
+  # Utility functions requiring a script.
+  if (${SCRIPT_OPTION} STREQUAL "checked-copy")
+    if (NOT EXISTS ${CMAKE_ARGV1})
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_ARGV4} ${CMAKE_ARGV5}
+      )
+    else()
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_ARGV4} ${CMAKE_ARGV5}
+      )
+    endif()
+  endif()
+endif()

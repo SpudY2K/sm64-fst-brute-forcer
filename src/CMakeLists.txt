@@ -1,19 +1,18 @@
 # Add new source files here
 add_executable(main
-  "BoundaryDistance.cpp"
-  "BoundaryDistance.hpp"
-  "CMakeLists.txt"
+  # "BoundaryDistance.cpp"
+  # "BoundaryDistance.hpp"
   "main.cpp"
-  "Path.cpp"
-  "Path.hpp"
-  "Platform.cpp"
-  "Platform.hpp"
-  "Surface.cpp"
-  "Surface.hpp"
-  "Trig.cpp"
-  "Trig.hpp"
-  "vmath.cpp"
-  "vmath.hpp"
+  # "Path.cpp"
+  # "Path.hpp"
+  # "Platform.cpp"
+  # "Platform.hpp"
+  # "Surface.cpp"
+  # "Surface.hpp"
+  # "Trig.cpp"
+  # "Trig.hpp"
+  # "vmath.cpp"
+  # "vmath.hpp"
 )
 
 set_target_properties(main PROPERTIES
@@ -32,6 +31,18 @@ if (SUPPORTS_IPO)
 else()
   message(STATUS "Link-time optimization not supported")
 endif()
+
+add_opencl_spirv(main "main_gpu.spv"
+  "constants.cl"
+  "constants.h.cl"
+  "globals.cl"
+  "globals.h.cl"
+  "main.cl"
+  "solvers.cl"
+  "solvers.h.cl"
+  "utils.cl"
+  "utils.h.cl"
+)
 
 
 if (OpenMP_FOUND)

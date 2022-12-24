@@ -1,5 +1,5 @@
 {
-  "editor.tabSize": 4,
+  "editor.tabSize": 2,
   "material-icon-theme.files.associations": {
     "*.cl": "shader"
   },
