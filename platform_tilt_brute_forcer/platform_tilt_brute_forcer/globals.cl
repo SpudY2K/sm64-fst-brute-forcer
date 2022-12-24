@@ -1,9 +1,5 @@
 #include "globals.h.cl"
 
-constexpr int MAX_PLAT_SOLUTIONS = 50000;
-constexpr int MAX_PU_SOLUTIONS = 50000000;
-constexpr int MAX_10K_SOLUTIONS = 200000;
-
 global float platform_pos[3] = {};
 global short startTriangles[2][3][3] = {};
 global float startNormals[2][3] = {};

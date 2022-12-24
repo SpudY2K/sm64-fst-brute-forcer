@@ -13,7 +13,7 @@ int find_floor(
     float* pos, short (&triangles)[2][3][3], float (&normals)[2][3],
     float* pheight);
 int find_floor(
-    float* position, SurfaceG** floor, float& floor_y, SurfaceG floor_set[],
+    float* position, SurfaceG** floor, float& floor_y, SurfaceG* floor_set,
     int n_floor_set);
 float find_closest_mag(float target);
 

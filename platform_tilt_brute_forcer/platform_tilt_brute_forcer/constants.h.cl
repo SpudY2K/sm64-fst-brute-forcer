@@ -28,8 +28,12 @@ constexpr float oneUpPlatformZMaxRight    = -306.0f;
 constexpr float oneUpPlatformXMinRight    = -4146.0f;
 constexpr float oneUpPlatformXMaxRight    = -3993.0f;
 
+constexpr int n_floor_ranges                 = 9;
+extern const global double lower_floor[n_floor_ranges];
+extern const global double upper_floor[n_floor_ranges];
+
 constexpr int total_floorsG = 350;
-extern const global SurfaceG floorsG[total_floorsG];
+extern global SurfaceG floorsG[total_floorsG];
 
 // Precomputed via Python script.
 constexpr int magCount = 1168;

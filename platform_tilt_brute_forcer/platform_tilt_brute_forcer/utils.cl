@@ -1,3 +1,7 @@
+#include "utils.h.cl"
+#include "structs.h.cl"
+#include "constants.h.cl"
+
 bool check_inbounds(const float* mario_pos) {
     short x_mod = (short) (int) mario_pos[0];
     short y_mod = (short) (int) mario_pos[1];
@@ -7,7 +11,7 @@ bool check_inbounds(const float* mario_pos) {
 }
 
 short atan2_lookupG(float z, float x) {
-    return (x == 0.0f)? 0x0000 : short(gArctanTableG[uint16_t(float(float(z / x) * 1024.0 + 0.5))]);
+    return (x == 0.0f)? 0x0000 : short(gArctanTableG[ushort(float(float(z / x) * 1024.0 + 0.5))]);
 }
 
 short atan2sG(float z, float x) {
@@ -64,15 +68,15 @@ int find_floor(
     float* pheight) {
     int idx = -1;
 
-    int16_t x = static_cast<int16_t>(static_cast<int>(pos[0]));
-    int16_t y = static_cast<int16_t>(static_cast<int>(pos[1]));
-    int16_t z = static_cast<int16_t>(static_cast<int>(pos[2]));
+    short x = static_cast<short>(static_cast<int>(pos[0]));
+    short y = static_cast<short>(static_cast<int>(pos[1]));
+    short z = static_cast<short>(static_cast<int>(pos[2]));
 
     for (int i = 0; i < 2; i++) {
-        int16_t x1 = triangles[i][0][0];
-        int16_t z1 = triangles[i][0][2];
-        int16_t x2 = triangles[i][1][0];
-        int16_t z2 = triangles[i][1][2];
+        short x1 = triangles[i][0][0];
+        short z1 = triangles[i][0][2];
+        short x2 = triangles[i][1][0];
+        short z2 = triangles[i][1][2];
 
         // Check that the point is within the triangle bounds.
         if ((z1 - z) * (x2 - x1) - (x1 - x) * (z2 - z1) < 0) {
@@ -80,8 +84,8 @@ int find_floor(
         }
 
         // To slightly save on computation time, set this later.
-        int16_t x3 = triangles[i][2][0];
-        int16_t z3 = triangles[i][2][2];
+        short x3 = triangles[i][2][0];
+        short z3 = triangles[i][2][2];
 
         if ((z2 - z) * (x3 - x2) - (x2 - x) * (z3 - z2) < 0) {
             continue;
@@ -114,7 +118,7 @@ int find_floor(
 }
 
 int find_floor(
-    float* position, SurfaceG** floor, float& floor_y, SurfaceG floor_set[],
+    float* position, SurfaceG* private* floor, float& floor_y, SurfaceG* floor_set,
     int n_floor_set) {
     short x = (short) (int) position[0];
     short y = (short) (int) position[1];

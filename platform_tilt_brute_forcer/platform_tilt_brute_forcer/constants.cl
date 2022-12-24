@@ -14,10 +14,16 @@ const global float normal_offsets[4][3] = {
 const global double lower_y[n_y_ranges] = {-1357.0};
 const global double upper_y[n_y_ranges] = {32767.0};
 
+
+const global double lower_floor[n_floor_ranges] = {
+    -1357.0, -743.0, 127.0, 675.0, 2687.0, 4325.0, 4940.0, 5170.0, 5400.0};
+const global double upper_floor[n_floor_ranges] = {
+    -1125.0, -665.0, 410.0, 1331.0, 3789.0, 4506.0, 5018.0, 5248.0, 5478.0};
+
 // WARNING: VERY LONG TABLES.
 // ==========================
 
-const global SurfaceG floorsG[total_floorsG] = {
+global SurfaceG floorsG[total_floorsG] = {
     SurfaceG(1536, 5478, -262, 922, 5478, -262, 922, 5478, 403),
     SurfaceG(1536, 5478, -262, 922, 5478, 403, 1536, 5478, 403),
     SurfaceG(2150, 5248, -262, 1536, 5248, -210, 2150, 5248, -210),
