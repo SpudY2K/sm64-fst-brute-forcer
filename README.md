@@ -12,5 +12,5 @@ The best boundary distance (usually negative) is recorded for each starting posi
 Values are returned in a csv for convenience.
 
 *Developed in VS 2019*  
-*Original CUDA code by SpudY2K*
+*Original CUDA code by SpudY2K*  
 *Ported from CUDA to OpenCL by superminer (WIP)*

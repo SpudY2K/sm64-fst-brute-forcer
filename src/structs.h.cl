@@ -1,6 +1,10 @@
 #ifndef STRUCTS_H_CL
 #define STRUCTS_H_CL
 
+#define MAX_10K_SOLUTIONS 50000
+#define MAX_PU_SOLUTIONS 50000000
+#define MAX_PLAT_SOLUTIONS 200000
+
 struct TenKSolution {
     int puSolutionIdx;
     int startFloorIdx;

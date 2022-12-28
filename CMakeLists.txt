@@ -17,6 +17,7 @@ checkout_repo(cargs "https://github.com/likle/cargs.git" "stable"
 include(CheckIPOSupported)
 check_ipo_supported(RESULT SUPPORTS_IPO)
 find_package(OpenMP)
+find_package(OpenCL REQUIRED)
 
 add_subdirectory(src)
 

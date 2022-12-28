@@ -1,0 +1,41 @@
+function(script_args_init)
+  set(p_idx -1)
+  set(found_ddash NO)
+  set(sacnt 0)
+  
+  foreach(i RANGE ${CMAKE_ARGC})
+    if(p_idx LESS 0)
+      # Find the -P argument
+      if ("${CMAKE_ARGV${i}}" STREQUAL "-P")
+        set(p_idx ${i})
+      endif()
+    else()
+      if(found_ddash)
+        # Treat this variable as a plain argument
+        set("SCRIPT_ARGV${sacnt}" "${CMAKE_ARGV${i}}" PARENT_SCOPE)
+        math(EXPR sacnt "(${sacnt}) + 1")
+      else()
+        # Variable could be a define or double dash
+        if("${CMAKE_ARGV${i}}" STREQUAL "--")
+          set(found_ddash YES)
+        elseif(NOT "${CMAKE_ARGV${i}}" MATCHES "^-D")
+          set("SCRIPT_ARGV${sacnt}" "${CMAKE_ARGV${i}}" PARENT_SCOPE)
+          math(EXPR sacnt "(${sacnt}) + 1")
+        endif()
+      endif()
+    endif()
+    message(DEBUG "argv[${i}] = \"${CMAKE_ARGV${i}}\"; sacnt = ${sacnt}")
+  endforeach()
+  
+  # Subtract 2: 1 to correct for the blank at the end, 1 because it will always be 1 past.
+  math(EXPR sacnt "${sacnt} - 2")
+  set(SCRIPT_ARGC "${sacnt}" PARENT_SCOPE)
+endfunction()
+
+if (CMAKE_SCRIPT_MODE_FILE AND NOT CMAKE_PARENT_LIST_FILE)
+  script_args_init()
+  message("argc = ${SCRIPT_ARGC}")
+  foreach(i RANGE ${SCRIPT_ARGC})
+    message("argv[${i}] = ${SCRIPT_ARGV${i}}")
+  endforeach()
+endif()

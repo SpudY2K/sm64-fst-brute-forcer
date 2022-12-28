@@ -3,22 +3,18 @@
 
 #include "structs.h.cl"
 
-constexpr int MAX_PLAT_SOLUTIONS = 50000;
-constexpr int MAX_PU_SOLUTIONS = 50000000;
-constexpr int MAX_10K_SOLUTIONS = 200000;
+inline global float platform_pos[3] = {};
+inline global short startTriangles[2][3][3] = {};
+inline global float startNormals[2][3] = {};
+inline global bool squishCeilings[4] = {};
 
-extern global float platform_pos[3];
-extern global short startTriangles[2][3][3];
-extern global float startNormals[2][3];
-extern global bool squishCeilings[4];
+inline global PlatformSolution platSolutions[MAX_PLAT_SOLUTIONS] = {};
+inline global int nPlatSolutions = 0;
 
-extern global PlatformSolution platSolutions[MAX_PLAT_SOLUTIONS];
-extern global int nPlatSolutions;
+inline global PUSolution puSolutions[MAX_PU_SOLUTIONS] = {};
+inline global int nPUSolutions = 0;
 
-extern global PUSolution puSolutions[MAX_PU_SOLUTIONS];
-extern global int nPUSolutions;
-
-extern global TenKSolution tenKSolutions[MAX_10K_SOLUTIONS];
-extern global int n10KSolutions;
+inline global TenKSolution tenKSolutions[MAX_10K_SOLUTIONS] = {};
+inline global int n10KSolutions = 0;
 
 #endif
