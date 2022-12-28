@@ -50,14 +50,22 @@ function(checkout_repo name url branch)
     COMMAND git fetch --depth=1 origin "${branch}"
     WORKING_DIRECTORY "${outdir}"
     COMMAND_ECHO STDOUT
-    COMMAND_ERROR_IS_FATAL ANY
+    RESULT_VARIABLE fetch_res
   )
-  execute_process(
-    COMMAND git checkout "${branch}"
-    WORKING_DIRECTORY "${outdir}"
-    COMMAND_ECHO STDOUT
-    COMMAND_ERROR_IS_FATAL ANY
-  )
+  if (fetch_res EQUAL 0)
+    execute_process(
+      COMMAND git checkout "${branch}"
+      WORKING_DIRECTORY "${outdir}"
+      COMMAND_ECHO STDOUT
+      COMMAND_ERROR_IS_FATAL ANY
+    )
+  else()
+    if (NOT EXISTS "${outdir}/${ARGV4}")
+      message(SEND_ERROR "Could not fetch from `${url}`.")
+    else()
+      message(WARNING "Could not fetch from `${url}`. Update will be skipped.")
+    endif()
+  endif()
   
   add_subdirectory("${outdir}" "${builddir}")
   
