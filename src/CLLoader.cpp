@@ -2,7 +2,6 @@
 #include <array>
 #include <filesystem>
 #include <system_error>
-#include <CL/opencl.hpp>
 
 namespace fs = std::filesystem;
 

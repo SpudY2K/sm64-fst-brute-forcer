@@ -12,7 +12,9 @@ public:
     file(path) {
     file << csv_header << std::flush;
   }
-  void write_soln(const TenKSolution& tenK, const PUSolution& pu, const PlatformSolution& plat);
+  void write_soln(
+  const TenKSolution& tenK, const PUSolution& pu,
+  const PlatformSolution& plat, float host_norms[], float normX, float normY, float normZ);
   
 private:
   static const std::string_view csv_header;

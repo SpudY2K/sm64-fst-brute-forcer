@@ -452,7 +452,7 @@ inline bool test_stick_position(
                                 platSol.puz, puSol.angle, puSol.stickMag,
                                 puSol.intendedDYaw);
 
-                            int idx = atomic_add(&n10KSolutions, 1);
+                            int idx = atomic_add(n10KSolutions, 1);
 
                             if (idx < MAX_10K_SOLUTIONS) {
                                 struct TenKSolution solution;
@@ -1385,7 +1385,7 @@ inline void find_pu_slide_setup(PlatformSolution* sol, int solIdx) {
                                 sol->penultimateFloorNormalY * zVel0 / 4.0f};
 
                         if (!check_inbounds(prePositionTest)) {
-                            int idx = atomic_add(&nPUSolutions, 1);
+                            int idx = atomic_add(nPUSolutions, 1);
                             if (idx < MAX_PU_SOLUTIONS) {
                                 PUSolution solution;
                                 solution.platformSolutionIdx = solIdx;
@@ -1635,7 +1635,7 @@ inline bool try_pu_xz(
                 // if (good_solution && mario_pos[1] >= 400 && mario_pos[1] <=
                 // 450) {
                 if (good_solution) {
-                    int solIdx = atomic_add(&nPlatSolutions, 1);
+                    int solIdx = atomic_add(nPlatSolutions, 1);
                     if (solIdx < MAX_PLAT_SOLUTIONS) {
                         PlatformSolution solution;
                         solution.endNormal[0]   = normal[0];

@@ -13,6 +13,14 @@ kernel void set_platform_pos(float x, float y, float z) {
   platform_pos[2] = z;
 }
 
+kernel void set_solution_buffers(
+  global PlatformSolution* plat, global PUSolution* pu,
+  global TenKSolution* tenK) {
+  platSolutions = plat;
+  puSolutions = pu;
+  tenKSolutions = tenK;
+}
+
 kernel void set_squish_ceilings(float n0, float n1, float n2, float n3) {
   squishCeilings[0] = n0 > -0.5;
   squishCeilings[1] = n1 > -0.5;
@@ -38,9 +46,9 @@ kernel void set_start_triangle(
 kernel void test_pu_solution() {
   int idx = get_group_id(0) * get_num_groups(0) + get_local_id(0);
 
-  if (idx < 8 * nPUSolutions) {
-    int solIdx = idx % nPUSolutions;
-    idx        = idx / nPUSolutions;
+  if (idx < 8 * *nPUSolutions) {
+    int solIdx = idx % *nPUSolutions;
+    idx        = idx / *nPUSolutions;
 
     int f = idx % 2;
     idx   = idx / 2;
@@ -56,7 +64,7 @@ kernel void test_pu_solution() {
 kernel void test_plat_solution() {
   int idx = get_group_id(0) * get_num_groups(0) + get_local_id(0);
 
-  if (idx < nPlatSolutions) {
+  if (idx < *nPlatSolutions) {
     find_pu_slide_setup(&(platSolutions[idx]), idx);
   }
 }

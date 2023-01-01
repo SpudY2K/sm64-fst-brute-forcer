@@ -24,6 +24,51 @@ const std::string_view SolutionWriter::csv_header =
   "Upwarp PU X, Upwarp PU Z, "
   "Upwarp Slide Facing Angle, Upwarp Slide IntendedMag, Upwarp Slide IntendedDYaw\n"sv;
 
-void SolutionWriter::write_soln(const TenKSolution &tenK, const PUSolution &pu, const PlatformSolution& plat) {
-  
+void SolutionWriter::write_soln(
+  const TenKSolution& tenK, const PUSolution& pu,
+  const PlatformSolution& plat, float host_norms[], float normX, float normY, float normZ) {
+  file << normX << ", " << normY << ", " << normZ << ", ";
+  file << tenK.startPosition[0] << ", "
+     << tenK.startPosition[1] << ", "
+     << tenK.startPosition[2] << ", ";
+  file << tenK.frame1Position[0] << ", "
+     << tenK.frame1Position[1] << ", "
+     << tenK.frame1Position[2] << ", ";
+  file << tenK.frame2Position[0] << ", "
+     << tenK.frame2Position[1] << ", "
+     << tenK.frame2Position[2] << ", ";
+  file << plat.returnPosition[0] << ", "
+     << plat.returnPosition[1] << ", "
+     << plat.returnPosition[2] << ", ";
+  file << tenK.pre10Kspeed << ", "
+     << tenK.pre10KVel[0] << ", "
+     << tenK.pre10KVel[1] << ", ";
+  file << pu.returnSpeed << ", "
+     << tenK.returnVel[0] << ", "
+     << tenK.returnVel[1] << ", ";
+  file << tenK.frame2QSteps << ", ";
+  file << tenK.stick10K[0] << ", "
+     << tenK.stick10K[1] << ", ";
+  file << tenK.cameraYaw10K << ", ";
+  file << host_norms[3 * tenK.startFloorIdx] << ", "
+     << host_norms[3 * tenK.startFloorIdx + 1] << ", "
+     << host_norms[3 * tenK.startFloorIdx + 2] << ", ";
+  file << tenK.startPositionLimits[0][0] << ", "
+     << tenK.startPositionLimits[0][1] << ", "
+     << tenK.startPositionLimits[0][2] << ", ";
+  file << tenK.startPositionLimits[1][0] << ", "
+     << tenK.startPositionLimits[1][1] << ", "
+     << tenK.startPositionLimits[1][2] << ", ";
+  file << plat.nFrames << ", ";
+  file << plat.endNormal[0] << ", "
+     << plat.endNormal[1] << ", "
+     << plat.endNormal[2] << ", ";
+  file << plat.endPosition[0] << ", "
+     << plat.endPosition[1] << ", "
+     << plat.endPosition[2] << ", ";
+  file << plat.pux << ", "
+     << plat.puz << ", ";
+  file << pu.angle << ", "
+     << pu.stickMag << ", "
+     << pu.intendedDYaw << std::endl;
 }
