@@ -1,8 +1,10 @@
 #ifndef CLLOADER_HPP
 #define CLLOADER_HPP
 
+#define CL_TARGET_OPENCL_VERSION 220
+#include <CL/cl.h>
+
 #define CL_HPP_TARGET_OPENCL_VERSION 220
-#define CL_HPP_ENABLE_EXCEPTIONS
 #include <CL/opencl.hpp>
 
 #include <filesystem>
@@ -28,6 +30,10 @@ namespace detail {
   class CLRangeBase<std::index_sequence<Is...>> {
   public:
     CLRangeBase(size_t_sink<Is>... vs) : m_data {vs...} {}
+    template <class... Ts>
+    requires(sizeof...(Ts) == sizeof...(Is) && (... && std::is_integral_v<Ts>) )
+      CLRangeBase(Ts... vs) :
+      m_data {static_cast<size_t>(vs)...} {}
 
   protected:
     size_t m_data[sizeof...(Is)];
@@ -53,6 +59,15 @@ public:
 private:
   using Base::m_data;
 };
+
+template <>
+class CLRange<0> {
+public:
+  CLRange() = default;
+  const size_t* data() const { return nullptr; }
+};
+
+inline constexpr CLRange<0> NullRange;
 
 template <class... Ts>
 requires(std::is_integral_v<Ts>&&...) CLRange(Ts&&...)
@@ -139,7 +154,7 @@ inline void CLContext::run_kernel(
     m_queue.get(), knl.get(), N, nullptr, global.data(), local.data(), 0,
     nullptr, nullptr);
   if (res != CL_SUCCESS) {
-    throw cl::Error(res, "clEnqueueNDRangeKernel failed");
+    throw std::runtime_error("Kernel enqueue failed");
   }
 
   m_queue.finish();

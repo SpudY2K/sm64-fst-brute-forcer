@@ -1,8 +1,13 @@
 # Add new source files here
 add_executable(main
+  "main.cpp"
+  
   "BoundaryDistance.cpp"
   "BoundaryDistance.hpp"
-  "main.cpp"
+  "CLLoader.cpp"
+  "CLLoader.hpp"
+  "SolutionWriter.cpp"
+  "SolutionWriter.hpp"
   "Path.cpp"
   "Path.hpp"
   "Platform.cpp"

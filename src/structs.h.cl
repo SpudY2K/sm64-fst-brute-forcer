@@ -1,9 +1,20 @@
 #ifndef STRUCTS_H_CL
 #define STRUCTS_H_CL
 
+#if defined(__cplusplus) && !defined(__OPENCL_CPP_VERSION__)
+#include <algorithm>
+#include <cmath>
+using namespace std;
+#endif
+
 #define MAX_10K_SOLUTIONS 50000
 #define MAX_PU_SOLUTIONS 50000000
 #define MAX_PLAT_SOLUTIONS 200000
+
+#define N_SOLN_COUNTERS 3
+#define PLAT_COUNTER_OFF 0
+#define PU_COUNTER_OFF 1
+#define TENK_COUNTER_OFF 2
 
 struct TenKSolution {
     int puSolutionIdx;

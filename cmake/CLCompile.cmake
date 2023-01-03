@@ -103,7 +103,7 @@ function(add_opencl_spirv target output)
   
   add_custom_command(
     OUTPUT "${link_path}"
-    COMMAND spirv-link --target-env opencl2.2 ${obj_list}
+    COMMAND spirv-link --target-env opencl2.2 -o "${link_path}" ${obj_list}
     DEPENDS ${obj_list}
     COMMENT "Linking SPIR-V module ${friendly_link_path}"
   )
@@ -111,8 +111,9 @@ function(add_opencl_spirv target output)
   # Copy final SPIR-V target to target dir
   add_custom_target("spirv_${target}_${output}"
     COMMAND ${CMAKE_COMMAND} -DSCRIPT_OPTION=checked-copy -P ${CMAKE_CURRENT_FUNCTION_LIST_FILE} --
-    "${tmpdir2}/${output}" "$<TARGET_FILE_DIR:${target}>/${output}"
-    DEPENDS "${tmpdir2}/${output}"
+    "${link_path}" "$<TARGET_FILE_DIR:${target}>/"
+    DEPENDS "${link_path}"
+    COMMENT "Copying compiled SPIR-V ${friendly_link_path}"
   )
   add_dependencies(${target} "spirv_${target}_${output}")
 endfunction()
@@ -122,7 +123,7 @@ if (CMAKE_SCRIPT_MODE_FILE AND NOT CMAKE_PARENT_LIST_FILE)
   script_args_init()
   # Utility functions requiring a script.
   if (${SCRIPT_OPTION} STREQUAL "checked-copy")
-    if (NOT EXISTS ${SCRIPT_ARGV1})
+    if (0 EQUAL 0)
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E copy ${SCRIPT_ARGV1} ${SCRIPT_ARGV2}
       )
@@ -137,6 +138,10 @@ if (CMAKE_SCRIPT_MODE_FILE AND NOT CMAKE_PARENT_LIST_FILE)
       COMMAND clang -target ${SCRIPT_ARGV1} -cl-std=clc++2021 -emit-llvm -O0 -o - -c ${SCRIPT_ARGV2} -MD -MF ${SCRIPT_ARGV3}
       COMMAND llvm-spirv --spirv-max-version=1.2 --spirv-target-env=CL2.0
       COMMAND spirv-opt --target-env=opencl2.2 -O -o ${SCRIPT_ARGV4}
+    )
+    # add a blank line
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E echo
     )
   endif()
 endif()

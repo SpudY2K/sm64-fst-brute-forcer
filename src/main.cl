@@ -15,10 +15,14 @@ kernel void set_platform_pos(float x, float y, float z) {
 
 kernel void set_solution_buffers(
   global PlatformSolution* plat, global PUSolution* pu,
-  global TenKSolution* tenK) {
+  global TenKSolution* tenK, global int* counters) {
   platSolutions = plat;
-  puSolutions = pu;
+  puSolutions   = pu;
   tenKSolutions = tenK;
+  
+  nPlatSolutions = counters + PLAT_COUNTER_OFF;
+  nPUSolutions   = counters + PU_COUNTER_OFF;
+  n10KSolutions  = counters + TENK_COUNTER_OFF;
 }
 
 kernel void set_squish_ceilings(float n0, float n1, float n2, float n3) {

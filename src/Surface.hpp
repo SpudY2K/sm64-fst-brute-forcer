@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+#include <stdexcept>
 #include <vector>
 #include <cstdio>
 #include <cstdint>
@@ -100,7 +102,9 @@ public:
 			vectors[2][2] = 307;
 		}
 		else {
-			throw "Unsupported surface " + idx;
+			std::ostringstream oss;
+      oss << "Unsupported surface " << idx;
+      throw std::runtime_error(oss.str());
 		}
 	}
 

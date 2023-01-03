@@ -1,4 +1,4 @@
-#include "CLLoader.hpp"
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include "CLLoader.hpp"
 #include "Platform.hpp"
 #include "SolutionWriter.hpp"
 #include "structs.h.cl"
@@ -204,7 +205,7 @@ struct ArgOptions {
         platformPos[2]);
       printf("\n");
     }
-    
+
     return 0;
   }
 };
@@ -214,25 +215,27 @@ struct HostParams {
   std::unique_ptr<PlatformSolution[]> platSolutionsCPU;
   std::unique_ptr<PUSolution[]> puSolutionsCPU;
   std::unique_ptr<TenKSolution[]> tenKSolutionsCPU;
-  
+
   std::unique_ptr<int16_t[]> host_tris;
   std::unique_ptr<float[]> host_norms;
-  
+
   // GPU buffers
   cl::Buffer platSolutions;
   cl::Buffer puSolutions;
   cl::Buffer tenKSolutions;
-  
+
+  cl::Buffer solnCounters;
+
   cl::Buffer dev_tris;
   cl::Buffer dev_norms;
-  
+
   // loop parameters
   const float deltaNX;
   const float deltaNY;
   const float deltaNZ;
-  
+
   // Misc values
-  SolutionWriter swr;
+  SolutionWriter solnWriter;
   std::unordered_map<uint64_t, PUSolution> puSolutionLookup;
 };
 
@@ -277,8 +280,8 @@ std::tuple<float, float, float, float> platBoundingBox(
 }
 
 void testNormal(
-  CLContext& cl, ArgOptions& o, HostParams& q,
-  const Vec3f& startNormal) {
+  CLContext& cl, ArgOptions& o, HostParams& h, const Vec3f& startNormal,
+  const Vec3ul& index) {
   Platform platform(
     o.platformPos[0], o.platformPos[1], o.platformPos[2], startNormal);
 
@@ -294,7 +297,7 @@ void testNormal(
   // allow the platform to untilt for nPUFrames
   platform.platform_logic(pos);
   // copy the platform vectors at the point of PU platform displacement
-  copyPlatVectors(platform, q.host_tris.get(), q.host_norms.get());
+  copyPlatVectors(platform, h.host_tris.get(), h.host_norms.get());
   for (uint k = 1; k < o.nPUFrames; k++) {
     platform.platform_logic(pos);
   }
@@ -311,60 +314,221 @@ void testNormal(
       startNormal[0], startNormal[2]);
     return;
   }
+
+  // FIND PLATFORM SOLUTIONS
+  // =======================
+
+  int nPlatSolutionsCPU = 0;
+  // copy counter from CPU to GPU
+  cl.write_buffer(
+    h.solnCounters, &nPlatSolutionsCPU, sizeof(int),
+    PLAT_COUNTER_OFF * sizeof(int));
+
+  cl.run_kernel(
+    "search_positions", {nX * nZ + o.nThreads - 1}, {o.nThreads}, minX,
+    o.deltaX, minZ, o.deltaZ, nX, nZ, platform.normal[0], platform.normal[1],
+    platform.normal[2], o.maxFrames);
+  // copy counter from GPU to CPU
+  cl.read_buffer(
+    h.solnCounters, &nPlatSolutionsCPU, sizeof(int),
+    PLAT_COUNTER_OFF * sizeof(int));
+
+  // skip if there are no good platform solutions
+  if (nPlatSolutionsCPU <= 0) {
+    fprintf(
+      stderr, "Note: No platform solutions for normal (%g, %g, %g)",
+      startNormal[0], startNormal[1], startNormal[2]);
+    return;
+  }
+
+  if (nPlatSolutionsCPU >= MAX_PLAT_SOLUTIONS) {
+    fputs(
+      "Warning: Maximum number of platform solutions found. "
+      "Increase the internal maximum to get more solutions.",
+      stderr);
+    nPlatSolutionsCPU = MAX_PLAT_SOLUTIONS;
+  }
+
+  // FIND PU SOLUTIONS
+  // =======================
+
+  int nPUSolutionsCPU = 0;
+
+  cl.write_buffer(
+    h.solnCounters, &nPUSolutionsCPU, sizeof(int),
+    PU_COUNTER_OFF * sizeof(int));
+
+  cl.run_kernel(
+    "test_plat_solution", {nPlatSolutionsCPU}, {o.nThreads});
+
+  cl.read_buffer(
+    h.solnCounters, &nPUSolutionsCPU, sizeof(int),
+    PU_COUNTER_OFF * sizeof(int));
+
+  // skip if there are no good PU solutions
+  if (nPUSolutionsCPU <= 0) {
+    fprintf(
+      stderr, "Note: No PU solutions for normal (%g, %g, %g)", startNormal[0],
+      startNormal[1], startNormal[2]);
+    return;
+  }
+
+  if (nPUSolutionsCPU >= MAX_PU_SOLUTIONS) {
+    fputs(
+      "Warning: Maximum number of PU solutions found. "
+      "Increase the internal maximum to get more solutions.",
+      stderr);
+    nPUSolutionsCPU = MAX_PU_SOLUTIONS;
+  }
+
+  // DEDUPLICATE ON CPU
+  // TODO replace with GPU algorithm
+  // ===============================
+
+  h.puSolutionLookup.clear();
+
+  // Copy PU solutions from GPU to CPU
+  cl.read_buffer(
+    h.puSolutions, h.puSolutionsCPU.get(),
+    nPUSolutionsCPU * sizeof(PUSolution));
+
+  // insert all values into hashmap
+  for (size_t n = 0; n < nPUSolutionsCPU; n++) {
+    // derive hash key from platform index and return speed
+    uint64_t key =
+      (static_cast<uint64_t>(h.puSolutionsCPU[n].platformSolutionIdx) << 32) |
+      std::bit_cast<uint32_t>(h.puSolutionsCPU[n].returnSpeed);
+
+    h.puSolutionLookup.emplace(key, h.puSolutionLookup[n]);
+  }
+
+  // Copy values from hashmap to CPU buffer
+  nPUSolutionsCPU = 0;
+  for (const auto& [key, soln] : h.puSolutionLookup) {
+    h.puSolutionsCPU[nPUSolutionsCPU] = soln;
+    nPUSolutionsCPU++;
+  }
+
+  // Copy PU solutions and counter back to GPU
+  cl.write_buffer(
+    h.solnCounters, &nPUSolutionsCPU, sizeof(int),
+    PU_COUNTER_OFF * sizeof(int));
+  cl.write_buffer(
+    h.puSolutions, h.puSolutionsCPU.get(),
+    nPUSolutionsCPU * sizeof(PUSolution));
+
+  // FIND 10K SOLUTIONS
+  // ==================
+
+  printf(
+    "---------------------------------------\n"
+    "Testing Normal: %g, %g, %g\n"
+    "        Index: %zu, %zu, %zu\n"
+    "        # Platform Solutions: %d\n"
+    "        # PU Solutions: %d\n",
+    startNormal[0], startNormal[1], startNormal[2], index[0], index[0],
+    index[0], nPlatSolutionsCPU, nPUSolutionsCPU);
+  
+  int n10KSolutionsCPU = 0;
+  // Copy counter from CPU to GPU
+  cl.write_buffer(
+    h.solnCounters, &n10KSolutionsCPU, sizeof(int),
+    TENK_COUNTER_OFF * sizeof(int));
+    
+  cl.run_kernel("test_pu_solution", {8 * nPUSolutionsCPU}, {o.nThreads});
+  // Copy counter from GPU to CPU
+  cl.read_buffer(
+    h.solnCounters, &n10KSolutionsCPU, sizeof(int),
+    TENK_COUNTER_OFF * sizeof(int));
+  
+  if (n10KSolutionsCPU <= 0) {
+    fprintf(
+      stderr, "Note: No 10K solutions for normal (%g, %g, %g)", startNormal[0],
+      startNormal[1], startNormal[2]);
+    return;
+  }
+  
+  // skip if there are no good 10k solutions
+  if (n10KSolutionsCPU >= MAX_10K_SOLUTIONS) {
+    fputs(
+      "Warning: Maximum number of 10k solutions found. "
+      "Increase the internal maximum to get more solutions.",
+      stderr);
+    n10KSolutionsCPU = MAX_10K_SOLUTIONS;
+  }
   
   
+  cl.read_buffer(h.tenKSolutions, h.tenKSolutionsCPU.get(), n10KSolutionsCPU * sizeof(TenKSolution));
+  cl.read_buffer(h.platSolutions, h.platSolutionsCPU.get(), n10KSolutionsCPU * sizeof(PlatformSolution));
+  
+  for (size_t i = 0; i < n10KSolutionsCPU; i++) {
+    auto& tenK = h.tenKSolutionsCPU[i];
+    auto& pu = h.puSolutionsCPU[tenK.puSolutionIdx];
+    auto& plat = h.platSolutionsCPU[pu.platformSolutionIdx];
+    
+    h.solnWriter.write_soln(tenK, pu, plat, h.host_norms.get(), startNormal[0], startNormal[1], startNormal[2]);
+  }
 }
 
 int main(int argc, char* argv[]) {
   ArgOptions o = ArgOptions::from_args(argc, argv);
-  
+
   if (int res = o.check())
     return res;
 
   // Initialize GPU kernel
   CLContext cl;
-  
-  
+
   HostParams q {
-    .platSolutionsCPU = std::make_unique<PlatformSolution[]>(MAX_PLAT_SOLUTIONS),
+    .platSolutionsCPU =
+      std::make_unique<PlatformSolution[]>(MAX_PLAT_SOLUTIONS),
     .puSolutionsCPU   = std::make_unique<PUSolution[]>(MAX_PU_SOLUTIONS),
     .tenKSolutionsCPU = std::make_unique<TenKSolution[]>(MAX_10K_SOLUTIONS),
-    
-    .host_tris = std::make_unique<int16_t[]>(18),
+
+    .host_tris  = std::make_unique<int16_t[]>(18),
     .host_norms = std::make_unique<float[]>(6),
-    
+
     .platSolutions = cl.alloc<PlatformSolution>(MAX_PLAT_SOLUTIONS),
     .puSolutions   = cl.alloc<PUSolution>(MAX_PU_SOLUTIONS),
     .tenKSolutions = cl.alloc<TenKSolution>(MAX_10K_SOLUTIONS),
-    
-    .dev_tris = cl.alloc<short>(18),
+
+    .solnCounters = cl.alloc<int16_t>(N_SOLN_COUNTERS),
+
+    .dev_tris  = cl.alloc<short>(18),
     .dev_norms = cl.alloc<float>(6),
-    
+
     .deltaNX =
       (o.nSamplesNX > 1) ? (o.maxNX - o.minNX) / (o.nSamplesNX - 1) : 0,
     .deltaNY =
       (o.nSamplesNY > 1) ? (o.maxNY - o.minNY) / (o.nSamplesNY - 1) : 0,
     .deltaNZ =
       (o.nSamplesNZ > 1) ? (o.maxNZ - o.minNZ) / (o.nSamplesNZ - 1) : 0,
-      
-    .swr = SolutionWriter(o.outFile),
+
+    .solnWriter              = SolutionWriter(o.outFile),
     .puSolutionLookup = std::unordered_map<uint64_t, PUSolution>(),
   };
   // init_reverse_atan, init_mag_set, and initialise_floors handled by
   // pregenerated table
   cl.run_kernel_once(
-    "set_platform_pos", o.platformPos[0], o.platformPos[1],
-    o.platformPos[2]);
-  cl.run_kernel_once("set_solution_buffers", q.platSolutions, q.puSolutions, q.tenKSolutions);
-  
-  for (size_t h = 0; h < o.nSamplesNY; h++)
-  for (size_t i = 0; i < o.nSamplesNX; i++)
-  for (size_t j = 0; j < o.nSamplesNZ; j++) {
-    Vec3f startNormal {
-      o.minNX + i * q.deltaNX,
-      o.minNY + h * q.deltaNY,
-      o.minNZ + j * q.deltaNZ,
-    };
-    
+    "set_platform_pos", o.platformPos[0], o.platformPos[1], o.platformPos[2]);
+  cl.run_kernel_once(
+    "set_solution_buffers", q.platSolutions, q.puSolutions, q.tenKSolutions,
+    q.solnCounters);
+
+  Vec3ul index;
+  Vec3f startNormal;
+  for (size_t h = 0; h < o.nSamplesNY; h++) {
+    for (size_t i = 0; i < o.nSamplesNX; i++) {
+      for (size_t j = 0; j < o.nSamplesNZ; j++) {
+        startNormal = Vec3f {
+          o.minNX + i * q.deltaNX,
+          o.minNY + h * q.deltaNY,
+          o.minNZ + j * q.deltaNZ,
+        };
+        index = Vec3ul {i, h, j};
+
+        testNormal(cl, o, q, startNormal, index);
+      }
+    }
   }
 }
