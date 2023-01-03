@@ -14,7 +14,7 @@ Values are returned in a csv for convenience.
 This project has since evolved into a master bruteforcer, doing all bruteforcing starting from platform tilts, all the way to solving the 10k route.
 
 # Credits
-- Original max-tilt bruteforcer by [Tyler Kehne](https://github.com/TylerKehne) with help from [SpudY2K](https://github.com/SpudY2K) and Modiseus (can someone link their GitHub?)
+- Original max-tilt bruteforcer by [Tyler Kehne](https://github.com/TylerKehne) with help from [SpudY2K](https://github.com/SpudY2K) and Modiseus (**TODO** link this guy's GitHub or something)
 - Game code derived from the [SM64 decompilation](https://github.com/n64decomp/sm64)
 - Base bruteforcer code from [AnthonyC4](https://github.com/acatelan)
 - CUDA port by [SpudY2K](https://github.com/SpudY2K)
