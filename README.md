@@ -11,6 +11,8 @@ For each starting position, Mario starts at the height of the platform floor (wh
 The best boundary distance (usually negative) is recorded for each starting position. Filtering only positive values for these will return the upwarp-compatible starting positions.
 Values are returned in a csv for convenience.
 
+This project has since evolved into a master bruteforcer, doing all bruteforcing starting from platform tilts, all the way to solving the 10k route.
+
 *Developed in VS 2019*  
 *Original CUDA code by SpudY2K*  
 *Ported from CUDA to OpenCL by superminer (WIP)*
