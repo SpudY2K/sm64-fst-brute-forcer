@@ -13,9 +13,27 @@ Values are returned in a csv for convenience.
 
 This project has since evolved into a master bruteforcer, doing all bruteforcing starting from platform tilts, all the way to solving the 10k route.
 
+# Build instructions
+
+Required tools:
+- CMake
+- Clang 14+
+- [`spirv-tools`](https://github.com/KhronosGroup/SPIRV-Tools) and [`llvm-spirv`](https://github.com/KhronosGroup/SPIRV-LLVM-Translator) packages
+  - available on most Linux distros
+  - needs to be compiled from source on Windows
+
+Once all the needed tools are on your path, it should be about as simple as:
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+
+build/main --help
+```
+Visual Studio has not been tested with this CMake setup, but it *should* work just fine. (It probably won't...)
+
 # Credits
 - Original max-tilt bruteforcer by [Tyler Kehne](https://github.com/TylerKehne) with help from [SpudY2K](https://github.com/SpudY2K) and Modiseus (**TODO** link this guy's GitHub or something)
 - Game code derived from the [SM64 decompilation](https://github.com/n64decomp/sm64)
-- Base bruteforcer code from [AnthonyC4](https://github.com/acatelan)
+- A lot of base bruteforcer code from [AnthonyC4](https://github.com/acatelan)
 - CUDA port by [SpudY2K](https://github.com/SpudY2K)
 - OpenCL port by [superminerJG](https://github.com/jgcodes2020)
