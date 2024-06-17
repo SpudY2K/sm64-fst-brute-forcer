@@ -1,5 +1,5 @@
 # Add new source files here
-add_executable(fst-brute-forcer
+add_executable(fst-brute-forcer-sycl
   "CMakeLists.txt"
   "main.cpp"
   "FST.cpp"
