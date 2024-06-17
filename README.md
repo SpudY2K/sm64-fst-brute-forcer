@@ -3,6 +3,8 @@ A GPU-based brute forcing tool to search for working setups for the FST step of 
 
 This tool evolved out of Tyler Kehne's platform max tilt brute forcer, but has since come to encompass many other aspects of the FST setup.
 
+This branch is a port of the CUDA code to SYCL, which is compatible with Intel and AMD GPUs.
+
 ## Options ##
 This program accepts the following options:
 
@@ -48,9 +50,9 @@ This program accepts the following options:
 </pre>
 #### GPU Settings ####
 <pre>
--d &lt;device_id&gt;:                             The CUDA device used to run the program.
+-d &lt;device_id&gt;:                             The SYCL device used to run the program.
   
--t &lt;threads&gt;:                               Number of CUDA threads to assign to the program.
+-t &lt;threads&gt;:                               Number of SYCL threads to assign to the program.
   
 -lsk1 &lt;n_solutions&gt;:                        Maximum number of phase 1 solutions for 10k setup search.
   
@@ -102,16 +104,10 @@ This program accepts the following options:
 </pre>
 
 ## Dependencies ##
-To maximise throughput, this program has been written in CUDA to allow for processing on the GPU. Therefore, to build this program you will need to install CUDA Toolkit (v11.7 or later is recommended).  
-
-In addition, to run the program you will need a computer with CUDA compatible GPU. A GPU with compute capability 5.2 or higher and at least 4GB of RAM is recommended. Lower powered GPUs may still be able to run this program, but some tweaking of the build configuration may be necessary.
+To build this program you will need to install the Intel oneAPI Base Toolkit (v2024.1.0 or later is recommended).
 
 ## Building Instructions ##
 This program can be built with Visual Studio or CMake using the included config files. 
-
-For Visual Studio builds, you might need to link CUDA Build Customizations to the project before building. Instructions for doing that can be found here:
-
-https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html#compiling-cuda-programs
 
 For CMake builds, use the following commands:
 
