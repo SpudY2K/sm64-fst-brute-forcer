@@ -1,8 +1,11 @@
 #pragma once
 
+#include <stdexcept>
 #include <vector>
 #include <cstdio>
 #include <cstdint>
+#include <string>
+
 
 #include "vmath.hpp"
 
@@ -33,6 +36,7 @@ public:
 	}
 
 	void reset_vectors() {
+	using namespace std::string_literals;
 		if (idx == 0) {
 			vectors[0][0] = 307;
 			vectors[0][1] = 307;
@@ -100,7 +104,7 @@ public:
 			vectors[2][2] = 307;
 		}
 		else {
-			throw "Unsupported surface " + idx;
+			throw std::out_of_range("Invalid surface index "s + std::to_string(idx));
 		}
 	}
 

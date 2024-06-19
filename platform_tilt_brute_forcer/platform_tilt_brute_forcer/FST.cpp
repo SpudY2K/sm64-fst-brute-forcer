@@ -6845,7 +6845,8 @@ void find_breakdance_solutions(
                                 falling = false;
                                 break;
                             }
-                            else if (intendedPos[0] < INT_MIN || intendedPos[0] > INT_MAX || intendedPos[2] < INT_MIN || intendedPos[2] > INT_MAX) {
+                            else if (intendedPos[0] < ((float) INT_MIN) || intendedPos[0] > ((float) INT_MAX) || 
+                                intendedPos[2] < ((float) INT_MIN) || intendedPos[2] > ((float) INT_MAX)) {
                                 falling = false;
                                 break;
                             }
@@ -7371,15 +7372,15 @@ bool try_pu_xz(
     float* normal, float* position, short (&current_triangles)[2][3][3],
     float (&triangle_normals)[2][3], double x, double z, int platSolIdx,
     const int n_y_ranges, double const* lower_y, double const* upper_y,
-    const int n_floor_ranges, const double const* lower_floor,
-    const double const* upper_floor, struct GPULimits limits,
+    const int n_floor_ranges, const double* const lower_floor,
+    const double* const upper_floor, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
     // For current (x, z) PU position, find range of yaws that
     // allow you to reach the PU platform from the original universe.
 
     float test_normal[3] = { normal[0], normal[1], normal[2] };
-    float mario_pos[3] = { x + position[0], position[1], z + position[2] };
+    float mario_pos[3] = { static_cast<float>(x + position[0]), position[1], static_cast<float>(z + position[2]) };
 
     short triangles[2][3][3];
     float normals[2][3];
@@ -7476,8 +7477,8 @@ bool try_pu_x(
     double platform_min_z, double platform_max_z, double m, double c_min,
     double c_max, int q_steps, double max_speed, int platSolIdx,
     const int n_y_ranges, double const* lower_y, double const* upper_y,
-    const int n_floor_ranges, const double const* lower_floor,
-    const double const* upper_floor, struct GPULimits limits,
+    const int n_floor_ranges, double const* const lower_floor,
+    double const* const upper_floor, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
     double pu_platform_min_x = x + platform_min_x;
@@ -7677,8 +7678,8 @@ bool try_pu_z(
     double platform_min_z, double platform_max_z, double m, double c_min,
     double c_max, int q_steps, double max_speed, int platSolIdx,
     const int n_y_ranges, double const* lower_y, double const* upper_y,
-    const int n_floor_ranges, const double const* lower_floor,
-    const double const* upper_floor, struct GPULimits limits,
+    const int n_floor_ranges, const double* const lower_floor,
+    const double* const upper_floor, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
     double pu_platform_min_z = z + platform_min_z;
@@ -7874,8 +7875,8 @@ void try_normal(
     dpct::accessor<const short, dpct::constant, 2> default_triangles,
     dpct::accessor<const float, dpct::constant, 2> normal_offsets,
     const int n_y_ranges, double const* lower_y, double const* upper_y,
-    const int n_floor_ranges, const double const* lower_floor,
-    const double const* upper_floor, struct GPULimits limits,
+    const int n_floor_ranges, const double* const lower_floor,
+    const double* const upper_floor, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
     // Tilt angle cut-offs
@@ -8392,8 +8393,8 @@ void find_upwarp_solutions(float maxSpeed, const sycl::nd_item<3> &item_ct1,
                            dpct::accessor<const float, dpct::constant, 2> normal_offsets,
                            const int n_y_ranges, double const *lower_y,
                            double const *upper_y, const int n_floor_ranges,
-                           const double const *lower_floor,
-                           const double const *upper_floor,
+                           const double* const lower_floor,
+                           const double* const upper_floor,
                            struct GPULimits limits, struct SolStruct &solutions,
                            struct SolCounts &counts, float *platform_pos) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
@@ -8968,7 +8969,7 @@ void testEdge(const float x0, const float x1, const float z0, const float z1, fl
 
     double t = (double)idx / (double)total;
 
-    float marioPos[3] = { x0 + t * (x1 - x0), -2500.0f, z0 + t * (z1 - z0) };
+    float marioPos[3] = { static_cast<float>(x0 + t * (x1 - x0)), -2500.0f, static_cast<float>(z0 + t * (z1 - z0)) };
     float normal[3] = { normalX, normalY, normalZ };
 
     try_position(
@@ -11393,7 +11394,7 @@ void set_squish_spots(short* tris, float* norms, struct GPULimits limits,
 
             for (int x = minX; x <= maxX; x++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    float pos[3] = { x, -3071.0f , z };
+                    float pos[3] = { static_cast<float>(x), -3071.0f , static_cast<float>(z) };
 
                     float ceilHeight;
                     int idx = find_ceil(pos, squishCeilingTriangles, squishCeilingNormals, &ceilHeight);

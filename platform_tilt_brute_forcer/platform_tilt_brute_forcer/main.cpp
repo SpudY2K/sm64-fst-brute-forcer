@@ -464,8 +464,3 @@ int main(int argc, char* argv[]) {
     free_fst_vars(&p);
     wf.close();
 }
-    if (!o.silent) print_success();
-
-    free_fst_vars(&p);
-    wf.close();
-}
