@@ -1,6 +1,5 @@
 # Add new source files here
-add_executable(fst-brute-forcer-sycl
-  "CMakeLists.txt"
+add_executable(fst-brute-forcer-sycl 
   "main.cpp"
   "FST.cpp"
   "FST.hpp"
@@ -13,22 +12,22 @@ add_executable(fst-brute-forcer-sycl
   "vmath.cpp"
   "vmath.hpp"
 )
+target_include_directories(fst-brute-forcer-sycl SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/include")
+add_sycl_to_target(
+  TARGET fst-brute-forcer-sycl SOURCES
+  "FST.cpp"
+  "FST.hpp"
+)
 
-set_target_properties(fst-brute-forcer PROPERTIES
+set_target_properties(fst-brute-forcer-sycl PROPERTIES
   CXX_STANDARD 17
   CXX_STANDARD_REQUIRED yes
-  CMAKE_CUDA_STANDARD 17
-  CMAKE_CUDA_STANDARD_REQUIRED yes
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
   PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-set_source_files_properties(FST.cpp PROPERTIES LANGUAGE CUDA)
-
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -maxrregcount=64 -fmad=false")
-
-if (SUPPORTS_MARCH_NATIVE)
-  if (SUPPORTS_FFP_CONTRACT)
+if(SUPPORTS_MARCH_NATIVE)
+  if(SUPPORTS_FFP_CONTRACT)
     message(STATUS "Compiler supports -march=native -ffp-contract=off")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -ffp-contract=off")
   else()
@@ -37,9 +36,10 @@ if (SUPPORTS_MARCH_NATIVE)
 else()
   message(STATUS "Compiler does not support -march=native")
 endif()
-if (SUPPORTS_IPO)
+
+if(SUPPORTS_IPO)
   message(STATUS "Link-time optimization supported")
-  set_target_properties(fst-brute-forcer PROPERTIES
+  set_target_properties(fst-brute-forcer-sycl PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION yes
   )
 else()

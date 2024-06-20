@@ -51,3 +51,6 @@
 
 # Build folder
 build/
+
+# clangd cache
+.cache/
