@@ -12,6 +12,7 @@ add_executable(fst-brute-forcer-sycl
   "vmath.cpp"
   "vmath.hpp"
 )
+target_include_directories(fst-brute-forcer-sycl SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/include")
 add_sycl_to_target(
   TARGET fst-brute-forcer-sycl SOURCES
   "FST.cpp"
