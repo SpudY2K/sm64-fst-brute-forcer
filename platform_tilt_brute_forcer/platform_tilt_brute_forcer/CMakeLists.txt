@@ -1,6 +1,5 @@
 # Add new source files here
 add_executable(fst-brute-forcer-sycl
-  "CMakeLists.txt"
   "main.cpp"
   "FST.cpp"
   "FST.hpp"
@@ -14,18 +13,17 @@ add_executable(fst-brute-forcer-sycl
   "vmath.hpp"
 )
 
-set_target_properties(fst-brute-forcer PROPERTIES
+target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/)
+target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/sycl)
+
+set_target_properties(fst-brute-forcer-sycl PROPERTIES
   CXX_STANDARD 17
   CXX_STANDARD_REQUIRED yes
-  CMAKE_CUDA_STANDARD 17
-  CMAKE_CUDA_STANDARD_REQUIRED yes
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
   PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-set_source_files_properties(FST.cpp PROPERTIES LANGUAGE CUDA)
-
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -maxrregcount=64 -fmad=false")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl -fsycl-unnamed-lambda -fsycl-targets=amdgcn-amd-amdhsa,spir64 -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=gfx1030 -Wno-c++11-narrowing")
 
 if (SUPPORTS_MARCH_NATIVE)
   if (SUPPORTS_FFP_CONTRACT)
@@ -39,7 +37,7 @@ else()
 endif()
 if (SUPPORTS_IPO)
   message(STATUS "Link-time optimization supported")
-  set_target_properties(fst-brute-forcer PROPERTIES
+  set_target_properties(fst-brute-forcer-sycl PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION yes
   )
 else()
