@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(sm64-fst-brute-forcer
   DESCRIPTION "Bruteforces Final Speed Transfer setups for BitFS 0x"
-  LANGUAGES CUDA CXX
+  LANGUAGES CXX
 )
+
+set(CMAKE_C_COMPILER "/opt/intel/oneapi/2024.2/bin/icx")
+set(CMAKE_CXX_COMPILER "/opt/intel/oneapi/2024.2/bin/icpx")
 
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-march=native" SUPPORTS_MARCH_NATIVE)
