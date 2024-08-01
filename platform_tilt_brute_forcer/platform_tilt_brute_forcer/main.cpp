@@ -5,16 +5,16 @@
 struct SearchOptions {
     std::string outFile = "outData.csv";
 
-    float minNX = 0.1765f;
-    float maxNX = 0.1815f;
-    float minNY = 0.877f;
-    float maxNY = 0.882f;
-    float minNXZ = 0.575f;
-    float maxNXZ = 0.5775f;
+    float minNX = 0.1808f;
+    float maxNX = 0.1808f;
+    float minNY = 0.87752f;
+    float maxNY = 0.87752f;
+    float minNXZ = -0.57664f;
+    float maxNXZ = -0.57664f;
 
-    int nSamplesNX = 51;
-    int nSamplesNXZ = 51;
-    int nSamplesNY = 51;
+    int nSamplesNX = 21;
+    int nSamplesNXZ = 21;
+    int nSamplesNY = 21;
 
     bool zMode = false;
     bool quadMode = false;
@@ -413,6 +413,7 @@ int main(int argc, char* argv[]) {
     for (int j = 0; j < s.nSamplesNXZ; j++) {
         for (int h = 0; h < s.nSamplesNY; h++) {
             for (int i = 0; i < s.nSamplesNX; i++) {
+                printf("Searching: Z=%d/%d Y=%d%/%d\n", j+1, s.nSamplesNXZ, h+1, s.nSamplesNY);
                 for (int quad = 0; quad < (s.quadMode ? 8 : 1); quad++) {
                     float normX;
                     float normY;
@@ -459,11 +460,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (!o.silent) print_success();
-
-    free_fst_vars(&p);
-    wf.close();
-}
     if (!o.silent) print_success();
 
     free_fst_vars(&p);

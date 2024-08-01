@@ -55,27 +55,27 @@ public:
 
         lower_y =
             sycl::fmin(
-                sycl::fmin((float) (vertices[0][1]), (float) (vertices[1][1])),
-                (float) (vertices[2][1])) -
+                sycl::fmin((float)(vertices[0][1]), (float)(vertices[1][1])),
+                (float)(vertices[2][1])) -
             5;
         upper_y =
             sycl::fmax(
-                sycl::fmax((float) (vertices[0][1]), (float) (vertices[1][1])),
-                (float) (vertices[2][1])) +
+                sycl::fmax((float)(vertices[0][1]), (float)(vertices[1][1])),
+                (float)(vertices[2][1])) +
             5;
 
         min_x = sycl::fmin(
-            sycl::fmin((float) (vertices[0][0]), (float) (vertices[1][0])),
-            (float) (vertices[2][0]));
+            sycl::fmin((float)(vertices[0][0]), (float)(vertices[1][0])),
+            (float)(vertices[2][0]));
         max_x = sycl::fmax(
-            sycl::fmax((float) (vertices[0][0]), (float) (vertices[1][0])),
-            (float) (vertices[2][0]));
+            sycl::fmax((float)(vertices[0][0]), (float)(vertices[1][0])),
+            (float)(vertices[2][0]));
         min_z = sycl::fmin(
-            sycl::fmin((float) (vertices[0][2]), (float) (vertices[1][2])),
-            (float) (vertices[2][2]));
+            sycl::fmin((float)(vertices[0][2]), (float)(vertices[1][2])),
+            (float)(vertices[2][2]));
         max_z = sycl::fmax(
-            sycl::fmax((float) (vertices[0][2]), (float) (vertices[1][2])),
-            (float) (vertices[2][2]));
+            sycl::fmax((float)(vertices[0][2]), (float)(vertices[1][2])),
+            (float)(vertices[2][2]));
 
         calculate_normal();
     }
@@ -104,45 +104,45 @@ static dpct::constant_memory<const int, 0> maxF3Turn(522);
 static dpct::constant_memory<const int, 0> nTenKFloors(nTenKFloors_c);
 static dpct::constant_memory<float, 2> tenKFloors(
     sycl::range<2>(nTenKFloors_c, 9),
-    {{-613.0, -306.0, -4607.0, -4453.0, -3071.0, -2661.0, -0.9361413717,
+    { {-613.0, -306.0, -4607.0, -4453.0, -3071.0, -2661.0, -0.9361413717,
       0.351623833, 0.0},
      {-613.0, -306.0, -4146.0, -3993.0, -2661.0, -3071.0, 0.936891377,
       0.349620432, 0.0},
      {-7065.0, -6041.0, 307.0, 322.0, -2866.0, -3071.0, 0.0146370763,
       0.03655698895, 0.9992243648},
      {-7065.0, -6553.0, 307.0, 322.0, -2866.0, -3071.0, 0, 0.07297563553,
-      0.9973337054}});
+      0.9973337054} });
 
 static dpct::constant_memory<int, 0> slideAngleSampleRate(4);
 
 static dpct::constant_memory<const short, 2> default_triangles(
     sycl::range<2>(2, 9),
-    {{307, 307, -306, -306, 307, -306, -306, 307, 307},
-     {307, 307, -306, -306, 307, 307, 307, 307, 307}});
+    { {307, 307, -306, -306, 307, -306, -306, 307, 307},
+     {307, 307, -306, -306, 307, 307, 307, 307, 307} });
 static dpct::constant_memory<const float, 2> normal_offsets(
     sycl::range<2>(4, 3),
-    {{0.01f, -0.01f, 0.01f},
+    { {0.01f, -0.01f, 0.01f},
      {-0.01f, -0.01f, 0.01f},
      {-0.01f, -0.01f, -0.01f},
-     {0.01f, -0.01f, -0.01f}});
+     {0.01f, -0.01f, -0.01f} });
 
 const int n_y_ranges_c = 1;
 
 static dpct::constant_memory<const int, 0> n_y_ranges(n_y_ranges_c);
 static dpct::constant_memory<double, 1> lower_y(
-    sycl::range<1>(n_y_ranges_c), {-1357.0});
+    sycl::range<1>(n_y_ranges_c), { -1357.0 });
 static dpct::constant_memory<double, 1> upper_y(
-    sycl::range<1>(n_y_ranges_c), {32767.0});
+    sycl::range<1>(n_y_ranges_c), { 32767.0 });
 
 const int n_floor_ranges_c = 9;
 
 static dpct::constant_memory<const int, 0> n_floor_ranges(n_floor_ranges_c);
 static dpct::constant_memory<const double, 1> lower_floor(
     sycl::range<1>(n_floor_ranges_c),
-    {-1357.0, -743.0, 127.0, 675.0, 2687.0, 4325.0, 4940.0, 5170.0, 5400.0});
+    { -1357.0, -743.0, 127.0, 675.0, 2687.0, 4325.0, 4940.0, 5170.0, 5400.0 });
 static dpct::constant_memory<const double, 1> upper_floor(
     sycl::range<1>(n_floor_ranges_c),
-    {-1125.0, -665.0, 410.0, 1331.0, 3789.0, 4506.0, 5018.0, 5248.0, 5478.0});
+    { -1125.0, -665.0, 410.0, 1331.0, 3789.0, 4506.0, 5018.0, 5248.0, 5478.0 });
 
 static dpct::constant_memory<bool, 0> filter_floor_ranges(true);
 static dpct::constant_memory<bool, 0> fall_through_pus(true);
@@ -171,7 +171,7 @@ dpct::global_memory<int, 0> nUniqueSticks;
 
 dpct::global_memory<float, 1> gSineTableG(
     sycl::range<1>(4096),
-    {0.000000000f,   0.0015339801f,  0.0030679568f,  0.004601926f,
+    { 0.000000000f,   0.0015339801f,  0.0030679568f,  0.004601926f,
      0.0061358847f,  0.007669829f,   0.009203754f,   0.010737659f,
      0.012271538f,   0.0138053885f,  0.015339206f,   0.016872987f,
      0.018406730f,   0.019940428f,   0.021474080f,   0.023007682f,
@@ -1194,10 +1194,10 @@ dpct::global_memory<float, 1> gSineTableG(
      -0.024541229f,  -0.023007682f,  -0.021474080f,  -0.019940428f,
      -0.018406730f,  -0.016872987f,  -0.015339206f,  -0.0138053885f,
      -0.012271538f,  -0.010737659f,  -0.009203754f,  -0.007669829f,
-     -0.0061358847f, -0.004601926f,  -0.0030679568f, -0.0015339801f});
+     -0.0061358847f, -0.004601926f,  -0.0030679568f, -0.0015339801f });
 dpct::global_memory<float, 1> gCosineTableG(
     sycl::range<1>(4096),
-    {1.000000000f,   0.999998808f,   0.999995291f,   0.999989390f,
+    { 1.000000000f,   0.999998808f,   0.999995291f,   0.999989390f,
      0.999981165f,   0.999970615f,   0.999957621f,   0.999942362f,
      0.999924719f,   0.999904692f,   0.999882340f,   0.999857664f,
      0.999830604f,   0.999801159f,   0.999769390f,   0.999735296f,
@@ -2220,10 +2220,10 @@ dpct::global_memory<float, 1> gCosineTableG(
      0.999698818f,   0.999735296f,   0.999769390f,   0.999801159f,
      0.999830604f,   0.999857664f,   0.999882340f,   0.999904692f,
      0.999924719f,   0.999942362f,   0.999957621f,   0.999970615f,
-     0.999981165f,   0.999989390f,   0.999995291f,   0.999998808f});
+     0.999981165f,   0.999989390f,   0.999995291f,   0.999998808f });
 dpct::global_memory<int, 1> gArctanTableG(
     sycl::range<1>(8192),
-    {0x0000,  0x000A,  0x0014,  0x001F,  0x0029,  0x0033,  0x003D,  0x0047,
+    { 0x0000,  0x000A,  0x0014,  0x001F,  0x0029,  0x0033,  0x003D,  0x0047,
      0x0051,  0x005C,  0x0066,  0x0070,  0x007A,  0x0084,  0x008F,  0x0099,
      0x00A3,  0x00AD,  0x00B7,  0x00C2,  0x00CC,  0x00D6,  0x00E0,  0x00EA,
      0x00F4,  0x00FF,  0x0109,  0x0113,  0x011D,  0x0127,  0x0131,  0x013C,
@@ -3246,7 +3246,7 @@ dpct::global_memory<int, 1> gArctanTableG(
      -0x0146, -0x013C, -0x0131, -0x0127, -0x011D, -0x0113, -0x0109, -0x00FF,
      -0x00F4, -0x00EA, -0x00E0, -0x00D6, -0x00CC, -0x00C2, -0x00B7, -0x00AD,
      -0x00A3, -0x0099, -0x008F, -0x0084, -0x007A, -0x0070, -0x0066, -0x005C,
-     -0x0051, -0x0047, -0x003D, -0x0033, -0x0029, -0x001F, -0x0014, -0x000A});
+     -0x0051, -0x0047, -0x003D, -0x0033, -0x0029, -0x001F, -0x0014, -0x000A });
 dpct::global_memory<int, 1> gReverseArctanTableG(65537);
 
 dpct::global_memory<bool, 1> validCameraAngle(65537);
@@ -3273,7 +3273,7 @@ const int total_floors_c = 350;
 dpct::global_memory<const int, 0> total_floorsG(total_floors_c);
 dpct::global_memory<SurfaceG, 1> floorsG(total_floors_c);
 
-void initialise_floors(SurfaceG *floorsG) {
+void initialise_floors(SurfaceG* floorsG) {
     floorsG[0] = SurfaceG(1536, 5478, -262, 922, 5478, -262, 922, 5478, 403);
     floorsG[1] = SurfaceG(1536, 5478, -262, 922, 5478, 403, 1536, 5478, 403);
     floorsG[2] = SurfaceG(2150, 5248, -262, 1536, 5248, -210, 2150, 5248, -210);
@@ -3634,23 +3634,23 @@ bool check_inbounds(const float* mario_pos) {
     return x_mod >= -8191 && x_mod <= 8192 && y_mod > -3149 && z_mod >= -8191 && z_mod <= 8192;
 }
 
-void set_platform_pos(float x, float y, float z, float *platform_pos) {
+void set_platform_pos(float x, float y, float z, float* platform_pos) {
     platform_pos[0] = x;
     platform_pos[1] = y;
     platform_pos[2] = z;
 }
 
-void init_reverse_atanG(int *gArctanTableG, int *gReverseArctanTableG) {
+void init_reverse_atanG(int* gArctanTableG, int* gReverseArctanTableG) {
     for (int i = 0; i < 8192; i++) {
         gReverseArctanTableG[(unsigned short)gArctanTableG[i]] = i;
     }
 }
 
 void set_start_triangle(short* tris, float* norms,
-                        dpct::accessor<short, dpct::global, 3> squishTriangles,
-                        dpct::accessor<float, dpct::global, 2> squishNormals,
-                        dpct::accessor<short, dpct::global, 3> startTriangles,
-                        dpct::accessor<float, dpct::global, 2> startNormals) {
+    dpct::accessor<short, dpct::global, 3> squishTriangles,
+    dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startTriangles,
+    dpct::accessor<float, dpct::global, 2> startNormals) {
     for (int x = 0; x < 2; x++) {
         for (int y = 0; y < 3; y++) {
             startTriangles[x][y][0] = tris[9 * x + 3 * y];
@@ -3665,13 +3665,13 @@ void set_start_triangle(short* tris, float* norms,
     }
 }
 
-void set_platform_normal(float nx, float ny, float nz, float *platformNormal) {
+void set_platform_normal(float nx, float ny, float nz, float* platformNormal) {
     platformNormal[0] = nx;
     platformNormal[1] = ny;
     platformNormal[2] = nz;
 }
 
-int16_t atan2_lookupG(float z, float x, int *gArctanTableG) {
+int16_t atan2_lookupG(float z, float x, int* gArctanTableG) {
     int16_t angle = 0;
 
     if (x == 0) {
@@ -3684,7 +3684,7 @@ int16_t atan2_lookupG(float z, float x, int *gArctanTableG) {
     return angle;
 }
 
-int16_t atan2sG(float z, float x, int *gArctanTableG) {
+int16_t atan2sG(float z, float x, int* gArctanTableG) {
     int16_t angle = 0;
 
     if (x >= 0) {
@@ -3835,7 +3835,7 @@ int find_ceil(float* pos, short(&triangles)[4][3][3], float(&normals)[4][3], flo
     return idx;
 }
 
-int find_floor(float* pos, dpct::accessor<short, dpct::global, 3> &triangles, dpct::accessor<float, dpct::global, 2> normals, float* pheight) {
+int find_floor(float* pos, dpct::accessor<short, dpct::global, 3>& triangles, dpct::accessor<float, dpct::global, 2> normals, float* pheight) {
     int idx = -1;
 
     int16_t x = static_cast<int16_t>(static_cast<int>(pos[0]));
@@ -3974,8 +3974,8 @@ int find_floor(float* position, SurfaceG** floor, float& floor_y, SurfaceG floor
     return floor_idx;
 }
 
-void init_camera_angles(float *gSineTableG, float *gCosineTableG,
-                        int *gArctanTableG, bool *validCameraAngle) {
+void init_camera_angles(float* gSineTableG, float* gCosineTableG,
+    int* gArctanTableG, bool* validCameraAngle) {
     for (int i = 0; i < 65536; i += 16) {
         int angle = atan2sG(cossG(i), sinsG(i), gArctanTableG);
         validCameraAngle[(unsigned short)angle] = true;
@@ -4033,7 +4033,7 @@ void init_mag_set(float* magSet, int& magCount) {
 
     for (int i = 0; i <= 4096; i++) {
         if (magCheck[i]) {
-            float mag        = sycl::sqrt((float) i);
+            float mag = sycl::sqrt((float)i);
             mag = (mag / 64.0f) * (mag / 64.0f) * 32.0f;
             magSet[magCount] = mag;
             magCount++;
@@ -4102,7 +4102,7 @@ float find_pre10K_speed(
     post10KVelZ = NAN;
 
     float mag = sycl::sqrt(
-        (float) (sol5->stickX * sol5->stickX + sol5->stickY * sol5->stickY));
+        (float)(sol5->stickX * sol5->stickX + sol5->stickY * sol5->stickY));
 
     float xS = sol5->stickX;
     float yS = sol5->stickY;
@@ -4114,7 +4114,7 @@ float find_pre10K_speed(
     }
 
     float intendedMag = ((mag / 64.0f) * (mag / 64.0f)) * 32.0f;
-    int intendedYaw   = atan2sG(-yS, xS, gArctanTableG) + sol4->cameraYaw;
+    int intendedYaw = atan2sG(-yS, xS, gArctanTableG) + sol4->cameraYaw;
     int intendedDYaw = intendedYaw - sol5->f1Angle;
 
     double w = intendedMag * cossG(intendedDYaw);
@@ -4208,9 +4208,9 @@ void adjust_position_to_ints(float* a, float* b, float p[2][3]) {
     z2 = (short)(int)z2 - roundDirZ;
 
     x2 = (lookDirX == roundDirX) ? sycl::nextafter(x2, roundDirX * INFINITY) :
-                                   x2;
+        x2;
     z2 = (lookDirZ == roundDirZ) ? sycl::nextafter(z2, roundDirZ * INFINITY) :
-                                   z2;
+        z2;
 
     double rX = ((double)x2 - (double)a[0]) / ((double)b[0] - (double)a[0]);
     double rZ = ((double)z2 - (double)a[2]) / ((double)b[2] - (double)a[2]);
@@ -4362,9 +4362,9 @@ void test_speed_solution(
                                     if (squishEdges[i] != -1 && nSquishSpots[squishEdges[i]] > 0) {
                                         int surfAngle = atan2sG(
                                             squishCeilingNormals[squishEdges[i]]
-                                                                [2],
+                                            [2],
                                             squishCeilingNormals[squishEdges[i]]
-                                                                [0],
+                                            [0],
                                             gArctanTableG);
 
                                         float xPushVel = sinsG(surfAngle) * 10.0f;
@@ -4457,11 +4457,11 @@ void test_speed_solution(
                                         sycl::nextafter(-2971.0f, INFINITY);
                                     float highestPos = sycl::nextafter(
                                         -2921.0f -
-                                            (52.0f *
-                                             sycl::sqrt(
-                                                 1.0f -
-                                                 floorNormalY * floorNormalY) /
-                                             floorNormalY),
+                                        (52.0f *
+                                            sycl::sqrt(
+                                                1.0f -
+                                                floorNormalY * floorNormalY) /
+                                            floorNormalY),
                                         -INFINITY);
 
                                     if (startPositions[i][0][1] < lowestPos) {
@@ -4503,15 +4503,15 @@ void test_speed_solution(
 
                                     int f1Angle0 = atan2sG(
                                         frame1Position[2] -
-                                            startPositions[i][0][2],
+                                        startPositions[i][0][2],
                                         frame1Position[0] -
-                                            startPositions[i][0][0],
+                                        startPositions[i][0][0],
                                         gArctanTableG);
                                     int f1Angle1 = atan2sG(
                                         frame1Position[2] -
-                                            startPositions[i][1][2],
+                                        startPositions[i][1][2],
                                         frame1Position[0] -
-                                            startPositions[i][1][0],
+                                        startPositions[i][1][0],
                                         gArctanTableG);
 
                                     if ((unsigned short)(f1Angle1 - f1Angle0) > 32768) {
@@ -4540,9 +4540,9 @@ void test_speed_solution(
 
                                         int surfAngle = atan2sG(
                                             squishCeilingNormals
-                                                [intersectionIdxs[i]][2],
+                                            [intersectionIdxs[i]][2],
                                             squishCeilingNormals
-                                                [intersectionIdxs[i]][0],
+                                            [intersectionIdxs[i]][0],
                                             gArctanTableG);
 
                                         float xPushVel = sinsG(surfAngle) * 10.0f;
@@ -4557,11 +4557,11 @@ void test_speed_solution(
 
                                         float steepness = sycl::sqrt(
                                             startNormals[squishFloorIdx][0] *
-                                                startNormals[squishFloorIdx]
-                                                            [0] +
+                                            startNormals[squishFloorIdx]
+                                            [0] +
                                             startNormals[squishFloorIdx][2] *
-                                                startNormals[squishFloorIdx]
-                                                            [2]);
+                                            startNormals[squishFloorIdx]
+                                            [2]);
 
                                         float slopeXVel = accel * steepness * sinsG(slopeAngle);
                                         float slopeZVel = accel * steepness * cossG(slopeAngle);
@@ -4579,14 +4579,14 @@ void test_speed_solution(
                                                 int refAngle = 65536;
 
                                                 for (int l = 0;
-                                                     l <
-                                                     sycl::min(
-                                                         nSquishSpots
-                                                             [intersectionIdxs
-                                                                  [i]],
-                                                         limits
-                                                             .MAX_SQUISH_SPOTS);
-                                                     l++) {
+                                                    l <
+                                                    sycl::min(
+                                                        nSquishSpots
+                                                        [intersectionIdxs
+                                                        [i]],
+                                                        limits
+                                                        .MAX_SQUISH_SPOTS);
+                                                    l++) {
                                                     float signX = sign(squishSpots[(2 * intersectionIdxs[i] * limits.MAX_SQUISH_SPOTS) + (2 * l)]);
                                                     float signZ = sign(squishSpots[(2 * l) + 1]);
 
@@ -4599,20 +4599,20 @@ void test_speed_solution(
                                                             zDist * zDist);
 
                                                         if (dist >= pushRadius -
-                                                                    bullyHurtbox &&
+                                                            bullyHurtbox &&
                                                             dist <= pushRadius -
-                                                                    sycl::fmax(
-                                                                        bullyHurtbox -
-                                                                            2.0f *
-                                                                                maxSlidingSpeed -
-                                                                            1.85f,
-                                                                        0.0f)) {
+                                                            sycl::fmax(
+                                                                bullyHurtbox -
+                                                                2.0f *
+                                                                maxSlidingSpeed -
+                                                                1.85f,
+                                                                0.0f)) {
                                                             int angle =
                                                                 (unsigned short)
-                                                                    atan2sG(
-                                                                        zDist,
-                                                                        xDist,
-                                                                        gArctanTableG);
+                                                                atan2sG(
+                                                                    zDist,
+                                                                    xDist,
+                                                                    gArctanTableG);
 
                                                             int angleDiff = (short)(angle - uphillAngle);
 
@@ -4623,12 +4623,12 @@ void test_speed_solution(
 
                                                                 minAngle = sycl::min(
                                                                     minAngle,
-                                                                    (int) (short) (angle -
-                                                                                   refAngle));
+                                                                    (int)(short)(angle -
+                                                                        refAngle));
                                                                 maxAngle = sycl::max(
                                                                     maxAngle,
-                                                                    (int) (short) (angle -
-                                                                                   refAngle));
+                                                                    (int)(short)(angle -
+                                                                        refAngle));
                                                             }
                                                         }
                                                     }
@@ -4642,84 +4642,84 @@ void test_speed_solution(
                                                         minBullyX = sycl::fmin(
                                                             minBullyX,
                                                             bullyPushX -
-                                                                pushRadius);
+                                                            pushRadius);
                                                     }
                                                     else {
                                                         minBullyX = sycl::fmin(
                                                             minBullyX,
                                                             bullyPushX -
-                                                                pushRadius *
-                                                                    sinsG(
-                                                                        minAngle));
+                                                            pushRadius *
+                                                            sinsG(
+                                                                minAngle));
                                                         minBullyX = sycl::fmin(
                                                             minBullyX,
                                                             bullyPushX -
-                                                                pushRadius *
-                                                                    sinsG(
-                                                                        maxAngle));
+                                                            pushRadius *
+                                                            sinsG(
+                                                                maxAngle));
                                                     }
 
                                                     if (minAngle < 16384 && maxAngle > 16384) {
                                                         minBullyZ = sycl::fmin(
                                                             minBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius);
+                                                            pushRadius);
                                                     }
                                                     else {
                                                         minBullyZ = sycl::fmin(
                                                             minBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius *
-                                                                    cossG(
-                                                                        minAngle));
+                                                            pushRadius *
+                                                            cossG(
+                                                                minAngle));
                                                         minBullyZ = sycl::fmin(
                                                             minBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius *
-                                                                    cossG(
-                                                                        maxAngle));
+                                                            pushRadius *
+                                                            cossG(
+                                                                maxAngle));
                                                     }
 
                                                     if (minAngle < 32768 && maxAngle > 32768) {
                                                         maxBullyX = sycl::fmax(
                                                             maxBullyX,
                                                             bullyPushX -
-                                                                pushRadius);
+                                                            pushRadius);
                                                     }
                                                     else {
                                                         maxBullyX = sycl::fmax(
                                                             maxBullyX,
                                                             bullyPushX -
-                                                                pushRadius *
-                                                                    sinsG(
-                                                                        minAngle));
+                                                            pushRadius *
+                                                            sinsG(
+                                                                minAngle));
                                                         maxBullyX = sycl::fmax(
                                                             maxBullyX,
                                                             bullyPushX -
-                                                                pushRadius *
-                                                                    sinsG(
-                                                                        maxAngle));
+                                                            pushRadius *
+                                                            sinsG(
+                                                                maxAngle));
                                                     }
 
                                                     if (minAngle < 49152 && maxAngle > 49152) {
                                                         maxBullyZ = sycl::fmax(
                                                             maxBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius);
+                                                            pushRadius);
                                                     }
                                                     else {
                                                         maxBullyZ = sycl::fmax(
                                                             maxBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius *
-                                                                    cossG(
-                                                                        minAngle));
+                                                            pushRadius *
+                                                            cossG(
+                                                                minAngle));
                                                         maxBullyZ = sycl::fmax(
                                                             maxBullyZ,
                                                             bullyPushZ -
-                                                                pushRadius *
-                                                                    cossG(
-                                                                        maxAngle));
+                                                            pushRadius *
+                                                            cossG(
+                                                                maxAngle));
                                                     }
 
                                                     if (refPushAngle == 65536) {
@@ -4728,12 +4728,12 @@ void test_speed_solution(
 
                                                     minPushAngle = sycl::min(
                                                         minPushAngle,
-                                                        (int) (short) (minAngle -
-                                                                       refAngle));
+                                                        (int)(short)(minAngle -
+                                                            refAngle));
                                                     maxPushAngle = sycl::max(
                                                         maxPushAngle,
-                                                        (int) (short) (maxAngle -
-                                                                       refAngle));
+                                                        (int)(short)(maxAngle -
+                                                            refAngle));
                                                 }
 
                                                 currentX = currentX - squishNormals[squishFloorIdx][1] * xPushVel / 4.0f;
@@ -4771,11 +4771,11 @@ void test_speed_solution(
                                                         minBullyX)));
 
                                                 while (sycl::floor(
-                                                           maxBullyX /
-                                                           (2.0f * xDiff2)) >=
-                                                       sycl::ceil(
-                                                           minBullyX /
-                                                           (2.0f * xDiff2))) {
+                                                    maxBullyX /
+                                                    (2.0f * xDiff2)) >=
+                                                    sycl::ceil(
+                                                        minBullyX /
+                                                        (2.0f * xDiff2))) {
                                                     xDiff2 = xDiff2 * 2.0f;
                                                 }
                                             }
@@ -4806,11 +4806,11 @@ void test_speed_solution(
                                                         minBullyZ)));
 
                                                 while (sycl::floor(
-                                                           maxBullyZ /
-                                                           (2.0f * zDiff2)) >=
-                                                       sycl::ceil(
-                                                           minBullyZ /
-                                                           (2.0f * zDiff2))) {
+                                                    maxBullyZ /
+                                                    (2.0f * zDiff2)) >=
+                                                    sycl::ceil(
+                                                        minBullyZ /
+                                                        (2.0f * zDiff2))) {
                                                     zDiff2 = zDiff2 * 2.0f;
                                                 }
                                             }
@@ -4819,12 +4819,12 @@ void test_speed_solution(
                                                 sycl::nextafter(
                                                     xDiff2 * baseBullySpeed,
                                                     -INFINITY),
-                                                (float) maxBullySpeed);
+                                                (float)maxBullySpeed);
                                             float maxBullyZSpeed = sycl::fmin(
                                                 sycl::nextafter(
                                                     zDiff2 * baseBullySpeed,
                                                     -INFINITY),
-                                                (float) maxBullySpeed);
+                                                (float)maxBullySpeed);
 
                                             float maxPushSpeed;
 
@@ -4835,30 +4835,30 @@ void test_speed_solution(
                                             if ((unsigned short)(maxSpeedAngle - minPushAngle) <= (unsigned short)(maxPushAngle - minPushAngle)) {
                                                 maxPushSpeed =
                                                     (sycl::fabs(
-                                                         maxBullyXSpeed *
-                                                         sinsG(maxSpeedAngle)) +
-                                                     sycl::fabs(
-                                                         maxBullyZSpeed *
-                                                         cossG(
-                                                             maxSpeedAngle))) *
+                                                        maxBullyXSpeed *
+                                                        sinsG(maxSpeedAngle)) +
+                                                        sycl::fabs(
+                                                            maxBullyZSpeed *
+                                                            cossG(
+                                                                maxSpeedAngle))) *
                                                     (73.0f / 53.0f) * 3.0f;
                                             }
                                             else {
                                                 float minAngleSpeed =
                                                     (sycl::fabs(
-                                                         maxBullyXSpeed *
-                                                         sinsG(minPushAngle)) +
-                                                     sycl::fabs(
-                                                         maxBullyZSpeed *
-                                                         cossG(minPushAngle))) *
+                                                        maxBullyXSpeed *
+                                                        sinsG(minPushAngle)) +
+                                                        sycl::fabs(
+                                                            maxBullyZSpeed *
+                                                            cossG(minPushAngle))) *
                                                     (73.0f / 53.0f) * 3.0f;
                                                 float maxAngleSpeed =
                                                     (sycl::fabs(
-                                                         maxBullyXSpeed *
-                                                         sinsG(maxPushAngle)) +
-                                                     sycl::fabs(
-                                                         maxBullyZSpeed *
-                                                         cossG(maxPushAngle))) *
+                                                        maxBullyXSpeed *
+                                                        sinsG(maxPushAngle)) +
+                                                        sycl::fabs(
+                                                            maxBullyZSpeed *
+                                                            cossG(maxPushAngle))) *
                                                     (73.0f / 53.0f) * 3.0f;
                                                 maxPushSpeed = sycl::fmax(
                                                     minAngleSpeed,
@@ -4878,16 +4878,16 @@ void test_speed_solution(
                                             float slidingSpeedToPlatform = slidingSpeedToPlatformOptions[intersectionIdxs[i]];
 
                                             if (sycl::fabs(slidingSpeedX) <=
-                                                    maxSlidingSpeed &&
+                                                maxSlidingSpeed &&
                                                 sycl::fabs(slidingSpeedZ) <=
-                                                    maxSlidingSpeed &&
+                                                maxSlidingSpeed &&
                                                 slidingSpeedToPlatform <=
-                                                    maxSlidingSpeedToPlatform) {
+                                                maxSlidingSpeedToPlatform) {
                                                 int solIdx =
                                                     dpct::atomic_fetch_add<
-                                                        sycl::access::
-                                                            address_space::
-                                                                generic_space>(
+                                                    sycl::access::
+                                                    address_space::
+                                                    generic_space>(
                                                         &(counts.n10KSolutions),
                                                         1);
 
@@ -4946,7 +4946,7 @@ void find_speed_solutions(
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
     int strainIdx = idx % sycl::min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
-    idx           = idx / sycl::min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
+    idx = idx / sycl::min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
 
     if (idx <
         sycl::min(counts.nSKUWSolutions, limits.MAX_SK_UPWARP_SOLUTIONS)) {
@@ -4965,7 +4965,7 @@ void find_speed_solutions(
 
         float signF = sign(strain->forwardStrain);
         float fStrain = strain->forwardStrain;
-        float prevFStrain = strain->forwardStrain - signF*1.5f/(float)maxFSpeedLevels;
+        float prevFStrain = strain->forwardStrain - signF * 1.5f / (float)maxFSpeedLevels;
 
         fStrain = sycl::round(fStrain / sol->speedRange) * sol->speedRange;
         prevFStrain =
@@ -5050,9 +5050,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5062,7 +5062,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed < lowerSpeed) {
+                                midSpeed < lowerSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, minReturnVelX,
@@ -5079,8 +5079,8 @@ void find_speed_solutions(
                                     minSpeedF2X = newSpeedF2X;
                                     minSpeedF2Z = platSol->returnPosition[2] - tenKFloors[sol2->tenKFloorIdx][7] * (minReturnVelZ / 4.0f);
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5089,7 +5089,7 @@ void find_speed_solutions(
                             }
                             else {
                                 lowerSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5102,9 +5102,9 @@ void find_speed_solutions(
                     float upperSpeed = maxSpeed;
 
                     while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                           upperSpeed) {
+                        upperSpeed) {
                         float midSpeed = sycl::fmin(
-                            (float) ((lowerSpeed + upperSpeed) / 2.0),
+                            (float)((lowerSpeed + upperSpeed) / 2.0),
                             sycl::nextafter(lowerSpeed, -INFINITY));
 
                         float testPre10KSpeed = find_pre10K_speed(
@@ -5113,7 +5113,7 @@ void find_speed_solutions(
                             gSineTableG, gCosineTableG, gArctanTableG);
 
                         while (sycl::isnan(testPre10KSpeed) &&
-                               midSpeed > upperSpeed) {
+                            midSpeed > upperSpeed) {
                             midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                             testPre10KSpeed = find_pre10K_speed(
                                 midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5130,7 +5130,7 @@ void find_speed_solutions(
                                 maxSpeedF2X = newSpeedF2X;
                                 maxSpeedF2Z = platSol->returnPosition[2] - tenKFloors[sol2->tenKFloorIdx][7] * (maxReturnVelZ / 4.0f);
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                             else {
@@ -5139,7 +5139,7 @@ void find_speed_solutions(
                         }
                         else {
                             upperSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
                         }
                     }
@@ -5157,9 +5157,9 @@ void find_speed_solutions(
                             float upperSpeed = maxSpeed;
 
                             while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                                   upperSpeed) {
+                                upperSpeed) {
                                 float midSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
 
                                 float testPre10KSpeed = find_pre10K_speed(
@@ -5169,7 +5169,7 @@ void find_speed_solutions(
                                     gArctanTableG);
 
                                 while (sycl::isnan(testPre10KSpeed) &&
-                                       midSpeed < lowerSpeed) {
+                                    midSpeed < lowerSpeed) {
                                     midSpeed =
                                         sycl::nextafter(midSpeed, INFINITY);
                                     testPre10KSpeed = find_pre10K_speed(
@@ -5188,8 +5188,8 @@ void find_speed_solutions(
                                         minSpeedF2X = newSpeedF2X;
                                         minSpeedF2Z = platSol->returnPosition[2] - tenKFloors[sol2->tenKFloorIdx][7] * (minReturnVelZ / 4.0f);
                                         lowerSpeed = sycl::fmin(
-                                            (float) ((lowerSpeed + upperSpeed) /
-                                                     2.0),
+                                            (float)((lowerSpeed + upperSpeed) /
+                                                2.0),
                                             sycl::nextafter(
                                                 lowerSpeed, -INFINITY));
                                     }
@@ -5199,8 +5199,8 @@ void find_speed_solutions(
                                 }
                                 else {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                             }
@@ -5213,9 +5213,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5225,7 +5225,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5239,8 +5239,8 @@ void find_speed_solutions(
 
                                 if (newSpeedF2X > maxX) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5252,7 +5252,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5271,9 +5271,9 @@ void find_speed_solutions(
                             float upperSpeed = maxSpeed;
 
                             while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                                   upperSpeed) {
+                                upperSpeed) {
                                 float midSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
 
                                 float testPre10KSpeed = find_pre10K_speed(
@@ -5283,7 +5283,7 @@ void find_speed_solutions(
                                     gArctanTableG);
 
                                 while (sycl::isnan(testPre10KSpeed) &&
-                                       midSpeed < lowerSpeed) {
+                                    midSpeed < lowerSpeed) {
                                     midSpeed =
                                         sycl::nextafter(midSpeed, INFINITY);
                                     testPre10KSpeed = find_pre10K_speed(
@@ -5299,8 +5299,8 @@ void find_speed_solutions(
 
                                     if (newSpeedF2Z < minZ) {
                                         lowerSpeed = sycl::fmin(
-                                            (float) ((lowerSpeed + upperSpeed) /
-                                                     2.0),
+                                            (float)((lowerSpeed + upperSpeed) /
+                                                2.0),
                                             sycl::nextafter(
                                                 lowerSpeed, -INFINITY));
                                     }
@@ -5313,8 +5313,8 @@ void find_speed_solutions(
                                 }
                                 else {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                             }
@@ -5327,9 +5327,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5339,7 +5339,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5353,8 +5353,8 @@ void find_speed_solutions(
 
                                 if (newSpeedF2Z < minZ) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5366,7 +5366,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5385,9 +5385,9 @@ void find_speed_solutions(
                             float upperSpeed = maxSpeed;
 
                             while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                                   upperSpeed) {
+                                upperSpeed) {
                                 float midSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
 
                                 float testPre10KSpeed = find_pre10K_speed(
@@ -5397,7 +5397,7 @@ void find_speed_solutions(
                                     gArctanTableG);
 
                                 while (sycl::isnan(testPre10KSpeed) &&
-                                       midSpeed < lowerSpeed) {
+                                    midSpeed < lowerSpeed) {
                                     midSpeed =
                                         sycl::nextafter(midSpeed, INFINITY);
                                     testPre10KSpeed = find_pre10K_speed(
@@ -5413,8 +5413,8 @@ void find_speed_solutions(
 
                                     if (newSpeedF2Z > maxZ) {
                                         lowerSpeed = sycl::fmin(
-                                            (float) ((lowerSpeed + upperSpeed) /
-                                                     2.0),
+                                            (float)((lowerSpeed + upperSpeed) /
+                                                2.0),
                                             sycl::nextafter(
                                                 lowerSpeed, -INFINITY));
                                     }
@@ -5427,8 +5427,8 @@ void find_speed_solutions(
                                 }
                                 else {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                             }
@@ -5441,9 +5441,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5453,7 +5453,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5467,8 +5467,8 @@ void find_speed_solutions(
 
                                 if (newSpeedF2Z > maxZ) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5480,7 +5480,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5503,9 +5503,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5515,7 +5515,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed < lowerSpeed) {
+                                midSpeed < lowerSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, minReturnVelX,
@@ -5534,8 +5534,8 @@ void find_speed_solutions(
 
                                 if (testFloorIdx == -1 || testFloor->normal[1] != tenKFloors[sol2->tenKFloorIdx][7]) {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5550,7 +5550,7 @@ void find_speed_solutions(
                             }
                             else {
                                 lowerSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5568,9 +5568,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5580,14 +5580,14 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
                                     maxReturnVelZ, sol->skIdx, tenKFloors,
                                     solutions, gSineTableG, gCosineTableG,
                                     gArctanTableG);
-                           }
+                            }
 
                             if (!sycl::isnan(testPre10KSpeed)) {
                                 maxPos[0] = platSol->returnPosition[0] - tenKFloors[sol2->tenKFloorIdx][7] * (maxReturnVelX / 4.0f);
@@ -5599,8 +5599,8 @@ void find_speed_solutions(
 
                                 if (testFloorIdx == -1 || testFloor->normal[1] != tenKFloors[sol2->tenKFloorIdx][7]) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5615,7 +5615,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5625,7 +5625,7 @@ void find_speed_solutions(
                     }
                 }
 
-                
+
                 if (speedTest) {
                     if (minFloorHeight > platSol->returnPosition[1]) {
                         if (maxFloorHeight > platSol->returnPosition[1]) {
@@ -5636,9 +5636,9 @@ void find_speed_solutions(
                             float upperSpeed = maxSpeed;
 
                             while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                                   upperSpeed) {
+                                upperSpeed) {
                                 float midSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
 
                                 float testPre10KSpeed = find_pre10K_speed(
@@ -5648,7 +5648,7 @@ void find_speed_solutions(
                                     gArctanTableG);
 
                                 while (sycl::isnan(testPre10KSpeed) &&
-                                       midSpeed < lowerSpeed) {
+                                    midSpeed < lowerSpeed) {
                                     midSpeed =
                                         sycl::nextafter(midSpeed, INFINITY);
                                     testPre10KSpeed = find_pre10K_speed(
@@ -5669,11 +5669,11 @@ void find_speed_solutions(
 
                                     if (testFloorIdx == -1 || testFloor->normal[1] != tenKFloors[sol2->tenKFloorIdx][7]) {
                                         break;
-                                    } 
+                                    }
                                     else if (testFloorHeight > platSol->returnPosition[1]) {
                                         lowerSpeed = sycl::fmin(
-                                            (float) ((lowerSpeed + upperSpeed) /
-                                                     2.0),
+                                            (float)((lowerSpeed + upperSpeed) /
+                                                2.0),
                                             sycl::nextafter(
                                                 lowerSpeed, -INFINITY));
                                     }
@@ -5687,8 +5687,8 @@ void find_speed_solutions(
                                 }
                                 else {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                             }
@@ -5709,9 +5709,9 @@ void find_speed_solutions(
                             float upperSpeed = maxSpeed;
 
                             while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                                   upperSpeed) {
+                                upperSpeed) {
                                 float midSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
 
                                 float testPre10KSpeed = find_pre10K_speed(
@@ -5721,7 +5721,7 @@ void find_speed_solutions(
                                     gArctanTableG);
 
                                 while (sycl::isnan(testPre10KSpeed) &&
-                                       midSpeed < lowerSpeed) {
+                                    midSpeed < lowerSpeed) {
                                     midSpeed =
                                         sycl::nextafter(midSpeed, INFINITY);
                                     testPre10KSpeed = find_pre10K_speed(
@@ -5745,8 +5745,8 @@ void find_speed_solutions(
                                     }
                                     else if (testFloorHeight <= -2971.0f || testFloorHeight <= (platSol->returnPosition[1] - 78.0f)) {
                                         lowerSpeed = sycl::fmin(
-                                            (float) ((lowerSpeed + upperSpeed) /
-                                                     2.0),
+                                            (float)((lowerSpeed + upperSpeed) /
+                                                2.0),
                                             sycl::nextafter(
                                                 lowerSpeed, -INFINITY));
                                     }
@@ -5760,8 +5760,8 @@ void find_speed_solutions(
                                 }
                                 else {
                                     lowerSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                             }
@@ -5771,16 +5771,16 @@ void find_speed_solutions(
                         }
                     }
                 }
-                
+
                 if (speedTest) {
                     if (maxFloorHeight > platSol->returnPosition[1]) {
                         float lowerSpeed = minSpeed;
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5790,7 +5790,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5809,11 +5809,11 @@ void find_speed_solutions(
 
                                 if (testFloorIdx == -1 || testFloor->normal[1] != tenKFloors[sol2->tenKFloorIdx][7]) {
                                     break;
-                                } 
+                                }
                                 else if (testFloorHeight > platSol->returnPosition[1]) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5826,7 +5826,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5842,9 +5842,9 @@ void find_speed_solutions(
                         float upperSpeed = maxSpeed;
 
                         while (sycl::nextafter(lowerSpeed, -INFINITY) >
-                               upperSpeed) {
+                            upperSpeed) {
                             float midSpeed = sycl::fmin(
-                                (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                (float)((lowerSpeed + upperSpeed) / 2.0),
                                 sycl::nextafter(lowerSpeed, -INFINITY));
 
                             float testPre10KSpeed = find_pre10K_speed(
@@ -5854,7 +5854,7 @@ void find_speed_solutions(
                                 gArctanTableG);
 
                             while (sycl::isnan(testPre10KSpeed) &&
-                                   midSpeed > upperSpeed) {
+                                midSpeed > upperSpeed) {
                                 midSpeed = sycl::nextafter(midSpeed, -INFINITY);
                                 testPre10KSpeed = find_pre10K_speed(
                                     midSpeed, xStrain, zStrain, maxReturnVelX,
@@ -5876,8 +5876,8 @@ void find_speed_solutions(
                                 }
                                 else if (testFloorHeight <= -2971.0f || testFloorHeight <= (platSol->returnPosition[1] - 78.0f)) {
                                     upperSpeed = sycl::fmin(
-                                        (float) ((lowerSpeed + upperSpeed) /
-                                                 2.0),
+                                        (float)((lowerSpeed + upperSpeed) /
+                                            2.0),
                                         sycl::nextafter(lowerSpeed, -INFINITY));
                                 }
                                 else {
@@ -5890,7 +5890,7 @@ void find_speed_solutions(
                             }
                             else {
                                 upperSpeed = sycl::fmin(
-                                    (float) ((lowerSpeed + upperSpeed) / 2.0),
+                                    (float)((lowerSpeed + upperSpeed) / 2.0),
                                     sycl::nextafter(lowerSpeed, -INFINITY));
                             }
                         }
@@ -5903,7 +5903,7 @@ void find_speed_solutions(
 
                 if (speedTest) {
                     for (float speed = minSpeed; speed >= maxSpeed;
-                         speed       = sycl::nextafter(speed, -INFINITY)) {
+                        speed = sycl::nextafter(speed, -INFINITY)) {
                         float returnVelX;
                         float returnVelZ;
 
@@ -5915,7 +5915,7 @@ void find_speed_solutions(
                         if (!sycl::isnan(pre10KSpeed)) {
                             int solIdx = dpct::atomic_fetch_add<
                                 sycl::access::address_space::generic_space>(
-                                &(counts.nSpeedSolutions), 1);
+                                    &(counts.nSpeedSolutions), 1);
 
                             if (solIdx < limits.MAX_SPEED_SOLUTIONS) {
                                 struct SpeedSolution* solution = &(solutions.speedSolutions[solIdx]);
@@ -5934,7 +5934,7 @@ void find_speed_solutions(
 }
 
 float next_out_of_bounds_speed(float currentSpeed, float floorNormalY, float* position, int angle, int searchDir,
-                               float *gSineTableG, float *gCosineTableG) {
+    float* gSineTableG, float* gCosineTableG) {
     angle = (unsigned short)angle;
     searchDir = sign(searchDir);
 
@@ -5961,7 +5961,7 @@ float next_out_of_bounds_speed(float currentSpeed, float floorNormalY, float* po
         else {
             int xDir = sign(sinAngle) * searchDir;
             float nextOOBX = 65536.0f *
-                    sycl::floor((nextPosition[0] - -8192.0f) / 65536.0f) +
+                sycl::floor((nextPosition[0] - -8192.0f) / 65536.0f) +
                 (xDir * 8192.5f + 0.5f);
 
             while ((short)(int)nextOOBX >= -8191 && (short)(int)nextOOBX <= 8192) {
@@ -5984,7 +5984,7 @@ float next_out_of_bounds_speed(float currentSpeed, float floorNormalY, float* po
         else {
             int zDir = sign(cosAngle) * searchDir;
             float nextOOBZ = 65536.0f *
-                    sycl::floor((nextPosition[2] - -8192.0f) / 65536.0f) +
+                sycl::floor((nextPosition[2] - -8192.0f) / 65536.0f) +
                 (zDir * 8192.5f + 0.5f);
 
             while ((short)(int)nextOOBZ >= -8191 && (short)(int)nextOOBZ <= 8192) {
@@ -6007,7 +6007,7 @@ float next_out_of_bounds_speed(float currentSpeed, float floorNormalY, float* po
 }
 
 float next_in_bounds_speed(float currentSpeed, float floorNormalY, float* position, int angle, int searchDir,
-                           float *gSineTableG, float *gCosineTableG) {
+    float* gSineTableG, float* gCosineTableG) {
     angle = (unsigned short)angle;
     searchDir = sign(searchDir);
 
@@ -6191,8 +6191,8 @@ void find_sk_upwarp_solutions(
         float lowerSpeed = -(minDist / platSol->endTriangleNormals[platSol->endFloorIdx][1]) / 0.94 + speedBuffer;
 
         for (int i = 0;
-             i < sycl::min(counts.nSK6Solutions, limits.MAX_SK_PHASE_SIX);
-             i++) {
+            i < sycl::min(counts.nSK6Solutions, limits.MAX_SK_PHASE_SIX);
+            i++) {
             SKPhase6* sk6Sol = &(solutions.sk6Solutions[i]);
             struct SKPhase5* sol5 = &(solutions.sk5Solutions[sk6Sol->p5Idx]);
             struct SKPhase4* sol4 = &(solutions.sk4Solutions[sol5->p4Idx]);
@@ -6211,7 +6211,7 @@ void find_sk_upwarp_solutions(
                 float testMinSpeed = minSpeed;
 
                 while (sycl::isnan(minPre10KSpeed) &&
-                       testMinSpeed >= maxSpeed) {
+                    testMinSpeed >= maxSpeed) {
                     minPre10KSpeed = find_pre10K_speed(
                         testMinSpeed, 0.0f, 0.0f, minReturnVelX, minReturnVelZ,
                         i, tenKFloors, solutions, gSineTableG, gCosineTableG,
@@ -6233,11 +6233,11 @@ void find_sk_upwarp_solutions(
                     */
                     sycl::frexp(minPre10KSpeed, &precision);
 
-                    float speedRange  = dpct::pow(2.0f, precision - 24);
-                    int nFSpeedLevels = (int) sycl::ceil(1.5f / speedRange);
+                    float speedRange = dpct::pow(2.0f, precision - 24);
+                    int nFSpeedLevels = (int)sycl::ceil(1.5f / speedRange);
                     dpct::atomic_fetch_max<
                         sycl::access::address_space::generic_space>(
-                        &maxFSpeedLevels, nFSpeedLevels);
+                            &maxFSpeedLevels, nFSpeedLevels);
 
                     float xVel = minPre10KSpeed * sinsG(sol2->f2Angle);
                     float zVel = minPre10KSpeed * cossG(sol2->f2Angle);
@@ -6249,8 +6249,8 @@ void find_sk_upwarp_solutions(
                     performance issues for the generated code.
                     */
                     sycl::frexp(xVel, &precision);
-                    float xVelRange   = dpct::pow(2.0f, precision - 24);
-                    int nXSpeedLevels = (int) sycl::ceil(
+                    float xVelRange = dpct::pow(2.0f, precision - 24);
+                    int nXSpeedLevels = (int)sycl::ceil(
                         sycl::fabs(10.0f * cossG(sol2->f2Angle)) / xVelRange);
 
                     /*
@@ -6260,14 +6260,14 @@ void find_sk_upwarp_solutions(
                     performance issues for the generated code.
                     */
                     sycl::frexp(zVel, &precision);
-                    float zVelRange   = dpct::pow(2.0f, precision - 24);
-                    int nZSpeedLevels = (int) sycl::ceil(
+                    float zVelRange = dpct::pow(2.0f, precision - 24);
+                    int nZSpeedLevels = (int)sycl::ceil(
                         sycl::fabs(10.0f * -sinsG(sol2->f2Angle)) / zVelRange);
 
                     dpct::atomic_fetch_max<
                         sycl::access::address_space::generic_space>(
-                        &maxSSpeedLevels,
-                        sycl::max(nXSpeedLevels, nZSpeedLevels));
+                            &maxSSpeedLevels,
+                            sycl::max(nXSpeedLevels, nZSpeedLevels));
                     /*
                     float currentSpeed = minSpeed;
 
@@ -6295,7 +6295,7 @@ void find_sk_upwarp_solutions(
                     }
 
                     int returnFaceAngle = sk6Sol->f3Angle + newFacingDYaw;
-                    
+
                     while (currentSpeed >= maxSpeed) {
                         float oobSpeed0 = NAN;
                         float oobSpeed1 = NAN;
@@ -6338,7 +6338,7 @@ void find_sk_upwarp_solutions(
 
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nSKUWSolutions), 1);
+                            &(counts.nSKUWSolutions), 1);
 
                     if (solIdx < limits.MAX_SK_UPWARP_SOLUTIONS) {
                         struct SKUpwarpSolution* solution = &(solutions.skuwSolutions[solIdx]);
@@ -6357,9 +6357,9 @@ void find_sk_upwarp_solutions(
 }
 
 int calculate_camera_yaw(float* currentPosition, float* lakituPosition, int faceAngle,
-                         float *gSineTableG, float *gCosineTableG,
-                         int *gArctanTableG, const int &total_floorsG,
-                         SurfaceG *floorsG) {
+    float* gSineTableG, float* gCosineTableG,
+    int* gArctanTableG, const int& total_floorsG,
+    SurfaceG* floorsG) {
     short baseCameraYaw = -16384;
     float baseCameraDist = 1400.0;
     short baseCameraPitch = 0x05B0;
@@ -6399,7 +6399,7 @@ int calculate_camera_yaw(float* currentPosition, float* lakituPosition, int face
 
     float cameraDist = sycl::sqrt(dx * dx + dy * dy + dz * dz);
     int cameraPitch = atan2sG(sycl::sqrt(dx * dx + dz * dz), dy, gArctanTableG);
-    int cameraYaw   = atan2sG(dz, dx, gArctanTableG);
+    int cameraYaw = atan2sG(dz, dx, gArctanTableG);
 
     // The camera will pan ahead up to about 30% of the camera's distance to Mario.
     pan[2] = sinsG(0xC00) * cameraDist;
@@ -6439,9 +6439,9 @@ int calculate_camera_yaw(float* currentPosition, float* lakituPosition, int face
     dy = cameraFocus[1] - lakituPosition[1];
     dz = cameraFocus[2] - lakituPosition[2];
 
-    cameraDist  = sycl::sqrt(dx * dx + dy * dy + dz * dz);
+    cameraDist = sycl::sqrt(dx * dx + dy * dy + dz * dz);
     cameraPitch = atan2sG(sycl::sqrt(dx * dx + dz * dz), dy, gArctanTableG);
-    cameraYaw   = atan2sG(dz, dx, gArctanTableG);
+    cameraYaw = atan2sG(dz, dx, gArctanTableG);
 
     if (cameraPitch > 15872) {
         cameraPitch = 15872;
@@ -6460,7 +6460,7 @@ int calculate_camera_yaw(float* currentPosition, float* lakituPosition, int face
 }
 
 void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[2][3][3], float(&normals)[2][3], float(&mat)[4][4],
-                    float *platform_pos) {
+    float* platform_pos) {
     float dx;
     float dy;
     float dz;
@@ -6485,7 +6485,7 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     float invsqrt = 1.0f /
         sycl::sqrt(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
-                   mat[1][2] * mat[1][2]);
+            mat[1][2] * mat[1][2]);
 
     mat[1][0] *= invsqrt;
     mat[1][1] *= invsqrt;
@@ -6497,8 +6497,8 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
-                  mat[0][2] * mat[0][2]);
+            mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+            mat[0][2] * mat[0][2]);
 
     mat[0][0] *= invsqrt;
     mat[0][1] *= invsqrt;
@@ -6510,8 +6510,8 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
-                  mat[2][2] * mat[2][2]);
+            mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+            mat[2][2] * mat[2][2]);
 
     mat[2][0] *= invsqrt;
     mat[2][1] *= invsqrt;
@@ -6532,7 +6532,7 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
     dx = mx - (float)platform_pos[0];
     dy = 500.0f;
     dz = mz - (float)platform_pos[2];
-    d  = sycl::sqrt(dx * dx + dy * dy + dz * dz);
+    d = sycl::sqrt(dx * dx + dy * dy + dz * dz);
 
     // Normalizing
     d = 1.0 / d;
@@ -6552,8 +6552,8 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
-                  mat[1][2] * mat[1][2]);
+            mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
+            mat[1][2] * mat[1][2]);
 
     mat[1][0] *= invsqrt;
     mat[1][1] *= invsqrt;
@@ -6565,8 +6565,8 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
-                  mat[0][2] * mat[0][2]);
+            mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+            mat[0][2] * mat[0][2]);
 
     mat[0][0] *= invsqrt;
     mat[0][1] *= invsqrt;
@@ -6578,8 +6578,8 @@ void platform_logic(float* platform_normal, float* mario_pos, short(&triangles)[
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
-                  mat[2][2] * mat[2][2]);
+            mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+            mat[2][2] * mat[2][2]);
 
     mat[2][0] *= invsqrt;
     mat[2][1] *= invsqrt;
@@ -6629,7 +6629,7 @@ void find_breakdance_solutions(
     if (idx < sycl::min(counts.nSlideSolutions, limits.MAX_SLIDE_SOLUTIONS)) {
         struct SlideSolution* slideSol = &(solutions.slideSolutions[idx]);
         struct TenKSolution* tenKSol = &(solutions.tenKSolutions[slideSol->tenKSolutionIdx]);
-        
+
         SurfaceG* floor;
         float floorHeight;
 
@@ -6823,7 +6823,7 @@ void find_breakdance_solutions(
                                         else {
                                             intendedPos[0] = nextPos[0];
                                             intendedPos[2] = nextPos[2];
-                                            
+
                                             if (intendedPos[1] > floorHeight + 100.0f) {
                                                 falling = true;
                                                 break;
@@ -6857,7 +6857,7 @@ void find_breakdance_solutions(
                     if (landed && intendedPos[1] >= -1357.0) {
                         int solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nBDSolutions), 1);
+                                &(counts.nBDSolutions), 1);
 
                         if (solIdx < limits.MAX_BD_SOLUTIONS) {
                             BDSolution* solution = &(solutions.bdSolutions[solIdx]);
@@ -6871,7 +6871,7 @@ void find_breakdance_solutions(
                             solution->postSlideSpeed = postSlideSpeed;
                             dpct::atomic_fetch_add<
                                 sycl::access::address_space::generic_space>(
-                                &(tenKSol->bdSetups), 1);
+                                    &(tenKSol->bdSetups), 1);
                         }
                     }
                 }
@@ -6906,9 +6906,9 @@ void try_upwarp_slide(
 
     float steepness = sycl::sqrt(
         platSol->endTriangleNormals[platSol->endFloorIdx][0] *
-            platSol->endTriangleNormals[platSol->endFloorIdx][0] +
+        platSol->endTriangleNormals[platSol->endFloorIdx][0] +
         platSol->endTriangleNormals[platSol->endFloorIdx][2] *
-            platSol->endTriangleNormals[platSol->endFloorIdx][2]);
+        platSol->endTriangleNormals[platSol->endFloorIdx][2]);
 
     float xVel0 = speedSol->returnSpeed * sinsG(angle);
     float zVel0 = speedSol->returnSpeed * cossG(angle);
@@ -6958,7 +6958,7 @@ void try_upwarp_slide(
 
         if (!check_inbounds(prePositionTest)) {
             float test_normal[3] = { platSol->endNormal[0], platSol->endNormal[1], platSol->endNormal[2] };
-            float mario_pos[3] = { intendedPos[0], intendedPos[1], intendedPos[2]};
+            float mario_pos[3] = { intendedPos[0], intendedPos[1], intendedPos[2] };
 
             short triangles[2][3][3];
             float normals[2][3];
@@ -6980,7 +6980,7 @@ void try_upwarp_slide(
             if (upwarpPositionTest) {
                 int idx = dpct::atomic_fetch_add<
                     sycl::access::address_space::generic_space>(
-                    &(counts.nSlideSolutions), 1);
+                        &(counts.nSlideSolutions), 1);
 
                 if (idx < limits.MAX_SLIDE_SOLUTIONS) {
                     int slideYaw = atan2sG(zVel1, xVel1, gArctanTableG);
@@ -7047,8 +7047,8 @@ void try_pu_slide_angle(
     struct SolStruct& solutions, struct SolCounts& counts, float* magSet,
     int& magCount, float* gSineTableG, float* gCosineTableG, int* gArctanTableG,
     float* platform_pos) {
-    double minAngleDiff = sycl::fmax(minEndAngle - angle, -(double) 522);
-    double maxAngleDiff = sycl::fmin(maxEndAngle - angle, (double) 522);
+    double minAngleDiff = sycl::fmax(minEndAngle - angle, -(double)522);
+    double maxAngleDiff = sycl::fmin(maxEndAngle - angle, (double)522);
 
     if (minAngleDiff <= maxAngleDiff) {
         double minEndAngleA = minAngleDiff + angle;
@@ -7059,7 +7059,7 @@ void try_pu_slide_angle(
 
         if (angle == 0 || angle == 32768) {
             double sinStartAngle =
-                sycl::sin(2.0 * M_PI * (double) angle / 65536.0);
+                sycl::sin(2.0 * M_PI * (double)angle / 65536.0);
 
             minN =
                 -sycl::cos(2.0 * M_PI * minEndAngleA / 65536.0) / sinStartAngle;
@@ -7086,20 +7086,20 @@ void try_pu_slide_angle(
             bool signTest = (cosStartAngle > 0 && cosMinEndAngle > 0) || (cosStartAngle < 0 && cosMinEndAngle < 0);
 
             if (signTest) {
-                minN = (-((double) s * (double) t) - 1.0 +
-                        sycl::sqrt(
-                            ((double) s * (double) t - 1.0) *
-                                ((double) s * (double) t - 1.0) +
-                            4.0 * (double) s * (double) s)) /
-                    (2.0 * (double) s);
+                minN = (-((double)s * (double)t) - 1.0 +
+                    sycl::sqrt(
+                        ((double)s * (double)t - 1.0) *
+                        ((double)s * (double)t - 1.0) +
+                        4.0 * (double)s * (double)s)) /
+                    (2.0 * (double)s);
             }
             else {
-                minN = (-((double) s * (double) t) - 1.0 -
-                        sycl::sqrt(
-                            ((double) s * (double) t - 1.0) *
-                                ((double) s * (double) t - 1.0) +
-                            4.0 * (double) s * (double) s)) /
-                    (2.0 * (double) s);
+                minN = (-((double)s * (double)t) - 1.0 -
+                    sycl::sqrt(
+                        ((double)s * (double)t - 1.0) *
+                        ((double)s * (double)t - 1.0) +
+                        4.0 * (double)s * (double)s)) /
+                    (2.0 * (double)s);
             }
 
             s = sinMaxEndAngle / cosMaxEndAngle;
@@ -7107,20 +7107,20 @@ void try_pu_slide_angle(
             signTest = (cosStartAngle > 0 && cosMaxEndAngle > 0) || (cosStartAngle < 0 && cosMaxEndAngle < 0);
 
             if (signTest) {
-                maxN = (-((double) s * (double) t) - 1.0 +
-                        sycl::sqrt(
-                            ((double) s * (double) t - 1.0) *
-                                ((double) s * (double) t - 1.0) +
-                            4.0 * (double) s * (double) s)) /
-                    (2.0 * (double) s);
+                maxN = (-((double)s * (double)t) - 1.0 +
+                    sycl::sqrt(
+                        ((double)s * (double)t - 1.0) *
+                        ((double)s * (double)t - 1.0) +
+                        4.0 * (double)s * (double)s)) /
+                    (2.0 * (double)s);
             }
             else {
-                maxN = (-((double) s * (double) t) - 1.0 -
-                        sycl::sqrt(
-                            ((double) s * (double) t - 1.0) *
-                                ((double) s * (double) t - 1.0) +
-                            4.0 * (double) s * (double) s)) /
-                    (2.0 * (double) s);
+                maxN = (-((double)s * (double)t) - 1.0 -
+                    sycl::sqrt(
+                        ((double)s * (double)t - 1.0) *
+                        ((double)s * (double)t - 1.0) +
+                        4.0 * (double)s * (double)s)) /
+                    (2.0 * (double)s);
             }
         }
 
@@ -7167,11 +7167,11 @@ void try_pu_slide_angle(
 
                 double mag = sycl::sqrt(m1 * m1 + n1 * n1);
                 double yaw = 65536.0 * (sycl::atan2(n1, m1) / (2.0 * M_PI));
-                yaw        = sycl::fmod(65536.0 + yaw, 65536.0);
+                yaw = sycl::fmod(65536.0 + yaw, 65536.0);
 
                 double yawDiff = yaw - refYaw;
-                yawDiff        = sycl::fmod(
-                              sycl::fmod(yawDiff, 65536.0) + 98304.0, 65536.0) -
+                yawDiff = sycl::fmod(
+                    sycl::fmod(yawDiff, 65536.0) + 98304.0, 65536.0) -
                     32768.0f;
 
                 minMag = sycl::fmin(minMag, mag);
@@ -7184,9 +7184,9 @@ void try_pu_slide_angle(
 
             if (minMag <= maxMag) {
                 int minIntendedDYaw =
-                    16 * (int) sycl::ceil((minYaw + refYaw) / 16);
+                    16 * (int)sycl::ceil((minYaw + refYaw) / 16);
                 int maxIntendedDYaw =
-                    16 * (int) sycl::floor((maxYaw + refYaw) / 16);
+                    16 * (int)sycl::floor((maxYaw + refYaw) / 16);
 
                 int minIdx = -1;
                 int maxIdx = magCount;
@@ -7219,8 +7219,8 @@ void try_pu_slide_angle(
                 }
 
                 int endMagIdx = minIdx;
-                
-                for (int intendedDYaw = minIntendedDYaw; intendedDYaw <= maxIntendedDYaw; intendedDYaw+=slideAngleSampleRate) {
+
+                for (int intendedDYaw = minIntendedDYaw; intendedDYaw <= maxIntendedDYaw; intendedDYaw += slideAngleSampleRate) {
                     for (int magIdx = startMagIdx; magIdx <= endMagIdx; magIdx++) {
                         float intendedMag = magSet[magIdx];
                         try_upwarp_slide(
@@ -7230,20 +7230,20 @@ void try_pu_slide_angle(
                             platform_pos);
                     }
                 }
-                
+
             }
         }
     }
 }
 
-void test_slide_angle(const sycl::nd_item<3> &item_ct1,
-                      int slideAngleSampleRate, const int n_y_ranges,
-                      double const *lower_y, double const *upper_y,
-                      struct GPULimits limits, struct SolStruct &solutions,
-                      struct SolCounts &counts, int &maxAngleRange,
-                      float *magSet, int &magCount, float *gSineTableG,
-                      float *gCosineTableG, int *gArctanTableG,
-                      float *platform_pos) {
+void test_slide_angle(const sycl::nd_item<3>& item_ct1,
+    int slideAngleSampleRate, const int n_y_ranges,
+    double const* lower_y, double const* upper_y,
+    struct GPULimits limits, struct SolStruct& solutions,
+    struct SolCounts& counts, int& maxAngleRange,
+    float* magSet, int& magCount, float* gSineTableG,
+    float* gCosineTableG, int* gArctanTableG,
+    float* platform_pos) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -7256,7 +7256,7 @@ void test_slide_angle(const sycl::nd_item<3> &item_ct1,
 
         if (angle <= tenKSol->maxStartAngle) {
             try_pu_slide_angle(
-                idx, (unsigned short) angle, tenKSol->minEndAngle,
+                idx, (unsigned short)angle, tenKSol->minEndAngle,
                 tenKSol->maxEndAngle, tenKSol->minM1, tenKSol->maxM1,
                 slideAngleSampleRate, n_y_ranges, lower_y, upper_y, limits,
                 solutions, counts, magSet, magCount, gSineTableG, gCosineTableG,
@@ -7302,7 +7302,7 @@ void find_slide_solutions(
             double dist = sycl::sqrt(xDist * xDist + zDist * zDist);
 
             double angle = sycl::atan2(-xDist, -zDist);
-            angle        = sycl::fmod(2.0 * M_PI + angle, 2.0 * M_PI);
+            angle = sycl::fmod(2.0 * M_PI + angle, 2.0 * M_PI);
 
             if (i == 0) {
                 baseAngle = angle;
@@ -7341,8 +7341,8 @@ void find_slide_solutions(
             minEndAngle = 65536.0 * minEndAngle / (2.0 * M_PI);
             maxEndAngle = 65536.0 * maxEndAngle / (2.0 * M_PI);
 
-            int minStartAngle = (int) sycl::ceil(minEndAngle) - maxTurnAngle;
-            int maxStartAngle = (int) sycl::floor(maxEndAngle) + maxTurnAngle;
+            int minStartAngle = (int)sycl::ceil(minEndAngle) - maxTurnAngle;
+            int maxStartAngle = (int)sycl::floor(maxEndAngle) + maxTurnAngle;
 
             minStartAngle = minStartAngle + 15;
             minStartAngle = minStartAngle - (minStartAngle % 16);
@@ -7354,7 +7354,7 @@ void find_slide_solutions(
             tenKSol->maxM1 = maxM1;
             tenKSol->minM1 = minM1;
 
-            int angleRange = ((maxStartAngle - minStartAngle)/slideAngleSampleRate) + 1;
+            int angleRange = ((maxStartAngle - minStartAngle) / slideAngleSampleRate) + 1;
             dpct::atomic_fetch_max<sycl::access::address_space::generic_space>(
                 &maxAngleRange, angleRange);
         }
@@ -7368,8 +7368,8 @@ hardware vendor to find the total register size available and adjust the code,
 or use smaller sub-group size to avoid high register pressure.
 */
 bool try_pu_xz(
-    float* normal, float* position, short (&current_triangles)[2][3][3],
-    float (&triangle_normals)[2][3], double x, double z, int platSolIdx,
+    float* normal, float* position, short(&current_triangles)[2][3][3],
+    float(&triangle_normals)[2][3], double x, double z, int platSolIdx,
     const int n_y_ranges, double const* lower_y, double const* upper_y,
     const int n_floor_ranges, const double const* lower_floor,
     const double const* upper_floor, struct GPULimits limits,
@@ -7402,7 +7402,7 @@ bool try_pu_xz(
 
                 if (!good_solution) {
                     float floor_dist = 65536.0;
-                    float speed = 65536.0 * sycl::sqrt((float) (x * x + z * z));
+                    float speed = 65536.0 * sycl::sqrt((float)(x * x + z * z));
 
                     for (int f = 0; f < n_floor_ranges; f++) {
                         float f_dist = mario_pos[1] - lower_floor[f];
@@ -7415,7 +7415,7 @@ bool try_pu_xz(
                         }
                     }
 
-                    int falling_frames = (int) sycl::ceil(
+                    int falling_frames = (int)sycl::ceil(
                         (sycl::sqrt(2.0 * floor_dist + 1.0) + 1.0) / 2.0);
 
                     int closest_pu_dist = sycl::fmin(
@@ -7427,9 +7427,9 @@ bool try_pu_xz(
                             dpct::pow(2, 31) - 1.0 - mario_pos[2]));
 
                     if (closest_pu_dist >= speed / 4.0f) {
-                        int total_falling_frames = (int) sycl::floor(
+                        int total_falling_frames = (int)sycl::floor(
                             (dpct::pow(2, 32) - closest_pu_dist -
-                             3.0 * speed / 2.0) /
+                                3.0 * speed / 2.0) /
                             speed);
 
                         if (falling_frames <= total_falling_frames) {
@@ -7441,15 +7441,15 @@ bool try_pu_xz(
                 if (good_solution) {
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nUpwarpSolutions), 1);
+                            &(counts.nUpwarpSolutions), 1);
 
                     if (solIdx < limits.MAX_UPWARP_SOLUTIONS) {
                         UpwarpSolution solution;
                         solution.platformSolutionIdx = platSolIdx;
                         solution.pux =
-                            (int) sycl::round((float) (x / 65536.0f));
+                            (int)sycl::round((float)(x / 65536.0f));
                         solution.puz =
-                            (int) sycl::round((float) (z / 65536.0f));
+                            (int)sycl::round((float)(z / 65536.0f));
                         solutions.upwarpSolutions[solIdx] = solution;
                     }
 
@@ -7469,9 +7469,9 @@ hardware vendor to find the total register size available and adjust the code,
 or use smaller sub-group size to avoid high register pressure.
 */
 bool try_pu_x(
-    float* normal, float* position, short (&current_triangles)[2][3][3],
-    float (&triangle_normals)[2][3], float (&T_start)[4][4],
-    float (&T_tilt)[4][4], double x, double x1_min, double x1_max,
+    float* normal, float* position, short(&current_triangles)[2][3][3],
+    float(&triangle_normals)[2][3], float(&T_start)[4][4],
+    float(&T_tilt)[4][4], double x, double x1_min, double x1_max,
     double x2_min, double x2_max, double platform_min_x, double platform_max_x,
     double platform_min_z, double platform_max_z, double m, double c_min,
     double c_max, int q_steps, double max_speed, int platSolIdx,
@@ -7565,10 +7565,10 @@ bool try_pu_x(
     // Find the minimum speed to reach a valid PU from current x position.
     // If this exceeds our maximum allowed speed, then we can stop searching polygon
     // in this direction.
-    double min_needed_speed = (4.0 / (double) q_steps) *
+    double min_needed_speed = (4.0 / (double)q_steps) *
         sycl::sqrt((x + platform_max_z - platform_min_z) *
-                       (x + platform_max_z - platform_min_z) +
-                   (closest_z_pu_platform * closest_z_pu_platform)) /
+            (x + platform_max_z - platform_min_z) +
+            (closest_z_pu_platform * closest_z_pu_platform)) /
         sycl::fmax(triangle_normals[0][1], triangle_normals[1][1]);
 
     if (min_needed_speed > max_speed) {
@@ -7586,9 +7586,9 @@ bool try_pu_x(
 
             double min_dist_oob = closest_oob /
                 (sycl::fmax(triangle_normals[0][1], triangle_normals[1][1]) /
-                     sycl::fmin(
-                         triangle_normals[0][1], triangle_normals[1][1]) -
-                 1.0);
+                    sycl::fmin(
+                        triangle_normals[0][1], triangle_normals[1][1]) -
+                    1.0);
             double min_dist_oob_z =
                 sycl::sqrt(min_dist_oob * min_dist_oob - x * x);
 
@@ -7614,7 +7614,7 @@ bool try_pu_x(
 
         // Search backwards from z=0
         for (double z = sycl::fmin(sycl::fmin(0.0, max_z_pu), -min_pu_oob_z);
-             z + 8192 > min_z_pu; z -= pu_gap) {
+            z + 8192 > min_z_pu; z -= pu_gap) {
             double base_platform_displacement_x = x * T_diff00 + z * T_diff20;
             double base_platform_displacement_z = x * T_diff02 + z * T_diff22;
 
@@ -7626,10 +7626,10 @@ bool try_pu_x(
             if (sycl::fabs(bpd_x_mod) < 8192 + disp_leeway &&
                 sycl::fabs(bpd_z_mod) < 8192 + disp_leeway) {
                 if (!try_pu_xz(
-                        normal, position, current_triangles, triangle_normals,
-                        x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
-                        n_floor_ranges, lower_floor, upper_floor, limits,
-                        solutions, counts, platform_pos)) {
+                    normal, position, current_triangles, triangle_normals,
+                    x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
+                    n_floor_ranges, lower_floor, upper_floor, limits,
+                    solutions, counts, platform_pos)) {
                     break;
                 }
             }
@@ -7637,8 +7637,8 @@ bool try_pu_x(
 
         // Search forwards from z>0
         for (double z = sycl::fmax(
-                 sycl::fmax(q_steps * pu_gap, min_z_pu), min_pu_oob_z);
-             z - 8192 < max_z_pu; z += pu_gap) {
+            sycl::fmax(q_steps * pu_gap, min_z_pu), min_pu_oob_z);
+            z - 8192 < max_z_pu; z += pu_gap) {
             double base_platform_displacement_x = x * T_diff00 + z * T_diff20;
             double base_platform_displacement_z = x * T_diff02 + z * T_diff22;
 
@@ -7650,10 +7650,10 @@ bool try_pu_x(
             if (sycl::fabs(bpd_x_mod) < 8192 + disp_leeway &&
                 sycl::fabs(bpd_z_mod) < 8192 + disp_leeway) {
                 if (!try_pu_xz(
-                        normal, position, current_triangles, triangle_normals,
-                        x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
-                        n_floor_ranges, lower_floor, upper_floor, limits,
-                        solutions, counts, platform_pos)) {
+                    normal, position, current_triangles, triangle_normals,
+                    x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
+                    n_floor_ranges, lower_floor, upper_floor, limits,
+                    solutions, counts, platform_pos)) {
                     break;
                 }
             }
@@ -7670,9 +7670,9 @@ hardware vendor to find the total register size available and adjust the code,
 or use smaller sub-group size to avoid high register pressure.
 */
 bool try_pu_z(
-    float* normal, float* position, short (&current_triangles)[2][3][3],
-    float (&triangle_normals)[2][3], float (&T_start)[4][4],
-    float (&T_tilt)[4][4], double z, double z1_min, double z1_max,
+    float* normal, float* position, short(&current_triangles)[2][3][3],
+    float(&triangle_normals)[2][3], float(&T_start)[4][4],
+    float(&T_tilt)[4][4], double z, double z1_min, double z1_max,
     double z2_min, double z2_max, double platform_min_x, double platform_max_x,
     double platform_min_z, double platform_max_z, double m, double c_min,
     double c_max, int q_steps, double max_speed, int platSolIdx,
@@ -7766,10 +7766,10 @@ bool try_pu_z(
     // Find the minimum speed to reach a valid PU from current z position.
     // If this exceeds our maximum allowed speed, then we can stop searching
     // the polygon in this direction.
-    double min_needed_speed = (4.0 / (double) q_steps) *
+    double min_needed_speed = (4.0 / (double)q_steps) *
         sycl::sqrt((z + platform_max_x - platform_min_x) *
-                       (z + platform_max_x - platform_min_x) +
-                   (closest_x_pu_platform * closest_x_pu_platform)) /
+            (z + platform_max_x - platform_min_x) +
+            (closest_x_pu_platform * closest_x_pu_platform)) /
         sycl::fmax(triangle_normals[0][1], triangle_normals[1][1]);
 
     if (min_needed_speed > max_speed) {
@@ -7787,9 +7787,9 @@ bool try_pu_z(
 
             double min_dist_oob = closest_oob /
                 (sycl::fmax(triangle_normals[0][1], triangle_normals[1][1]) /
-                     sycl::fmin(
-                         triangle_normals[0][1], triangle_normals[1][1]) -
-                 1.0);
+                    sycl::fmin(
+                        triangle_normals[0][1], triangle_normals[1][1]) -
+                    1.0);
             double min_dist_oob_x =
                 sycl::sqrt(min_dist_oob * min_dist_oob - z * z);
 
@@ -7815,7 +7815,7 @@ bool try_pu_z(
 
         // Search backwards from x=0
         for (double x = sycl::fmin(sycl::fmin(0.0, max_x_pu), -min_pu_oob_x);
-             x + 8192 > min_x_pu; x -= pu_gap) {
+            x + 8192 > min_x_pu; x -= pu_gap) {
             double base_platform_displacement_x = x * T_diff00 + z * T_diff20;
             double base_platform_displacement_z = x * T_diff02 + z * T_diff22;
 
@@ -7827,10 +7827,10 @@ bool try_pu_z(
             if (sycl::fabs(bpd_x_mod) < 8192 + disp_leeway &&
                 sycl::fabs(bpd_z_mod) < 8192 + disp_leeway) {
                 if (!try_pu_xz(
-                        normal, position, current_triangles, triangle_normals,
-                        x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
-                        n_floor_ranges, lower_floor, upper_floor, limits,
-                        solutions, counts, platform_pos)) {
+                    normal, position, current_triangles, triangle_normals,
+                    x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
+                    n_floor_ranges, lower_floor, upper_floor, limits,
+                    solutions, counts, platform_pos)) {
                     break;
                 }
             }
@@ -7838,7 +7838,7 @@ bool try_pu_z(
 
         // Search forwards from x>0
         for (double x = sycl::fmax(sycl::fmax(pu_gap, min_x_pu), min_pu_oob_x);
-             x - 8192 < max_x_pu; x += pu_gap) {
+            x - 8192 < max_x_pu; x += pu_gap) {
             double base_platform_displacement_x = x * T_diff00 + z * T_diff20;
             double base_platform_displacement_z = x * T_diff02 + z * T_diff22;
 
@@ -7850,10 +7850,10 @@ bool try_pu_z(
             if (sycl::fabs(bpd_x_mod) < 8192 + disp_leeway &&
                 sycl::fabs(bpd_z_mod) < 8192 + disp_leeway) {
                 if (!try_pu_xz(
-                        normal, position, current_triangles, triangle_normals,
-                        x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
-                        n_floor_ranges, lower_floor, upper_floor, limits,
-                        solutions, counts, platform_pos)) {
+                    normal, position, current_triangles, triangle_normals,
+                    x, z, platSolIdx, n_y_ranges, lower_y, upper_y,
+                    n_floor_ranges, lower_floor, upper_floor, limits,
+                    solutions, counts, platform_pos)) {
                     break;
                 }
             }
@@ -7896,8 +7896,8 @@ void try_normal(
 
     float invsqrt = 1.0f /
         sycl::sqrt(T_start[1][0] * T_start[1][0] +
-                   T_start[1][1] * T_start[1][1] +
-                   T_start[1][2] * T_start[1][2]);
+            T_start[1][1] * T_start[1][1] +
+            T_start[1][2] * T_start[1][2]);
 
     T_start[1][0] *= invsqrt;
     T_start[1][1] *= invsqrt;
@@ -7956,9 +7956,9 @@ void try_normal(
 
         invsqrt = 1.0f /
             sycl::sqrt(
-                      triangle_normals[h][0] * triangle_normals[h][0] +
-                      triangle_normals[h][1] * triangle_normals[h][1] +
-                      triangle_normals[h][2] * triangle_normals[h][2]);
+                triangle_normals[h][0] * triangle_normals[h][0] +
+                triangle_normals[h][1] * triangle_normals[h][1] +
+                triangle_normals[h][2] * triangle_normals[h][2]);
 
         triangle_normals[h][0] *= invsqrt;
         triangle_normals[h][1] *= invsqrt;
@@ -7977,49 +7977,49 @@ void try_normal(
 
     double platform_min_x = sycl::fmin(
         sycl::fmin(
-            (double) current_triangles[0][0][0],
-            (double) current_triangles[0][1][0]),
+            (double)current_triangles[0][0][0],
+            (double)current_triangles[0][1][0]),
         sycl::fmin(
-            (double) current_triangles[0][2][0],
-            (double) current_triangles[1][2][0]));
+            (double)current_triangles[0][2][0],
+            (double)current_triangles[1][2][0]));
     double platform_max_x = sycl::fmax(
         sycl::fmax(
-            (double) current_triangles[0][0][0],
-            (double) current_triangles[0][1][0]),
+            (double)current_triangles[0][0][0],
+            (double)current_triangles[0][1][0]),
         sycl::fmax(
-            (double) current_triangles[0][2][0],
-            (double) current_triangles[1][2][0]));
+            (double)current_triangles[0][2][0],
+            (double)current_triangles[1][2][0]));
     double platform_min_z = sycl::fmin(
         sycl::fmin(
-            (double) current_triangles[0][0][2],
-            (double) current_triangles[0][1][2]),
+            (double)current_triangles[0][0][2],
+            (double)current_triangles[0][1][2]),
         sycl::fmin(
-            (double) current_triangles[0][2][2],
-            (double) current_triangles[1][2][2]));
+            (double)current_triangles[0][2][2],
+            (double)current_triangles[1][2][2]));
     double platform_max_z = sycl::fmax(
         sycl::fmax(
-            (double) current_triangles[0][0][2],
-            (double) current_triangles[0][1][2]),
+            (double)current_triangles[0][0][2],
+            (double)current_triangles[0][1][2]),
         sycl::fmax(
-            (double) current_triangles[0][2][2],
-            (double) current_triangles[1][2][2]));
+            (double)current_triangles[0][2][2],
+            (double)current_triangles[1][2][2]));
 
     double min_y = sycl::fmin(
         -3071.0,
         sycl::fmin(
             sycl::fmin(
-                (double) current_triangles[0][0][1],
-                (double) current_triangles[0][1][1]),
+                (double)current_triangles[0][0][1],
+                (double)current_triangles[0][1][1]),
             sycl::fmin(
-                (double) current_triangles[0][2][1],
-                (double) current_triangles[1][2][1])));
+                (double)current_triangles[0][2][1],
+                (double)current_triangles[1][2][1])));
     double max_y = sycl::fmax(
         sycl::fmax(
-            (double) current_triangles[0][0][1],
-            (double) current_triangles[0][1][1]),
+            (double)current_triangles[0][0][1],
+            (double)current_triangles[0][1][1]),
         sycl::fmax(
-            (double) current_triangles[0][2][1],
-            (double) current_triangles[1][2][1]));
+            (double)current_triangles[0][2][1],
+            (double)current_triangles[1][2][1]));
 
     // Try to find solutions for each possible platform tilt direction
     for (int i = 0; i < 4; i++) {
@@ -8030,8 +8030,8 @@ void try_normal(
 
         float invsqrt = 1.0f /
             sycl::sqrt(T_tilt[1][0] * T_tilt[1][0] +
-                       T_tilt[1][1] * T_tilt[1][1] +
-                       T_tilt[1][2] * T_tilt[1][2]);
+                T_tilt[1][1] * T_tilt[1][1] +
+                T_tilt[1][2] * T_tilt[1][2]);
 
         T_tilt[1][0] *= invsqrt;
         T_tilt[1][1] *= invsqrt;
@@ -8116,10 +8116,10 @@ void try_normal(
             if (nx == 0) {
                 if (i % 2 == 0) {
                     x1_min = (c_min + sycl::tan(a[i]) * platform_pos[0] -
-                              platform_pos[2]) /
+                        platform_pos[2]) /
                         (sycl::tan(a[i]) - m);
                     x1_max = (c_max + sycl::tan(a[i]) * platform_pos[0] -
-                              platform_pos[2]) /
+                        platform_pos[2]) /
                         (sycl::tan(a[i]) - m);
                     x2_min = 0;
                     x2_max = 0;
@@ -8145,11 +8145,11 @@ void try_normal(
                     x1_max = 0;
                     x2_min =
                         (c_min + sycl::tan(a[(i + 1) % 4]) * platform_pos[0] -
-                         platform_pos[2]) /
+                            platform_pos[2]) /
                         (sycl::tan(a[(i + 1) % 4]) - m);
                     x2_max =
                         (c_max + sycl::tan(a[(i + 1) % 4]) * platform_pos[0] -
-                         platform_pos[2]) /
+                            platform_pos[2]) /
                         (sycl::tan(a[(i + 1) % 4]) - m);
 
                     if (nz > 0 && c_min < platform_pos[0] || nz < 0 && c_min > platform_pos[0]) {
@@ -8171,16 +8171,16 @@ void try_normal(
             }
             else {
                 x1_min = (c_min + sycl::tan(a[i]) * platform_pos[0] -
-                          platform_pos[2]) /
+                    platform_pos[2]) /
                     (sycl::tan(a[i]) - m);
                 x1_max = (c_max + sycl::tan(a[i]) * platform_pos[0] -
-                          platform_pos[2]) /
+                    platform_pos[2]) /
                     (sycl::tan(a[i]) - m);
                 x2_min = (c_min + sycl::tan(a[(i + 1) % 4]) * platform_pos[0] -
-                          platform_pos[2]) /
+                    platform_pos[2]) /
                     (sycl::tan(a[(i + 1) % 4]) - m);
                 x2_max = (c_max + sycl::tan(a[(i + 1) % 4]) * platform_pos[0] -
-                          platform_pos[2]) /
+                    platform_pos[2]) /
                     (sycl::tan(a[(i + 1) % 4]) - m);
 
                 if (a1_cos > 0 && x1_min < platform_pos[0] || a1_cos < 0 && x1_min > platform_pos[0]) {
@@ -8233,7 +8233,7 @@ void try_normal(
                     else {
                         if (c_min > 0) {
                             poly_x_start = -INFINITY;
-                            poly_x_end   = sycl::fmax(x1_min, x1_max);
+                            poly_x_end = sycl::fmax(x1_min, x1_max);
                         }
                         else {
                             poly_x_start = sycl::fmin(x1_min, x1_max);
@@ -8248,7 +8248,7 @@ void try_normal(
                     }
                     else {
                         poly_x_start = -INFINITY;
-                        poly_x_end   = sycl::fmax(x2_min, x2_max);
+                        poly_x_end = sycl::fmax(x2_min, x2_max);
                     }
                 }
                 else {
@@ -8264,32 +8264,32 @@ void try_normal(
 
                 // Search backwards from x=0
                 for (double x = sycl::fmin(0.0, last_x_pu);
-                     x + platform_min_x > poly_x_start; x -= pu_gap) {
+                    x + platform_min_x > poly_x_start; x -= pu_gap) {
                     if (!try_pu_x(
-                            normal, position, current_triangles,
-                            triangle_normals, T_start, T_tilt, x, x1_min,
-                            x1_max, x2_min, x2_max, platform_min_x,
-                            platform_max_x, platform_min_z, platform_max_z, m,
-                            c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
-                            lower_y, upper_y, n_floor_ranges, lower_floor,
-                            upper_floor, limits, solutions, counts,
-                            platform_pos)) {
+                        normal, position, current_triangles,
+                        triangle_normals, T_start, T_tilt, x, x1_min,
+                        x1_max, x2_min, x2_max, platform_min_x,
+                        platform_max_x, platform_min_z, platform_max_z, m,
+                        c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
+                        lower_y, upper_y, n_floor_ranges, lower_floor,
+                        upper_floor, limits, solutions, counts,
+                        platform_pos)) {
                         break;
                     }
                 }
 
                 // Search forwards from x>0
                 for (double x = sycl::fmax(pu_gap, first_x_pu);
-                     x - platform_max_x < poly_x_end; x += pu_gap) {
+                    x - platform_max_x < poly_x_end; x += pu_gap) {
                     if (!try_pu_x(
-                            normal, position, current_triangles,
-                            triangle_normals, T_start, T_tilt, x, x1_min,
-                            x1_max, x2_min, x2_max, platform_min_x,
-                            platform_max_x, platform_min_z, platform_max_z, m,
-                            c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
-                            lower_y, upper_y, n_floor_ranges, lower_floor,
-                            upper_floor, limits, solutions, counts,
-                            platform_pos)) {
+                        normal, position, current_triangles,
+                        triangle_normals, T_start, T_tilt, x, x1_min,
+                        x1_max, x2_min, x2_max, platform_min_x,
+                        platform_max_x, platform_min_z, platform_max_z, m,
+                        c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
+                        lower_y, upper_y, n_floor_ranges, lower_floor,
+                        upper_floor, limits, solutions, counts,
+                        platform_pos)) {
                         break;
                     }
                 }
@@ -8322,7 +8322,7 @@ void try_normal(
                     else {
                         if (c_min / m > 0) {
                             poly_z_start = -INFINITY;
-                            poly_z_end   = sycl::fmax(z1_min, z1_max);
+                            poly_z_end = sycl::fmax(z1_min, z1_max);
                         }
                         else {
                             poly_z_start = sycl::fmin(z1_min, z1_max);
@@ -8337,7 +8337,7 @@ void try_normal(
                     }
                     else {
                         poly_z_start = -INFINITY;
-                        poly_z_end   = sycl::fmax(z2_min, z2_max);
+                        poly_z_end = sycl::fmax(z2_min, z2_max);
                     }
                 }
                 else {
@@ -8353,32 +8353,32 @@ void try_normal(
 
                 // Search backwards from z=0
                 for (double z = sycl::fmin(0.0, last_z_pu);
-                     z + platform_min_z > poly_z_start; z -= pu_gap) {
+                    z + platform_min_z > poly_z_start; z -= pu_gap) {
                     if (!try_pu_z(
-                            normal, position, current_triangles,
-                            triangle_normals, T_start, T_tilt, z, z1_min,
-                            z1_max, z2_min, z2_max, platform_min_x,
-                            platform_max_x, platform_min_z, platform_max_z, m,
-                            c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
-                            lower_y, upper_y, n_floor_ranges, lower_floor,
-                            upper_floor, limits, solutions, counts,
-                            platform_pos)) {
+                        normal, position, current_triangles,
+                        triangle_normals, T_start, T_tilt, z, z1_min,
+                        z1_max, z2_min, z2_max, platform_min_x,
+                        platform_max_x, platform_min_z, platform_max_z, m,
+                        c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
+                        lower_y, upper_y, n_floor_ranges, lower_floor,
+                        upper_floor, limits, solutions, counts,
+                        platform_pos)) {
                         break;
                     }
                 }
 
                 // Search forwards from z>0
                 for (double z = sycl::fmax(pu_gap, first_z_pu);
-                     z - platform_max_z < poly_z_end; z += pu_gap) {
+                    z - platform_max_z < poly_z_end; z += pu_gap) {
                     if (!try_pu_z(
-                            normal, position, current_triangles,
-                            triangle_normals, T_start, T_tilt, z, z1_min,
-                            z1_max, z2_min, z2_max, platform_min_x,
-                            platform_max_x, platform_min_z, platform_max_z, m,
-                            c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
-                            lower_y, upper_y, n_floor_ranges, lower_floor,
-                            upper_floor, limits, solutions, counts,
-                            platform_pos)) {
+                        normal, position, current_triangles,
+                        triangle_normals, T_start, T_tilt, z, z1_min,
+                        z1_max, z2_min, z2_max, platform_min_x,
+                        platform_max_x, platform_min_z, platform_max_z, m,
+                        c_min, c_max, q, max_speed, platSolIdx, n_y_ranges,
+                        lower_y, upper_y, n_floor_ranges, lower_floor,
+                        upper_floor, limits, solutions, counts,
+                        platform_pos)) {
                         break;
                     }
                 }
@@ -8387,15 +8387,15 @@ void try_normal(
     }
 }
 
-void find_upwarp_solutions(float maxSpeed, const sycl::nd_item<3> &item_ct1,
-                           dpct::accessor<const short, dpct::constant, 2> default_triangles,
-                           dpct::accessor<const float, dpct::constant, 2> normal_offsets,
-                           const int n_y_ranges, double const *lower_y,
-                           double const *upper_y, const int n_floor_ranges,
-                           const double const *lower_floor,
-                           const double const *upper_floor,
-                           struct GPULimits limits, struct SolStruct &solutions,
-                           struct SolCounts &counts, float *platform_pos) {
+void find_upwarp_solutions(float maxSpeed, const sycl::nd_item<3>& item_ct1,
+    dpct::accessor<const short, dpct::constant, 2> default_triangles,
+    dpct::accessor<const float, dpct::constant, 2> normal_offsets,
+    const int n_y_ranges, double const* lower_y,
+    double const* upper_y, const int n_floor_ranges,
+    const double const* lower_floor,
+    const double const* upper_floor,
+    struct GPULimits limits, struct SolStruct& solutions,
+    struct SolCounts& counts, float* platform_pos) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -8429,7 +8429,7 @@ void try_position(
 
     float invsqrt = 1.0f /
         sycl::sqrt(mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
-                   mat[1][2] * mat[1][2]);
+            mat[1][2] * mat[1][2]);
 
     mat[1][0] *= invsqrt;
     mat[1][1] *= invsqrt;
@@ -8441,8 +8441,8 @@ void try_position(
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
-                  mat[0][2] * mat[0][2]);
+            mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+            mat[0][2] * mat[0][2]);
 
     mat[0][0] *= invsqrt;
     mat[0][1] *= invsqrt;
@@ -8454,8 +8454,8 @@ void try_position(
 
     invsqrt = 1.0f /
         sycl::sqrt(
-                  mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
-                  mat[2][2] * mat[2][2]);
+            mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+            mat[2][2] * mat[2][2]);
 
     mat[2][0] *= invsqrt;
     mat[2][1] *= invsqrt;
@@ -8489,9 +8489,9 @@ void try_position(
 
         invsqrt = 1.0f /
             sycl::sqrt(
-                      triangleNormals[h][0] * triangleNormals[h][0] +
-                      triangleNormals[h][1] * triangleNormals[h][1] +
-                      triangleNormals[h][2] * triangleNormals[h][2]);
+                triangleNormals[h][0] * triangleNormals[h][0] +
+                triangleNormals[h][1] * triangleNormals[h][1] +
+                triangleNormals[h][2] * triangleNormals[h][2]);
 
         triangleNormals[h][0] *= invsqrt;
         triangleNormals[h][1] *= invsqrt;
@@ -8554,8 +8554,8 @@ void try_position(
 
         invsqrt = 1.0f /
             sycl::sqrt(
-                      mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
-                      mat[1][2] * mat[1][2]);
+                mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
+                mat[1][2] * mat[1][2]);
 
         mat[1][0] *= invsqrt;
         mat[1][1] *= invsqrt;
@@ -8567,8 +8567,8 @@ void try_position(
 
         invsqrt = 1.0f /
             sycl::sqrt(
-                      mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
-                      mat[0][2] * mat[0][2]);
+                mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+                mat[0][2] * mat[0][2]);
 
         mat[0][0] *= invsqrt;
         mat[0][1] *= invsqrt;
@@ -8580,8 +8580,8 @@ void try_position(
 
         invsqrt = 1.0f /
             sycl::sqrt(
-                      mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
-                      mat[2][2] * mat[2][2]);
+                mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+                mat[2][2] * mat[2][2]);
 
         mat[2][0] *= invsqrt;
         mat[2][1] *= invsqrt;
@@ -8612,9 +8612,9 @@ void try_position(
 
             invsqrt = 1.0f /
                 sycl::sqrt(
-                          triangleNormals[h][0] * triangleNormals[h][0] +
-                          triangleNormals[h][1] * triangleNormals[h][1] +
-                          triangleNormals[h][2] * triangleNormals[h][2]);
+                    triangleNormals[h][0] * triangleNormals[h][0] +
+                    triangleNormals[h][1] * triangleNormals[h][1] +
+                    triangleNormals[h][2] * triangleNormals[h][2]);
 
             triangleNormals[h][0] *= invsqrt;
             triangleNormals[h][1] *= invsqrt;
@@ -8666,7 +8666,7 @@ void try_position(
                 dx = mx - (float)platformPos[0];
                 dy = 500.0f;
                 dz = mz - (float)platformPos[2];
-                d  = sycl::sqrt(dx * dx + dy * dy + dz * dz);
+                d = sycl::sqrt(dx * dx + dy * dy + dz * dz);
 
                 //! Always true since dy = 500, making d >= 500.
                 if (d != 0.0f) {
@@ -8707,8 +8707,8 @@ void try_position(
 
             invsqrt = 1.0f /
                 sycl::sqrt(
-                          mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
-                          mat[1][2] * mat[1][2]);
+                    mat[1][0] * mat[1][0] + mat[1][1] * mat[1][1] +
+                    mat[1][2] * mat[1][2]);
 
             mat[1][0] *= invsqrt;
             mat[1][1] *= invsqrt;
@@ -8720,8 +8720,8 @@ void try_position(
 
             invsqrt = 1.0f /
                 sycl::sqrt(
-                          mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
-                          mat[0][2] * mat[0][2]);
+                    mat[0][0] * mat[0][0] + mat[0][1] * mat[0][1] +
+                    mat[0][2] * mat[0][2]);
 
             mat[0][0] *= invsqrt;
             mat[0][1] *= invsqrt;
@@ -8733,8 +8733,8 @@ void try_position(
 
             invsqrt = 1.0f /
                 sycl::sqrt(
-                          mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
-                          mat[2][2] * mat[2][2]);
+                    mat[2][0] * mat[2][0] + mat[2][1] * mat[2][1] +
+                    mat[2][2] * mat[2][2]);
 
             mat[2][0] *= invsqrt;
             mat[2][1] *= invsqrt;
@@ -8765,9 +8765,9 @@ void try_position(
 
                 invsqrt = 1.0f /
                     sycl::sqrt(
-                              triangleNormals[h][0] * triangleNormals[h][0] +
-                              triangleNormals[h][1] * triangleNormals[h][1] +
-                              triangleNormals[h][2] * triangleNormals[h][2]);
+                        triangleNormals[h][0] * triangleNormals[h][0] +
+                        triangleNormals[h][1] * triangleNormals[h][1] +
+                        triangleNormals[h][2] * triangleNormals[h][2]);
 
                 triangleNormals[h][0] *= invsqrt;
                 triangleNormals[h][1] *= invsqrt;
@@ -8848,7 +8848,7 @@ void try_position(
             }
 
             bool oldOnPlatform = onPlatform;
-            onPlatform         = floor_idx != -1 &&
+            onPlatform = floor_idx != -1 &&
                 sycl::fabs(marioPos[1] - floor_height) <= 4.0;
 
             //Check if Mario is under the lava, or too far below the platform for it to conceivably be in reach later
@@ -8860,7 +8860,7 @@ void try_position(
             if (onPlatform && oldOnPlatform) {
                 float testNormal[3] = {
                     sycl::fabs(normal[0]), sycl::fabs(normal[1]),
-                    sycl::fabs(normal[2])};
+                    sycl::fabs(normal[2]) };
 
                 bool validSolution = false;
 
@@ -8873,7 +8873,7 @@ void try_position(
                     float a = testNormal[0] - offset;
                     float b = testNormal[2] - offset;
                     float c = testNormal[2];
-                    float d    = sycl::sqrt(1 - testNormal[2] * testNormal[2]);
+                    float d = sycl::sqrt(1 - testNormal[2] * testNormal[2]);
                     float sign = 1;
 
                     float v = testNormal[1] - offset;
@@ -8894,7 +8894,7 @@ void try_position(
                         validSolution = true;
                     }
                     else {
-                        c    = sycl::sqrt(1 - testNormal[0] * testNormal[0]);
+                        c = sycl::sqrt(1 - testNormal[0] * testNormal[0]);
                         d = testNormal[0];
                         sign = -1;
                         result = sign * d * sqrt1 * sqrt3 * (d * sqrt2 * (sqrt1 * testNormal[0] - a * sqrt3) * sqrt4 + c * (-sqrt1 * sqrt2 * testNormal[1] * testNormal[2] + b * v * sqrt3 * sqrt4));
@@ -8908,7 +8908,7 @@ void try_position(
                 if (validSolution) {
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nPlatSolutions), 1);
+                            &(counts.nPlatSolutions), 1);
 
                     if (solIdx < limits.MAX_PLAT_SOLUTIONS) {
                         struct PlatformSolution solution;
@@ -8959,9 +8959,9 @@ void try_position(
 }
 
 void testEdge(const float x0, const float x1, const float z0, const float z1, float normalX, float normalY, float normalZ, int maxFrames,
-              const sycl::nd_item<3> &item_ct1, struct GPULimits limits,
-              struct SolStruct &solutions, struct SolCounts &counts,
-              float *platform_pos) {
+    const sycl::nd_item<3>& item_ct1, struct GPULimits limits,
+    struct SolStruct& solutions, struct SolCounts& counts,
+    float* platform_pos) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
     int total = item_ct1.get_local_range(2) * item_ct1.get_group_range(2);
@@ -8976,19 +8976,19 @@ void testEdge(const float x0, const float x1, const float z0, const float z1, fl
 }
 
 void simulate_tilts(const float minX, const float deltaX, const float minZ, const float deltaZ, const int width, const int height, float normalX, float normalY, float normalZ, int maxFrames,
-                    const sycl::nd_item<3> &item_ct1, struct GPULimits limits,
-                    struct SolStruct &solutions, struct SolCounts &counts,
-                    float *platform_pos) {
+    const sycl::nd_item<3>& item_ct1, struct GPULimits limits,
+    struct SolStruct& solutions, struct SolCounts& counts,
+    float* platform_pos) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
     if (idx < width * height) {
         float marioPos[3] = {
-            minX - sycl::fmod((float) minX, (float) deltaX) +
+            minX - sycl::fmod((float)minX, (float)deltaX) +
                 deltaX * (idx % width),
             -2500.0f,
-            minZ - sycl::fmod((float) minZ, (float) deltaZ) +
-                deltaZ * (idx / width)};
+            minZ - sycl::fmod((float)minZ, (float)deltaZ) +
+                deltaZ * (idx / width) };
         float normal[3] = { normalX, normalY, normalZ };
 
         try_position(
@@ -9019,8 +9019,8 @@ void try_stick_positionG(
         struct SKPhase2* sol2 = (sol3->p2Type / 2 == 0) ? ((sol3->p2Type % 2 == 0) ? &(solutions.sk2ASolutions[sol3->p2Idx]) : &(solutions.sk2BSolutions[sol3->p2Idx])) : ((sol3->p2Type % 2 == 0) ? &(solutions.sk2CSolutions[sol3->p2Idx]) : &(solutions.sk2DSolutions[sol3->p2Idx]));
         struct SKPhase1* sol1 = &(solutions.sk1Solutions[sol2->p1Idx]);
 
-        float mag = sycl::sqrt((float) (sol5->stickX * sol5->stickX +
-                                        sol5->stickY * sol5->stickY));
+        float mag = sycl::sqrt((float)(sol5->stickX * sol5->stickX +
+            sol5->stickY * sol5->stickY));
 
         float xS = sol5->stickX;
         float yS = sol5->stickY;
@@ -9032,7 +9032,7 @@ void try_stick_positionG(
         }
 
         float intendedMag = ((mag / 64.0f) * (mag / 64.0f)) * 32.0f;
-        int intendedYaw   = atan2sG(-yS, xS, gArctanTableG) + sol4->cameraYaw;
+        int intendedYaw = atan2sG(-yS, xS, gArctanTableG) + sol4->cameraYaw;
         int intendedDYaw = intendedYaw - sol5->f1Angle;
 
         float lower10KSpeed = sol4->minPre10KSpeed;
@@ -9092,7 +9092,7 @@ void try_stick_positionG(
                 xVel += 7.0f * tenKFloors[sol2->tenKFloorIdx][6];
                 zVel += 7.0f * tenKFloors[sol2->tenKFloorIdx][8];
 
-                int f3Angle1    = atan2sG(-zVel, -xVel, gArctanTableG);
+                int f3Angle1 = atan2sG(-zVel, -xVel, gArctanTableG);
                 int f3Angle1Idx = revAtansG(f3Angle1);
 
                 xVel = minSpeed * sinsG(sol2->f2Angle) - 10.0f * cossG(sol2->f2Angle);
@@ -9111,7 +9111,7 @@ void try_stick_positionG(
                 xVel += 7.0f * tenKFloors[sol2->tenKFloorIdx][6];
                 zVel += 7.0f * tenKFloors[sol2->tenKFloorIdx][8];
 
-                int f3Angle2    = atan2sG(-zVel, -xVel, gArctanTableG);
+                int f3Angle2 = atan2sG(-zVel, -xVel, gArctanTableG);
                 int f3Angle2Idx = revAtansG(f3Angle2);
 
                 int minF3AngleIdx;
@@ -9141,7 +9141,7 @@ void try_stick_positionG(
                 for (int a = minF3AngleIdx; a <= maxF3AngleIdx; a++) {
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nSK6Solutions), 1);
+                            &(counts.nSK6Solutions), 1);
 
                     if (solIdx < limits.MAX_SK_PHASE_SIX) {
                         struct SKPhase6* solution = &(solutions.sk6Solutions[solIdx]);
@@ -9204,12 +9204,12 @@ void try_slide_kick_routeG2(
 
                 double targetDYaw =
                     65536.0 * (sycl::atan2(n1, m1) / (2.0 * M_PI));
-                double targetMag = sycl::sqrt((float) (m1 * m1 + n1 * n1));
+                double targetMag = sycl::sqrt((float)(m1 * m1 + n1 * n1));
 
                 double stickAngle = sycl::fmod(
                     65536.0 +
-                        sycl::fmod(
-                            targetDYaw + f1Angle - sol4->cameraYaw, 65536.0),
+                    sycl::fmod(
+                        targetDYaw + f1Angle - sol4->cameraYaw, 65536.0),
                     65536.0);
                 double stickMagnitude = sycl::sqrt(128.0 * targetMag);
 
@@ -9296,18 +9296,18 @@ void try_slide_kick_routeG2(
             }
 
             if (maxStickX - minStickX < maxStickY - minStickY) {
-                for (int x = (int) sycl::ceil(minStickX);
-                     x <= (int) sycl::floor(maxStickX); x++) {
+                for (int x = (int)sycl::ceil(minStickX);
+                    x <= (int)sycl::floor(maxStickX); x++) {
                     if (x != 1) {
-                        int y = (int) sycl::round(
-                            ((double) x - minStickX) * (maxStickY - minStickY) /
-                                (maxStickX - minStickX) +
+                        int y = (int)sycl::round(
+                            ((double)x - minStickX) * (maxStickY - minStickY) /
+                            (maxStickX - minStickX) +
                             minStickY);
 
                         if (y != 1) {
                             int solIdx = dpct::atomic_fetch_add<
                                 sycl::access::address_space::generic_space>(
-                                &(counts.nSK5Solutions), 1);
+                                    &(counts.nSK5Solutions), 1);
 
                             if (solIdx < limits.MAX_SK_PHASE_FIVE) {
                                 struct SKPhase5* solution = &(solutions.sk5Solutions[solIdx]);
@@ -9321,18 +9321,18 @@ void try_slide_kick_routeG2(
                 }
             }
             else {
-                for (int y = (int) sycl::ceil(minStickY);
-                     y <= (int) sycl::floor(maxStickY); y++) {
+                for (int y = (int)sycl::ceil(minStickY);
+                    y <= (int)sycl::floor(maxStickY); y++) {
                     if (y != 1) {
-                        int x = (int) sycl::round(
-                            ((double) y - minStickY) * (maxStickX - minStickX) /
-                                (maxStickY - minStickY) +
+                        int x = (int)sycl::round(
+                            ((double)y - minStickY) * (maxStickX - minStickX) /
+                            (maxStickY - minStickY) +
                             minStickX);
 
                         if (x != 1) {
                             int solIdx = dpct::atomic_fetch_add<
                                 sycl::access::address_space::generic_space>(
-                                &(counts.nSK5Solutions), 1);
+                                    &(counts.nSK5Solutions), 1);
 
                             if (solIdx < limits.MAX_SK_PHASE_FIVE) {
                                 struct SKPhase5* solution = &(solutions.sk5Solutions[solIdx]);
@@ -9407,7 +9407,7 @@ void try_slide_kick_routeG(
                 double PX = 65536.0 * sol3->x2 + ((j / 2 == 0) ? tenKFloors[sol2->tenKFloorIdx][0] : tenKFloors[sol2->tenKFloorIdx][1]);
                 double PZ = 65536.0 * sol3->z2 + ((((j + 1) % 4) / 2 == 0) ? tenKFloors[sol2->tenKFloorIdx][0] : tenKFloors[sol2->tenKFloorIdx][1]);
                 double QX1 = 65536.0 * sol1->x1 + pyramidFloorPoints[3 * i];
-                double QX2 = 65536.0 * sol1->x1 + pyramidFloorPoints[3 * ((i + 1)%nPoints)];
+                double QX2 = 65536.0 * sol1->x1 + pyramidFloorPoints[3 * ((i + 1) % nPoints)];
                 double QZ1 = 65536.0 * sol1->z1 + pyramidFloorPoints[3 * i + 2];
                 double QZ2 = 65536.0 * sol1->z1 + pyramidFloorPoints[3 * ((i + 1) % nPoints) + 2];
 
@@ -9431,11 +9431,11 @@ void try_slide_kick_routeG(
         }
 
         double minSpeed = sycl::fmax(
-            (float) (sol1->minSpeed - 2.85f),
-            (float) (4.0 * minF2Dist / (float) sol1->q2));
+            (float)(sol1->minSpeed - 2.85f),
+            (float)(4.0 * minF2Dist / (float)sol1->q2));
         double maxSpeed = sycl::fmin(
-            (float) (sol1->maxSpeed + 0.15f),
-            (float) (4.0 * maxF2Dist / (float) sol1->q2));
+            (float)(sol1->maxSpeed + 0.15f),
+            (float)(4.0 * maxF2Dist / (float)sol1->q2));
 
         if (minSpeed <= maxSpeed) {
             double minF3Dist = INFINITY;
@@ -9481,8 +9481,8 @@ void try_slide_kick_routeG(
                 }
             }
 
-            minAngleDiff = sycl::fmax(minAngleDiff, -(double) maxF3Turn);
-            maxAngleDiff = sycl::fmin(maxAngleDiff, (double) maxF3Turn);
+            minAngleDiff = sycl::fmax(minAngleDiff, -(double)maxF3Turn);
+            maxAngleDiff = sycl::fmin(maxAngleDiff, (double)maxF3Turn);
 
             if (minAngleDiff <= maxAngleDiff) {
                 double minF3Angle = minAngleDiff + sol2->f2Angle;
@@ -9493,7 +9493,7 @@ void try_slide_kick_routeG(
 
                 if (sol2->f2Angle == 0 || sol2->f2Angle == 32768) {
                     double sinF2Angle = sycl::sin(
-                        2.0 * M_PI * (double) sol2->f2Angle / 65536.0);
+                        2.0 * M_PI * (double)sol2->f2Angle / 65536.0);
 
                     minN = -sycl::cos(2.0 * M_PI * minF3Angle / 65536.0) /
                         sinF2Angle;
@@ -9520,20 +9520,20 @@ void try_slide_kick_routeG(
                     bool signTest = (cosF2Angle > 0 && cosMinF3Angle > 0) || (cosF2Angle < 0 && cosMinF3Angle < 0);
 
                     if (signTest) {
-                        minN = (-((double) s * (double) t) - 1.0 +
-                                sycl::sqrt(
-                                    ((double) s * (double) t - 1.0) *
-                                        ((double) s * (double) t - 1.0) +
-                                    4.0 * (double) s * (double) s)) /
-                            (2.0 * (double) s);
+                        minN = (-((double)s * (double)t) - 1.0 +
+                            sycl::sqrt(
+                                ((double)s * (double)t - 1.0) *
+                                ((double)s * (double)t - 1.0) +
+                                4.0 * (double)s * (double)s)) /
+                            (2.0 * (double)s);
                     }
                     else {
-                        minN = (-((double) s * (double) t) - 1.0 -
-                                sycl::sqrt(
-                                    ((double) s * (double) t - 1.0) *
-                                        ((double) s * (double) t - 1.0) +
-                                    4.0 * (double) s * (double) s)) /
-                            (2.0 * (double) s);
+                        minN = (-((double)s * (double)t) - 1.0 -
+                            sycl::sqrt(
+                                ((double)s * (double)t - 1.0) *
+                                ((double)s * (double)t - 1.0) +
+                                4.0 * (double)s * (double)s)) /
+                            (2.0 * (double)s);
                     }
 
                     s = sinMaxF3Angle / cosMaxF3Angle;
@@ -9541,20 +9541,20 @@ void try_slide_kick_routeG(
                     signTest = (cosF2Angle > 0 && cosMaxF3Angle > 0) || (cosF2Angle < 0 && cosMaxF3Angle < 0);
 
                     if (signTest) {
-                        maxN = (-((double) s * (double) t) - 1.0 +
-                                sycl::sqrt(
-                                    ((double) s * (double) t - 1.0) *
-                                        ((double) s * (double) t - 1.0) +
-                                    4.0 * (double) s * (double) s)) /
-                            (2.0 * (double) s);
+                        maxN = (-((double)s * (double)t) - 1.0 +
+                            sycl::sqrt(
+                                ((double)s * (double)t - 1.0) *
+                                ((double)s * (double)t - 1.0) +
+                                4.0 * (double)s * (double)s)) /
+                            (2.0 * (double)s);
                     }
                     else {
-                        maxN = (-((double) s * (double) t) - 1.0 -
-                                sycl::sqrt(
-                                    ((double) s * (double) t - 1.0) *
-                                        ((double) s * (double) t - 1.0) +
-                                    4.0 * (double) s * (double) s)) /
-                            (2.0 * (double) s);
+                        maxN = (-((double)s * (double)t) - 1.0 -
+                            sycl::sqrt(
+                                ((double)s * (double)t - 1.0) *
+                                ((double)s * (double)t - 1.0) +
+                                4.0 * (double)s * (double)s)) /
+                            (2.0 * (double)s);
                     }
                 }
 
@@ -9646,7 +9646,7 @@ void try_slide_kick_routeG(
                             if (validCameraAngle[cameraYaw]) {
                                 int solIdx = dpct::atomic_fetch_add<
                                     sycl::access::address_space::generic_space>(
-                                    &(counts.nSK4Solutions), 1);
+                                        &(counts.nSK4Solutions), 1);
 
                                 if (solIdx < limits.MAX_SK_PHASE_FOUR) {
                                     struct SKPhase4* solution = &(solutions.sk4Solutions[solIdx]);
@@ -9673,11 +9673,11 @@ void try_slide_kick_routeG(
 }
 
 void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ,
-                              const sycl::nd_item<3> &item_ct1,
-                              dpct::accessor<float, dpct::constant, 2> tenKFloors,
-                              struct GPULimits limits,
-                              struct SolStruct &solutions,
-                              struct SolCounts &counts) {
+    const sycl::nd_item<3>& item_ct1,
+    dpct::accessor<float, dpct::constant, 2> tenKFloors,
+    struct GPULimits limits,
+    struct SolStruct& solutions,
+    struct SolCounts& counts) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -9690,15 +9690,15 @@ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ,
         double speed1 = ((cosSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         double speed2 = ((cosSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2ZPU = (int) sycl::ceil(
+        int minF2ZPU = (int)sycl::ceil(
             (65536.0 * sol1->z1 + platformMinZ +
-             speed1 * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][3]) /
+                speed1 * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][3]) /
             65536.0);
-        int maxF2ZPU = (int) sycl::floor(
+        int maxF2ZPU = (int)sycl::floor(
             (65536.0 * sol1->z1 + platformMaxZ +
-             speed2 * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][2]) /
+                speed2 * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][2]) /
             65536.0);
 
         minF2ZPU += (sol1->q2 + ((sol1->z1 - minF2ZPU) % sol1->q2)) % sol1->q2;
@@ -9707,7 +9707,7 @@ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ,
         for (int z2 = minF2ZPU; z2 <= maxF2ZPU; z2 += sol1->q2) {
             int solIdx = dpct::atomic_fetch_add<
                 sycl::access::address_space::generic_space>(
-                &(counts.nSK3Solutions), 1);
+                    &(counts.nSK3Solutions), 1);
 
             if (solIdx < limits.MAX_SK_PHASE_THREE) {
                 struct SKPhase3* solution = &(solutions.sk3Solutions[solIdx]);
@@ -9722,11 +9722,11 @@ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ,
 
 
 void find_slide_kick_setupG3b(float platformMinX, float platformMaxX,
-                              const sycl::nd_item<3> &item_ct1,
-                              dpct::accessor<float, dpct::constant, 2> tenKFloors,
-                              struct GPULimits limits,
-                              struct SolStruct &solutions,
-                              struct SolCounts &counts) {
+    const sycl::nd_item<3>& item_ct1,
+    dpct::accessor<float, dpct::constant, 2> tenKFloors,
+    struct GPULimits limits,
+    struct SolStruct& solutions,
+    struct SolCounts& counts) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -9739,15 +9739,15 @@ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX,
         double speed1 = ((sinSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         double speed2 = ((sinSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2XPU = (int) sycl::ceil(
+        int minF2XPU = (int)sycl::ceil(
             (65536.0 * sol1->x1 + platformMinX +
-             speed1 * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][1]) /
+                speed1 * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][1]) /
             65536.0);
-        int maxF2XPU = (int) sycl::floor(
+        int maxF2XPU = (int)sycl::floor(
             (65536.0 * sol1->x1 + platformMaxX +
-             speed2 * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][0]) /
+                speed2 * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][0]) /
             65536.0);
 
         minF2XPU += (sol1->q2 + ((sol1->x1 - minF2XPU) % sol1->q2)) % sol1->q2;
@@ -9756,7 +9756,7 @@ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX,
         for (int x2 = minF2XPU; x2 <= maxF2XPU; x2 += sol1->q2) {
             int solIdx = dpct::atomic_fetch_add<
                 sycl::access::address_space::generic_space>(
-                &(counts.nSK3Solutions), 1);
+                    &(counts.nSK3Solutions), 1);
 
             if (solIdx < limits.MAX_SK_PHASE_THREE) {
                 struct SKPhase3* solution = &(solutions.sk3Solutions[solIdx]);
@@ -9770,11 +9770,11 @@ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX,
 }
 
 void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float platformMinZ, float platformMaxZ,
-                              const sycl::nd_item<3> &item_ct1,
-                              dpct::accessor<float, dpct::constant, 2> tenKFloors,
-                              struct GPULimits limits,
-                              struct SolStruct &solutions,
-                              struct SolCounts &counts) {
+    const sycl::nd_item<3>& item_ct1,
+    dpct::accessor<float, dpct::constant, 2> tenKFloors,
+    struct GPULimits limits,
+    struct SolStruct& solutions,
+    struct SolCounts& counts) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -9791,15 +9791,15 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
         double speed1 = ((sinSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         double speed2 = ((sinSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2XPU = (int) sycl::ceil(
+        int minF2XPU = (int)sycl::ceil(
             (65536.0 * sol1->x1 + platformMinX +
-             speed1 * sol2->sinAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][1]) /
+                speed1 * sol2->sinAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][1]) /
             65536.0);
-        int maxF2XPU = (int) sycl::floor(
+        int maxF2XPU = (int)sycl::floor(
             (65536.0 * sol1->x1 + platformMaxX +
-             speed2 * sol2->sinAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][0]) /
+                speed2 * sol2->sinAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][0]) /
             65536.0);
 
         minF2XPU += (sol1->q2 + ((sol1->x1 - minF2XPU) % sol1->q2)) % sol1->q2;
@@ -9808,15 +9808,15 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
         speed1 = ((cosSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         speed2 = ((cosSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2ZPU = (int) sycl::ceil(
+        int minF2ZPU = (int)sycl::ceil(
             (65536.0 * sol1->z1 + platformMinZ +
-             speed1 * sol2->cosAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][3]) /
+                speed1 * sol2->cosAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][3]) /
             65536.0);
-        int maxF2ZPU = (int) sycl::floor(
+        int maxF2ZPU = (int)sycl::floor(
             (65536.0 * sol1->z1 + platformMaxZ +
-             speed2 * sol2->cosAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][2]) /
+                speed2 * sol2->cosAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][2]) /
             65536.0);
 
         minF2ZPU += (sol1->q2 + ((sol1->z1 - minF2ZPU) % sol1->q2)) % sol1->q2;
@@ -9831,19 +9831,19 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
         float zRange2 = ((cotSign + 1) >> 1) * sol2->upper + (((cotSign + 1) >> 1) ^ 1) * sol2->lower;
 
         for (int x2 = minF2XPU; x2 <= maxF2XPU; x2 += sol1->q2) {
-            int minF2XZPU = (int) sycl::ceil(
+            int minF2XZPU = (int)sycl::ceil(
                 (65536.0 * sol1->z1 + platformMinZ +
-                 ((65536.0 * x2 + tenKFloorX1) -
-                  (65536.0 * sol1->x1 + platformX1)) *
-                     cotAngle +
-                 zRange1 - tenKFloors[sol2->tenKFloorIdx][3]) /
+                    ((65536.0 * x2 + tenKFloorX1) -
+                        (65536.0 * sol1->x1 + platformX1)) *
+                    cotAngle +
+                    zRange1 - tenKFloors[sol2->tenKFloorIdx][3]) /
                 65536.0);
-            int maxF2XZPU = (int) sycl::floor(
+            int maxF2XZPU = (int)sycl::floor(
                 (65536.0 * sol1->z1 + platformMaxZ +
-                 ((65536.0 * x2 + tenKFloorX2) -
-                  (65536.0 * sol1->x1 + platformX2)) *
-                     cotAngle +
-                 zRange2 - tenKFloors[sol2->tenKFloorIdx][2]) /
+                    ((65536.0 * x2 + tenKFloorX2) -
+                        (65536.0 * sol1->x1 + platformX2)) *
+                    cotAngle +
+                    zRange2 - tenKFloors[sol2->tenKFloorIdx][2]) /
                 65536.0);
 
             minF2XZPU += (sol1->q2 + ((sol1->z1 - minF2XZPU) % sol1->q2)) % sol1->q2;
@@ -9855,7 +9855,7 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
             for (int z2 = minF2ZPU; z2 <= maxF2ZPU; z2 += sol1->q2) {
                 int solIdx = dpct::atomic_fetch_add<
                     sycl::access::address_space::generic_space>(
-                    &(counts.nSK3Solutions), 1);
+                        &(counts.nSK3Solutions), 1);
 
                 if (solIdx < limits.MAX_SK_PHASE_THREE) {
                     struct SKPhase3* solution = &(solutions.sk3Solutions[solIdx]);
@@ -9870,11 +9870,11 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
 }
 
 void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float platformMinZ, float platformMaxZ,
-                              const sycl::nd_item<3> &item_ct1,
-                              dpct::accessor<float, dpct::constant, 2> tenKFloors,
-                              struct GPULimits limits,
-                              struct SolStruct &solutions,
-                              struct SolCounts &counts) {
+    const sycl::nd_item<3>& item_ct1,
+    dpct::accessor<float, dpct::constant, 2> tenKFloors,
+    struct GPULimits limits,
+    struct SolStruct& solutions,
+    struct SolCounts& counts) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -9891,15 +9891,15 @@ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float plat
         double speed1 = ((sinSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         double speed2 = ((sinSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((sinSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2XPU = (int) sycl::ceil(
+        int minF2XPU = (int)sycl::ceil(
             (65536.0 * sol1->x1 + platformMinX +
-             speed1 * sol2->sinAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][1]) /
+                speed1 * sol2->sinAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][1]) /
             65536.0);
-        int maxF2XPU = (int) sycl::floor(
+        int maxF2XPU = (int)sycl::floor(
             (65536.0 * sol1->x1 + platformMaxX +
-             speed2 * sol2->sinAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][0]) /
+                speed2 * sol2->sinAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][0]) /
             65536.0);
 
         minF2XPU += (sol1->q2 + ((sol1->x1 - minF2XPU) % sol1->q2)) % sol1->q2;
@@ -9908,15 +9908,15 @@ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float plat
         speed1 = ((cosSign + 1) >> 1) * (sol1->minSpeed - 2.85f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->maxSpeed + 0.15f);
         speed2 = ((cosSign + 1) >> 1) * (sol1->maxSpeed + 0.15f) + (((cosSign + 1) >> 1) ^ 1) * (sol1->minSpeed - 2.85f);
 
-        int minF2ZPU = (int) sycl::ceil(
+        int minF2ZPU = (int)sycl::ceil(
             (65536.0 * sol1->z1 + platformMinZ +
-             speed1 * sol2->cosAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][3]) /
+                speed1 * sol2->cosAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][3]) /
             65536.0);
-        int maxF2ZPU = (int) sycl::floor(
+        int maxF2ZPU = (int)sycl::floor(
             (65536.0 * sol1->z1 + platformMaxZ +
-             speed2 * sol2->cosAngle * (double) sol1->q2 / 4.0 -
-             tenKFloors[sol2->tenKFloorIdx][2]) /
+                speed2 * sol2->cosAngle * (double)sol1->q2 / 4.0 -
+                tenKFloors[sol2->tenKFloorIdx][2]) /
             65536.0);
 
         minF2ZPU += (sol1->q2 + ((sol1->z1 - minF2ZPU) % sol1->q2)) % sol1->q2;
@@ -9931,19 +9931,19 @@ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float plat
         float xRange2 = ((tanSign + 1) >> 1) * sol2->upper + (((tanSign + 1) >> 1) ^ 1) * sol2->lower;
 
         for (int z2 = minF2ZPU; z2 <= maxF2ZPU; z2 += sol1->q2) {
-            int minF2ZXPU = (int) sycl::ceil(
+            int minF2ZXPU = (int)sycl::ceil(
                 (65536.0 * sol1->x1 + platformMinX +
-                 ((65536.0 * z2 + tenKFloorZ1) -
-                  (65536.0 * sol1->z1 + platformZ1)) *
-                     tanAngle +
-                 xRange1 - tenKFloors[sol2->tenKFloorIdx][1]) /
+                    ((65536.0 * z2 + tenKFloorZ1) -
+                        (65536.0 * sol1->z1 + platformZ1)) *
+                    tanAngle +
+                    xRange1 - tenKFloors[sol2->tenKFloorIdx][1]) /
                 65536.0);
-            int maxF2ZXPU = (int) sycl::floor(
+            int maxF2ZXPU = (int)sycl::floor(
                 (65536.0 * sol1->x1 + platformMaxX +
-                 ((65536.0 * z2 + tenKFloorZ2) -
-                  (65536.0 * sol1->z1 + platformZ2)) *
-                     tanAngle +
-                 xRange2 - tenKFloors[sol2->tenKFloorIdx][0]) /
+                    ((65536.0 * z2 + tenKFloorZ2) -
+                        (65536.0 * sol1->z1 + platformZ2)) *
+                    tanAngle +
+                    xRange2 - tenKFloors[sol2->tenKFloorIdx][0]) /
                 65536.0);
 
             minF2ZXPU += (sol1->q2 + ((sol1->x1 - minF2ZXPU) % sol1->q2)) % sol1->q2;
@@ -9955,7 +9955,7 @@ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float plat
             for (int x2 = minF2ZXPU; x2 <= maxF2ZXPU; x2 += sol1->q2) {
                 int solIdx = dpct::atomic_fetch_add<
                     sycl::access::address_space::generic_space>(
-                    &(counts.nSK3Solutions), 1);
+                        &(counts.nSK3Solutions), 1);
 
                 if (solIdx < limits.MAX_SK_PHASE_THREE) {
                     struct SKPhase3* solution = &(solutions.sk3Solutions[solIdx]);
@@ -9988,21 +9988,21 @@ void find_slide_kick_setupG2(
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK1Solutions, limits.MAX_SK_PHASE_ONE)) {
-        struct SKPhase1 *sol = &(solutions.sk1Solutions[idx]);
-        double puAngle       = 65536.0 *
-            sycl::atan2((double) sol->x1, (double) sol->z1) / (2.0 * M_PI);
+        struct SKPhase1* sol = &(solutions.sk1Solutions[idx]);
+        double puAngle = 65536.0 *
+            sycl::atan2((double)sol->x1, (double)sol->z1) / (2.0 * M_PI);
         puAngle = sycl::fmod(65536.0 + puAngle, 65536.0);
 
         int puAngleClosest = atan2sG(sol->z1, sol->x1, gArctanTableG);
 
         double sinMaxAngle =
-            sycl::sin(2.0 * M_PI * (double) maxF3Turn / 65536.0);
+            sycl::sin(2.0 * M_PI * (double)maxF3Turn / 65536.0);
         double maxF2AngleChange = sycl::fmod(
             32768.0 -
-                (65536.0 *
-                 sycl::asin(sol->q2 * sinMaxAngle / (4.0 * floorNormalY)) /
-                 (2.0 * M_PI)) -
-                maxF3Turn,
+            (65536.0 *
+                sycl::asin(sol->q2 * sinMaxAngle / (4.0 * floorNormalY)) /
+                (2.0 * M_PI)) -
+            maxF3Turn,
             32768.0);
         maxF2AngleChange = sycl::fabs(
             sycl::fmod(maxF2AngleChange + 16384.0, 32768.0) - 16384.0);
@@ -10029,7 +10029,7 @@ void find_slide_kick_setupG2(
                     if (minX < maxX) {
                         int solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2ASolutions), 1);
+                                &(counts.nSK2ASolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_A) {
                             struct SKPhase2* solution = &(solutions.sk2ASolutions[solIdx]);
@@ -10042,7 +10042,7 @@ void find_slide_kick_setupG2(
 
                         solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2ASolutions), 1);
+                                &(counts.nSK2ASolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_A) {
                             struct SKPhase2* solution = &(solutions.sk2ASolutions[solIdx]);
@@ -10063,7 +10063,7 @@ void find_slide_kick_setupG2(
                     if (minZ < maxZ) {
                         int solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2BSolutions), 1);
+                                &(counts.nSK2BSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_B) {
                             struct SKPhase2* solution = &(solutions.sk2BSolutions[solIdx]);
@@ -10076,7 +10076,7 @@ void find_slide_kick_setupG2(
 
                         solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2BSolutions), 1);
+                                &(counts.nSK2BSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_B) {
                             struct SKPhase2* solution = &(solutions.sk2BSolutions[solIdx]);
@@ -10108,7 +10108,7 @@ void find_slide_kick_setupG2(
                     for (int i = 0; i < nTenKFloors; i++) {
                         int solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2CSolutions), 1);
+                                &(counts.nSK2CSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_C) {
                             struct SKPhase2* solution = &(solutions.sk2CSolutions[solIdx]);
@@ -10123,7 +10123,7 @@ void find_slide_kick_setupG2(
 
                         solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2CSolutions), 1);
+                                &(counts.nSK2CSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_C) {
                             struct SKPhase2* solution = &(solutions.sk2CSolutions[solIdx]);
@@ -10152,7 +10152,7 @@ void find_slide_kick_setupG2(
                     for (int i = 0; i < nTenKFloors; i++) {
                         int solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2DSolutions), 1);
+                                &(counts.nSK2DSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_D) {
                             struct SKPhase2* solution = &(solutions.sk2DSolutions[solIdx]);
@@ -10167,7 +10167,7 @@ void find_slide_kick_setupG2(
 
                         solIdx = dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(counts.nSK2DSolutions), 1);
+                                &(counts.nSK2DSolutions), 1);
 
                         if (solIdx < limits.MAX_SK_PHASE_TWO_D) {
                             struct SKPhase2* solution = &(solutions.sk2DSolutions[solIdx]);
@@ -10206,8 +10206,8 @@ void find_slide_kick_setupG(
     int z1 = 4 * (idx / (2 * (maxF1PU / 4) + 1)) - maxF1PU;
 
     if ((x1 != 0 || z1 != 0) &&
-        65536.0 * sycl::sqrt((double) (x1 * x1 + z1 * z1)) <=
-            floorNormalY * maxSpeed) {
+        65536.0 * sycl::sqrt((double)(x1 * x1 + z1 * z1)) <=
+        floorNormalY * maxSpeed) {
         float dx = 65536 * x1;
         float dy = 500.0f;
         float dz = 65536 * z1;
@@ -10275,7 +10275,7 @@ void find_slide_kick_setupG(
                 for (int q2 = 1; q2 <= 4; q2++) {
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nSK1Solutions), 1);
+                            &(counts.nSK1Solutions), 1);
 
                     if (solIdx < limits.MAX_SK_PHASE_ONE) {
                         struct SKPhase1* solution = &(solutions.sk1Solutions[solIdx]);
@@ -10307,33 +10307,33 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
     countsCPU->nSK6Solutions = 0;
 
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK1Solutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK1Solutions),
         &(countsCPU->nSK1Solutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK2ASolutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK2ASolutions),
         &(countsCPU->nSK2ASolutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK2BSolutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK2BSolutions),
         &(countsCPU->nSK2BSolutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK2CSolutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK2CSolutions),
         &(countsCPU->nSK2CSolutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK2DSolutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK2DSolutions),
         &(countsCPU->nSK2DSolutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK3Solutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK3Solutions),
         &(countsCPU->nSK3Solutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK4Solutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK4Solutions),
         &(countsCPU->nSK4Solutions), sizeof(int));
     dpct::get_in_order_queue().memcpy(
-        (char*) (counts.get_ptr()) + offsetof(struct SolCounts, nSK5Solutions),
+        (char*)(counts.get_ptr()) + offsetof(struct SolCounts, nSK5Solutions),
         &(countsCPU->nSK5Solutions), sizeof(int));
     dpct::get_in_order_queue()
         .memcpy(
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK6Solutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK6Solutions),
             &(countsCPU->nSK6Solutions), sizeof(int))
         .wait();
 
@@ -10385,15 +10385,15 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
         platformNormal.init();
 
         dpct::has_capability_or_fail(
-            dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+            dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-            auto limits_ptr_ct1               = limits.get_ptr();
-            auto solutions_ptr_ct1            = solutions.get_ptr();
-            auto counts_ptr_ct1               = counts.get_ptr();
-            auto gArctanTableG_ptr_ct1        = gArctanTableG.get_ptr();
+            auto limits_ptr_ct1 = limits.get_ptr();
+            auto solutions_ptr_ct1 = solutions.get_ptr();
+            auto counts_ptr_ct1 = counts.get_ptr();
+            auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
             auto gReverseArctanTableG_ptr_ct1 = gReverseArctanTableG.get_ptr();
-            auto platformNormal_ptr_ct1       = platformNormal.get_ptr();
+            auto platformNormal_ptr_ct1 = platformNormal.get_ptr();
 
             auto normal_offsets_acc_ct1 = normal_offsets.get_access(cgh);
 
@@ -10402,7 +10402,7 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             cgh.parallel_for(
                 sycl::nd_range<3>(
                     sycl::range<3>(1, 1, nBlocks) *
-                        sycl::range<3>(1, 1, o->nThreads),
+                    sycl::range<3>(1, 1, o->nThreads),
                     sycl::range<3>(1, 1, o->nThreads)),
                 [=](sycl::nd_item<3> item_ct1) {
                 find_slide_kick_setupG(
@@ -10417,8 +10417,8 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
     dpct::get_in_order_queue()
         .memcpy(
             &(countsCPU->nSK1Solutions),
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK1Solutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK1Solutions),
             sizeof(int))
         .wait();
 
@@ -10448,15 +10448,15 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             gReverseArctanTableG.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto maxF3Turn_ptr_ct1     = maxF3Turn.get_ptr();
-                auto nTenKFloors_ptr_ct1   = nTenKFloors.get_ptr();
-                auto limits_ptr_ct1        = limits.get_ptr();
-                auto solutions_ptr_ct1     = solutions.get_ptr();
-                auto counts_ptr_ct1        = counts.get_ptr();
-                auto gSineTableG_ptr_ct1   = gSineTableG.get_ptr();
+                auto maxF3Turn_ptr_ct1 = maxF3Turn.get_ptr();
+                auto nTenKFloors_ptr_ct1 = nTenKFloors.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
+                auto solutions_ptr_ct1 = solutions.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
+                auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                 auto gCosineTableG_ptr_ct1 = gCosineTableG.get_ptr();
                 auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
                 auto gReverseArctanTableG_ptr_ct1 =
@@ -10467,7 +10467,7 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     find_slide_kick_setupG2(
@@ -10484,24 +10484,24 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
 
         dpct::get_in_order_queue().memcpy(
             &(countsCPU->nSK2ASolutions),
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK2ASolutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK2ASolutions),
             sizeof(int));
         dpct::get_in_order_queue().memcpy(
             &(countsCPU->nSK2BSolutions),
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK2BSolutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK2BSolutions),
             sizeof(int));
         dpct::get_in_order_queue().memcpy(
             &(countsCPU->nSK2CSolutions),
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK2CSolutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK2CSolutions),
             sizeof(int));
         dpct::get_in_order_queue()
             .memcpy(
                 &(countsCPU->nSK2DSolutions),
-                (char*) (counts.get_ptr()) +
-                    offsetof(struct SolCounts, nSK2DSolutions),
+                (char*)(counts.get_ptr()) +
+                offsetof(struct SolCounts, nSK2DSolutions),
                 sizeof(int))
             .wait();
     }
@@ -10526,19 +10526,19 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             counts.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1    = limits.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
                 auto solutions_ptr_ct1 = solutions.get_ptr();
-                auto counts_ptr_ct1    = counts.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
 
                 auto tenKFloors_acc_ct1 = tenKFloors.get_access(cgh);
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     find_slide_kick_setupG3a(
@@ -10570,19 +10570,19 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             counts.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1    = limits.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
                 auto solutions_ptr_ct1 = solutions.get_ptr();
-                auto counts_ptr_ct1    = counts.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
 
                 auto tenKFloors_acc_ct1 = tenKFloors.get_access(cgh);
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     find_slide_kick_setupG3b(
@@ -10614,19 +10614,19 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             counts.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1    = limits.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
                 auto solutions_ptr_ct1 = solutions.get_ptr();
-                auto counts_ptr_ct1    = counts.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
 
                 auto tenKFloors_acc_ct1 = tenKFloors.get_access(cgh);
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     find_slide_kick_setupG3c(
@@ -10658,19 +10658,19 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             counts.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1    = limits.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
                 auto solutions_ptr_ct1 = solutions.get_ptr();
-                auto counts_ptr_ct1    = counts.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
 
                 auto tenKFloors_acc_ct1 = tenKFloors.get_access(cgh);
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     find_slide_kick_setupG3d(
@@ -10685,8 +10685,8 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
     dpct::get_in_order_queue()
         .memcpy(
             &(countsCPU->nSK3Solutions),
-            (char*) (counts.get_ptr()) +
-                offsetof(struct SolCounts, nSK3Solutions),
+            (char*)(counts.get_ptr()) +
+            offsetof(struct SolCounts, nSK3Solutions),
             sizeof(int))
         .wait();
 
@@ -10718,28 +10718,28 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             floorsG.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto maxF3Turn_ptr_ct1     = maxF3Turn.get_ptr();
-                auto limits_ptr_ct1        = limits.get_ptr();
-                auto solutions_ptr_ct1     = solutions.get_ptr();
-                auto counts_ptr_ct1        = counts.get_ptr();
-                auto gSineTableG_ptr_ct1   = gSineTableG.get_ptr();
+                auto maxF3Turn_ptr_ct1 = maxF3Turn.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
+                auto solutions_ptr_ct1 = solutions.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
+                auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                 auto gCosineTableG_ptr_ct1 = gCosineTableG.get_ptr();
                 auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
                 auto gReverseArctanTableG_ptr_ct1 =
                     gReverseArctanTableG.get_ptr();
                 auto validCameraAngle_ptr_ct1 = validCameraAngle.get_ptr();
-                auto total_floorsG_ptr_ct1    = total_floorsG.get_ptr();
-                auto floorsG_ptr_ct1          = floorsG.get_ptr();
+                auto total_floorsG_ptr_ct1 = total_floorsG.get_ptr();
+                auto floorsG_ptr_ct1 = floorsG.get_ptr();
 
                 auto tenKFloors_acc_ct1 = tenKFloors.get_access(cgh);
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     try_slide_kick_routeG(
@@ -10756,8 +10756,8 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
         dpct::get_in_order_queue()
             .memcpy(
                 &(countsCPU->nSK4Solutions),
-                (char*) (counts.get_ptr()) +
-                    offsetof(struct SolCounts, nSK4Solutions),
+                (char*)(counts.get_ptr()) +
+                offsetof(struct SolCounts, nSK4Solutions),
                 sizeof(int))
             .wait();
     }
@@ -10782,18 +10782,18 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             gArctanTableG.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1        = limits.get_ptr();
-                auto solutions_ptr_ct1     = solutions.get_ptr();
-                auto counts_ptr_ct1        = counts.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
+                auto solutions_ptr_ct1 = solutions.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
                 auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     try_slide_kick_routeG2(
@@ -10806,8 +10806,8 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
         dpct::get_in_order_queue()
             .memcpy(
                 &(countsCPU->nSK5Solutions),
-                (char*) (counts.get_ptr()) +
-                    offsetof(struct SolCounts, nSK5Solutions),
+                (char*)(counts.get_ptr()) +
+                offsetof(struct SolCounts, nSK5Solutions),
                 sizeof(int))
             .wait();
     }
@@ -10836,13 +10836,13 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
             gReverseArctanTableG.init();
 
             dpct::has_capability_or_fail(
-                dpct::get_in_order_queue().get_device(), {sycl::aspect::fp64});
+                dpct::get_in_order_queue().get_device(), { sycl::aspect::fp64 });
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1        = limits.get_ptr();
-                auto solutions_ptr_ct1     = solutions.get_ptr();
-                auto counts_ptr_ct1        = counts.get_ptr();
-                auto gSineTableG_ptr_ct1   = gSineTableG.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
+                auto solutions_ptr_ct1 = solutions.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
+                auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                 auto gCosineTableG_ptr_ct1 = gCosineTableG.get_ptr();
                 auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
                 auto gReverseArctanTableG_ptr_ct1 =
@@ -10853,7 +10853,7 @@ void find_slide_kick_setup_triangle(short* floorPoints, short* devFloorPoints, i
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     try_stick_positionG(
@@ -10925,7 +10925,7 @@ void find_bully_positions(
         float minBullyPushZ = doubleTenKSol->minStartZ;
         float maxBullyPushZ = doubleTenKSol->maxStartZ;
 
-        for (int i = 0; i < squishPushFrames-1; i++) {
+        for (int i = 0; i < squishPushFrames - 1; i++) {
             minBullyPushX = minBullyPushX - squishNormals[floorIdx][1] * xPushVel / 4.0f;
             maxBullyPushX = maxBullyPushX - squishNormals[floorIdx][1] * xPushVel / 4.0f;
             minBullyPushZ = minBullyPushZ - squishNormals[floorIdx][1] * zPushVel / 4.0f;
@@ -10957,10 +10957,10 @@ void find_bully_positions(
 
                     if (dist >= pushRadius - bullyHurtbox &&
                         dist <= pushRadius -
-                                sycl::fmax(
-                                    bullyHurtbox - 2.0f * maxSlidingSpeed -
-                                        1.85f,
-                                    0.0f)) {
+                        sycl::fmax(
+                            bullyHurtbox - 2.0f * maxSlidingSpeed -
+                            1.85f,
+                            0.0f)) {
                         int angle = atan2sG(zDist, xDist, gArctanTableG);
 
                         int angleDiff = (short)(angle - uphillAngle);
@@ -10971,9 +10971,9 @@ void find_bully_positions(
                             }
 
                             minAngle = sycl::min(
-                                minAngle, (int) (short) (angle - refAngle));
+                                minAngle, (int)(short)(angle - refAngle));
                             maxAngle = sycl::max(
-                                maxAngle, (int) (short) (angle - refAngle));
+                                maxAngle, (int)(short)(angle - refAngle));
                         }
                     }
                 }
@@ -11021,7 +11021,7 @@ void find_bully_positions(
                         2.0f, sycl::floor(sycl::log2(maxBullyX - minBullyX)));
 
                     while (sycl::floor(maxBullyX / (2.0f * xDiff2)) >=
-                           sycl::ceil(minBullyX / (2.0f * xDiff2))) {
+                        sycl::ceil(minBullyX / (2.0f * xDiff2))) {
                         xDiff2 = xDiff2 * 2.0f;
                     }
                 }
@@ -11044,21 +11044,21 @@ void find_bully_positions(
                         2.0f, sycl::floor(sycl::log2(maxBullyZ - minBullyZ)));
 
                     while (sycl::floor(maxBullyZ / (2.0f * zDiff2)) >=
-                           sycl::ceil(minBullyZ / (2.0f * zDiff2))) {
+                        sycl::ceil(minBullyZ / (2.0f * zDiff2))) {
                         zDiff2 = zDiff2 * 2.0f;
                     }
                 }
 
                 float maxBullyXSpeed = sycl::fmin(
                     sycl::nextafter(xDiff2 * baseBullySpeed, -INFINITY),
-                    (float) maxBullySpeed);
+                    (float)maxBullySpeed);
                 float maxBullyZSpeed = sycl::fmin(
                     sycl::nextafter(zDiff2 * baseBullySpeed, -INFINITY),
-                    (float) maxBullySpeed);
+                    (float)maxBullySpeed);
 
                 float maxPushSpeed =
                     (sycl::fabs(maxBullyXSpeed * sinsG(angle)) +
-                     sycl::fabs(maxBullyZSpeed * cossG(angle))) *
+                        sycl::fabs(maxBullyZSpeed * cossG(angle))) *
                     (73.0f / 53.0f) * 3.0f;
 
                 float maxLossFactor = (-1.0 * (0.5f + 0.5f * maxPushSpeed / 100.0f)) * 0.02 + 0.92;
@@ -11074,7 +11074,7 @@ void find_bully_positions(
                     slidingSpeedToPlatform <= maxSlidingSpeedToPlatform) {
                     int solIdx = dpct::atomic_fetch_add<
                         sycl::access::address_space::generic_space>(
-                        &(counts.nBullyPushSolutions), 1);
+                            &(counts.nBullyPushSolutions), 1);
 
                     if (solIdx < limits.MAX_BULLY_PUSH_SOLUTIONS) {
                         struct BullyPushSolution* solution = &(solutions.bullyPushSolutions[solIdx]);
@@ -11094,7 +11094,7 @@ void find_bully_positions(
                         solution->minSlidingSpeedZ = slidingSpeedZ;
                         dpct::atomic_fetch_add<
                             sycl::access::address_space::generic_space>(
-                            &(tenKSol->bpSetups), 1);
+                                &(tenKSol->bpSetups), 1);
                     }
                 }
             }
@@ -11136,12 +11136,12 @@ float find_speed_boundary(float minValue, float maxValue, float target, float yN
 }
 
 bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPosition, float yNormal, int idx,
-                 struct GPULimits limits, struct SolStruct &solutions,
-                 struct SolCounts &counts,
-                 dpct::accessor<short, dpct::global, 3> squishTriangles,
-                 dpct::accessor<float, dpct::global, 2> squishNormals,
-                 dpct::accessor<short, dpct::global, 3> startTriangles,
-                 dpct::accessor<float, dpct::global, 2> startNormals) {
+    struct GPULimits limits, struct SolStruct& solutions,
+    struct SolCounts& counts,
+    dpct::accessor<short, dpct::global, 3> squishTriangles,
+    dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startTriangles,
+    dpct::accessor<float, dpct::global, 2> startNormals) {
     float xDir = sign(xVel);
 
     float speed = sycl::sqrt(xVel * xVel + zVel * zVel);
@@ -11153,13 +11153,13 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
 
     if (xDir * minSpeed < xDir * targetSpeed) {
         while (xDir * minSpeed < xDir * targetSpeed) {
-            minXVel  = sycl::nextafter(minXVel, INFINITY);
+            minXVel = sycl::nextafter(minXVel, INFINITY);
             minSpeed = sycl::sqrt(minXVel * minXVel + zVel * zVel);
         }
     }
     else {
         while (xDir * minSpeed >= xDir * targetSpeed) {
-            minXVel  = sycl::nextafter(minXVel, -INFINITY);
+            minXVel = sycl::nextafter(minXVel, -INFINITY);
             minSpeed = sycl::sqrt(minXVel * minXVel + zVel * zVel);
         }
 
@@ -11170,13 +11170,13 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
 
     if (xDir * maxSpeed > xDir * targetSpeed) {
         while (xDir * maxSpeed > xDir * targetSpeed) {
-            maxXVel  = sycl::nextafter(maxXVel, -INFINITY);
+            maxXVel = sycl::nextafter(maxXVel, -INFINITY);
             maxSpeed = sycl::sqrt(maxXVel * maxXVel + zVel * zVel);
         }
     }
     else {
         while (xDir * maxSpeed <= xDir * targetSpeed) {
-            maxXVel  = sycl::nextafter(maxXVel, INFINITY);
+            maxXVel = sycl::nextafter(maxXVel, INFINITY);
             maxSpeed = sycl::sqrt(maxXVel * maxXVel + zVel * zVel);
         }
 
@@ -11186,7 +11186,7 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
     bool foundSpeed = minXVel > maxXVel;
 
     for (float xVel1 = minXVel; xVel1 <= maxXVel;
-         xVel1       = sycl::nextafter(xVel1, INFINITY)) {
+        xVel1 = sycl::nextafter(xVel1, INFINITY)) {
         float minX =
             sycl::nextafter(targetPosition[0], -INFINITY) - yNormal * xVel1;
         float maxX =
@@ -11213,7 +11213,7 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
 
         for (int x = minXI; x <= maxXI; x++) {
             for (int z = minZI; z <= maxZI; z++) {
-                float squarePos[3] = {(float)x, 0.0f, (float)z};
+                float squarePos[3] = { (float)x, 0.0f, (float)z };
                 float fHeight;
                 int fIdx1 = find_floor(squarePos, squishTriangles, squishNormals, &fHeight);
                 int fIdx2 = find_floor(squarePos, startTriangles, startNormals, &fHeight);
@@ -11221,20 +11221,20 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
                 if (fIdx1 == -1 && fIdx2 != -1) {
                     minXF = sycl::fmin(
                         minXF,
-                        (x < 0) ? sycl::nextafter((float) (x - 1), INFINITY) :
-                                  (float) x);
+                        (x < 0) ? sycl::nextafter((float)(x - 1), INFINITY) :
+                        (float)x);
                     maxXF = sycl::fmax(
                         maxXF,
-                        (x > 0) ? sycl::nextafter((float) (x + 1), -INFINITY) :
-                                  (float) x);
+                        (x > 0) ? sycl::nextafter((float)(x + 1), -INFINITY) :
+                        (float)x);
                     minZF = sycl::fmin(
                         minZF,
-                        (z < 0) ? sycl::nextafter((float) (z - 1), INFINITY) :
-                                  (float) z);
+                        (z < 0) ? sycl::nextafter((float)(z - 1), INFINITY) :
+                        (float)z);
                     maxZF = sycl::fmax(
                         maxZF,
-                        (z > 0) ? sycl::nextafter((float) (z + 1), -INFINITY) :
-                                  (float) z);
+                        (z > 0) ? sycl::nextafter((float)(z + 1), -INFINITY) :
+                        (float)z);
                 }
             }
         }
@@ -11247,7 +11247,7 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
         if (minX <= maxX && minZ <= maxZ) {
             int solIdx = dpct::atomic_fetch_add<
                 sycl::access::address_space::generic_space>(
-                &(counts.nDouble10KSolutions), 1);
+                    &(counts.nDouble10KSolutions), 1);
 
             if (solIdx < limits.MAX_DOUBLE_10K_SOLUTIONS) {
                 struct DoubleTenKSolution* solution = &(solutions.doubleTenKSolutions[solIdx]);
@@ -11267,14 +11267,14 @@ bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPositi
     return foundSpeed;
 }
 
-void find_double_10k_solutions(const sycl::nd_item<3> &item_ct1,
-                               struct GPULimits limits,
-                               struct SolStruct &solutions,
-                               struct SolCounts &counts,
-                               dpct::accessor<short, dpct::global, 3> squishTriangles,
-                               dpct::accessor<float, dpct::global, 2> squishNormals,
-                               dpct::accessor<short, dpct::global, 3> startTriangles,
-                               dpct::accessor<float, dpct::global, 2> startNormals) {
+void find_double_10k_solutions(const sycl::nd_item<3>& item_ct1,
+    struct GPULimits limits,
+    struct SolStruct& solutions,
+    struct SolCounts& counts,
+    dpct::accessor<short, dpct::global, 3> squishTriangles,
+    dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startTriangles,
+    dpct::accessor<float, dpct::global, 2> startNormals) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -11299,8 +11299,8 @@ void find_double_10k_solutions(const sycl::nd_item<3> &item_ct1,
             float xVel1 = xVel;
 
             for (float zVel1 = zVel;
-                 searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
-                 zVel1 = sycl::nextafter(zVel1, -INFINITY)) {
+                searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
+                zVel1 = sycl::nextafter(zVel1, -INFINITY)) {
                 searchLoop = search_xVel(
                     xVel1, zVel1, tenKSol->departureSpeed,
                     tenKSol->frame1Position, startNormals[floorIdx][1], idx,
@@ -11312,8 +11312,8 @@ void find_double_10k_solutions(const sycl::nd_item<3> &item_ct1,
             xVel1 = xVel;
 
             for (float zVel1 = sycl::nextafter(zVel, INFINITY);
-                 searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
-                 zVel1 = sycl::nextafter(zVel1, INFINITY)) {
+                searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
+                zVel1 = sycl::nextafter(zVel1, INFINITY)) {
                 searchLoop = search_xVel(
                     xVel1, zVel1, tenKSol->departureSpeed,
                     tenKSol->frame1Position, startNormals[floorIdx][1], idx,
@@ -11325,16 +11325,16 @@ void find_double_10k_solutions(const sycl::nd_item<3> &item_ct1,
 }
 
 void set_squish_spots(short* tris, float* norms, struct GPULimits limits,
-                      float *&squishSpots, int *&nSquishSpots,
-                      bool *squishCeilings,
-                      dpct::accessor<short, dpct::global, 3> preSquishCeilingTriangles,
-                      dpct::accessor<float, dpct::global, 2> preSquishCeilingNormals,
-                      dpct::accessor<short, dpct::global, 3> squishCeilingTriangles,
-                      dpct::accessor<float, dpct::global, 2> squishCeilingNormals,
-                      dpct::accessor<short, dpct::global, 3> squishTriangles,
-                      dpct::accessor<float, dpct::global, 2> squishNormals,
-                      dpct::accessor<short, dpct::global, 3> startCeilingTriangles,
-                      dpct::accessor<float, dpct::global, 2> startCeilingNormals) {
+    float*& squishSpots, int*& nSquishSpots,
+    bool* squishCeilings,
+    dpct::accessor<short, dpct::global, 3> preSquishCeilingTriangles,
+    dpct::accessor<float, dpct::global, 2> preSquishCeilingNormals,
+    dpct::accessor<short, dpct::global, 3> squishCeilingTriangles,
+    dpct::accessor<float, dpct::global, 2> squishCeilingNormals,
+    dpct::accessor<short, dpct::global, 3> squishTriangles,
+    dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startCeilingTriangles,
+    dpct::accessor<float, dpct::global, 2> startCeilingNormals) {
     for (int x = 0; x < 4; x++) {
         for (int y = 0; y < 3; y++) {
             preSquishCeilingTriangles[x][y][0] = tris[9 * x + 3 * y];
@@ -11368,13 +11368,13 @@ void set_squish_spots(short* tris, float* norms, struct GPULimits limits,
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 3; j++) {
                     minX =
-                        sycl::min(minX, (int) squishCeilingTriangles[i][j][0]);
+                        sycl::min(minX, (int)squishCeilingTriangles[i][j][0]);
                     maxX =
-                        sycl::max(maxX, (int) squishCeilingTriangles[i][j][0]);
+                        sycl::max(maxX, (int)squishCeilingTriangles[i][j][0]);
                     minZ =
-                        sycl::min(minZ, (int) squishCeilingTriangles[i][j][2]);
+                        sycl::min(minZ, (int)squishCeilingTriangles[i][j][2]);
                     maxZ =
-                        sycl::max(maxZ, (int) squishCeilingTriangles[i][j][2]);
+                        sycl::max(maxZ, (int)squishCeilingTriangles[i][j][2]);
                 }
             }
 
@@ -11423,16 +11423,16 @@ void set_squish_spots(short* tris, float* norms, struct GPULimits limits,
 }
 
 void generate_strain_setups(struct GPULimits limits,
-                            struct StrainSetup *&strainSetups,
-                            int &nStrainSetups, int &maxFSpeedLevels,
-                            int &maxSSpeedLevels) {
+    struct StrainSetup*& strainSetups,
+    int& nStrainSetups, int& maxFSpeedLevels,
+    int& maxSSpeedLevels) {
     nStrainSetups = 0;
 
     for (int i = 0; i <= maxFSpeedLevels; i++) {
         float fSpeed = (float)i / (float)maxFSpeedLevels;
 
         float maxSSpeedLevelsSq =
-            maxSSpeedLevels * sycl::sqrt((float) (1.0 - fSpeed * fSpeed));
+            maxSSpeedLevels * sycl::sqrt((float)(1.0 - fSpeed * fSpeed));
 
         fSpeed = 1.5f * fSpeed;
 
@@ -11443,8 +11443,8 @@ void generate_strain_setups(struct GPULimits limits,
                 for (float signS = (j == 0) ? 1.0f : -1.0f; signS <= 1.0f; signS += 2.0f) {
                     if (nStrainSetups < limits.MAX_STRAIN_SETUPS) {
                         struct StrainSetup* setup = &(strainSetups[nStrainSetups]);
-                        setup->forwardStrain = signF*fSpeed;
-                        setup->sidewardStrain = signS*sSpeed;
+                        setup->forwardStrain = signF * fSpeed;
+                        setup->sidewardStrain = signS * sSpeed;
                     }
 
                     nStrainSetups++;
@@ -11454,7 +11454,7 @@ void generate_strain_setups(struct GPULimits limits,
     }
 }
 
-void reset_ranges(int &maxFSpeedLevels, int &maxSSpeedLevels) {
+void reset_ranges(int& maxFSpeedLevels, int& maxSSpeedLevels) {
     maxFSpeedLevels = 0;
     maxSSpeedLevels = 0;
 }
@@ -11463,76 +11463,76 @@ int init_solution_structs(SolStruct* s, GPULimits* l) try {
     int errorCode = 0;
 
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk1Solutions = (struct SKPhase1*) sycl::malloc_device(
+        s->sk1Solutions = (struct SKPhase1*)sycl::malloc_device(
             l->MAX_SK_PHASE_ONE * sizeof(SKPhase1),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk2ASolutions = (struct SKPhase2*) sycl::malloc_device(
+        s->sk2ASolutions = (struct SKPhase2*)sycl::malloc_device(
             l->MAX_SK_PHASE_TWO_A * sizeof(SKPhase2),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk2BSolutions = (struct SKPhase2*) sycl::malloc_device(
+        s->sk2BSolutions = (struct SKPhase2*)sycl::malloc_device(
             l->MAX_SK_PHASE_TWO_B * sizeof(SKPhase2),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk2CSolutions = (struct SKPhase2*) sycl::malloc_device(
+        s->sk2CSolutions = (struct SKPhase2*)sycl::malloc_device(
             l->MAX_SK_PHASE_TWO_C * sizeof(SKPhase2),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk2DSolutions = (struct SKPhase2*) sycl::malloc_device(
+        s->sk2DSolutions = (struct SKPhase2*)sycl::malloc_device(
             l->MAX_SK_PHASE_TWO_D * sizeof(SKPhase2),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk3Solutions = (struct SKPhase3*) sycl::malloc_device(
+        s->sk3Solutions = (struct SKPhase3*)sycl::malloc_device(
             l->MAX_SK_PHASE_THREE * sizeof(SKPhase3),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk4Solutions = (struct SKPhase4*) sycl::malloc_device(
+        s->sk4Solutions = (struct SKPhase4*)sycl::malloc_device(
             l->MAX_SK_PHASE_FOUR * sizeof(SKPhase4),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk5Solutions = (struct SKPhase5*) sycl::malloc_device(
+        s->sk5Solutions = (struct SKPhase5*)sycl::malloc_device(
             l->MAX_SK_PHASE_FIVE * sizeof(SKPhase5),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->sk6Solutions = (struct SKPhase6*) sycl::malloc_device(
+        s->sk6Solutions = (struct SKPhase6*)sycl::malloc_device(
             l->MAX_SK_PHASE_SIX * sizeof(SKPhase6),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->platSolutions = (struct PlatformSolution*) sycl::malloc_device(
+        s->platSolutions = (struct PlatformSolution*)sycl::malloc_device(
             l->MAX_PLAT_SOLUTIONS * sizeof(PlatformSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->upwarpSolutions = (struct UpwarpSolution*) sycl::malloc_device(
+        s->upwarpSolutions = (struct UpwarpSolution*)sycl::malloc_device(
             l->MAX_UPWARP_SOLUTIONS * sizeof(UpwarpSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->skuwSolutions = (struct SKUpwarpSolution*) sycl::malloc_device(
+        s->skuwSolutions = (struct SKUpwarpSolution*)sycl::malloc_device(
             l->MAX_SK_UPWARP_SOLUTIONS * sizeof(SKUpwarpSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->speedSolutions = (struct SpeedSolution*) sycl::malloc_device(
+        s->speedSolutions = (struct SpeedSolution*)sycl::malloc_device(
             l->MAX_SPEED_SOLUTIONS * sizeof(SpeedSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->tenKSolutions = (struct TenKSolution*) sycl::malloc_device(
+        s->tenKSolutions = (struct TenKSolution*)sycl::malloc_device(
             l->MAX_10K_SOLUTIONS * sizeof(TenKSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
         s->doubleTenKSolutions =
-            (struct DoubleTenKSolution*) sycl::malloc_device(
-                l->MAX_DOUBLE_10K_SOLUTIONS * sizeof(DoubleTenKSolution),
-                dpct::get_in_order_queue()));
+        (struct DoubleTenKSolution*)sycl::malloc_device(
+            l->MAX_DOUBLE_10K_SOLUTIONS * sizeof(DoubleTenKSolution),
+            dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->bullyPushSolutions = (struct BullyPushSolution*) sycl::malloc_device(
+        s->bullyPushSolutions = (struct BullyPushSolution*)sycl::malloc_device(
             l->MAX_BULLY_PUSH_SOLUTIONS * sizeof(BullyPushSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->slideSolutions = (struct SlideSolution*) sycl::malloc_device(
+        s->slideSolutions = (struct SlideSolution*)sycl::malloc_device(
             l->MAX_SLIDE_SOLUTIONS * sizeof(SlideSolution),
             dpct::get_in_order_queue()));
     errorCode |= DPCT_CHECK_ERROR(
-        s->bdSolutions = (struct BDSolution*) sycl::malloc_device(
+        s->bdSolutions = (struct BDSolution*)sycl::malloc_device(
             l->MAX_BD_SOLUTIONS * sizeof(BDSolution),
             dpct::get_in_order_queue()));
 
@@ -11543,9 +11543,9 @@ int init_solution_structs(SolStruct* s, GPULimits* l) try {
     return errorCode;
 }
 catch (sycl::exception const& exc) {
-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-            << ", line:" << __LINE__ << std::endl;
-  std::exit(1);
+    std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+        << ", line:" << __LINE__ << std::endl;
+    std::exit(1);
 }
 
 void free_solution_pointers_gpu(SolStruct* s) {
@@ -11717,10 +11717,10 @@ void copy_solutions_to_cpu(struct FSTData* p, struct SolStruct* solutionsCPU, st
 SolutionStage get_best_stage(struct SolCounts* countsCPU) {
     if (countsCPU->nPlatSolutions == 0) {
         return STAGE_NOTHING;
-    } 
+    }
     else if (countsCPU->nUpwarpSolutions == 0) {
         return STAGE_PLATFORM;
-    } 
+    }
     else if (countsCPU->nSK6Solutions == 0) {
         return STAGE_UPWARP;
     }
@@ -11861,7 +11861,7 @@ void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FS
                 //if (!o->silent) printf("---------------------------------------\n    Tilt Frames: %d\n    Post-Tilt Platform Normal: %.10g, %.10g, %.10g\n    Post-Tilt Position: %.10g, %.10g, %.10g\n    Pre-Upwarp Position: %.10g, %.10g, %.10g\n    Post-Upwarp Position: %.10g, %.10g, %.10g\n    Upwarp PU X: %d\n    Upwarp PU Z: %d\n    Upwarp Slide Facing Angle: %d\n    Upwarp Slide Intended Mag: %.10g\n    Upwarp Slide Intended DYaw: %d\n", platSol->nFrames, platSol->endNormal[0], platSol->endNormal[1], platSol->endNormal[2], platSol->endPosition[0], platSol->endPosition[1], platSol->endPosition[2], slideSol->preUpwarpPosition[0], slideSol->preUpwarpPosition[1], slideSol->preUpwarpPosition[2], slideSol->upwarpPosition[0], slideSol->upwarpPosition[1], slideSol->upwarpPosition[2], uwSol->pux, uwSol->puz, slideSol->angle, slideSol->stickMag, slideSol->intendedDYaw);
                 //if (!o->silent) printf("---------------------------------------\n    Post-Breakdance Camera Yaw: %d\n    Post-Breakdance Stick X: %d\n    Post-Breakdance Stick Y: %d\n    Landing Position: %.10g, %.10g, %.10g\n    Landing Speed: %.10g\n---------------------------------------\n\n\n", bdSol->cameraYaw, bdSol->stickX, bdSol->stickY, bdSol->landingPosition[0], bdSol->landingPosition[1], bdSol->landingPosition[2], bdSol->postSlideSpeed);
                 //if (!o->silent) printf("---------------------------------------\n    Squish Push Position Range: [%.10g, %.10g], [%.10g, %.10g]\n    Squish Push Q-steps: %d\n    Bully Position Range: [%.10g, %.10g], [%.10g, %.10g]\n    Bully Push Angle: %d\n    Max Bully Speed: %.10g\n    Min Sliding Spped: (x=%.10g, z=%.10g)\n---------------------------------------\n\n\n", bpSol->squishPushMinX, bpSol->squishPushMaxX, bpSol->squishPushMinZ, bpSol->squishPushMaxZ, bpSol->squishPushQF, bpSol->bullyMinX, bpSol->bullyMaxX, bpSol->bullyMinZ, bpSol->bullyMaxZ, bpSol->pushAngle, bpSol->maxSpeed, bpSol->minSlidingSpeedX, bpSol->minSlidingSpeedZ);
-                
+
                 wf << startNormal[0] << "," << startNormal[1] << "," << startNormal[2] << ",";
                 wf << doubleTenKSol->minStartX << "," << doubleTenKSol->maxStartX << ",";
                 wf << doubleTenKSol->minStartZ << "," << doubleTenKSol->maxStartZ << ",";
@@ -12053,11 +12053,11 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
             auto squishTriangles_acc_ct1 = squishTriangles.get_access(cgh);
-            auto squishNormals_acc_ct1   = squishNormals.get_access(cgh);
-            auto startTriangles_acc_ct1  = startTriangles.get_access(cgh);
-            auto startNormals_acc_ct1    = startNormals.get_access(cgh);
+            auto squishNormals_acc_ct1 = squishNormals.get_access(cgh);
+            auto startTriangles_acc_ct1 = startTriangles.get_access(cgh);
+            auto startNormals_acc_ct1 = startNormals.get_access(cgh);
 
-            short* p_dev_tris_ct0  = p->dev_tris;
+            short* p_dev_tris_ct0 = p->dev_tris;
             float* p_dev_norms_ct1 = p->dev_norms;
 
             cgh.parallel_for(
@@ -12112,9 +12112,9 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
         startCeilingNormals.init();
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-            auto limits_ptr_ct1         = limits.get_ptr();
-            auto squishSpots_ptr_ct1    = squishSpots.get_ptr();
-            auto nSquishSpots_ptr_ct1   = nSquishSpots.get_ptr();
+            auto limits_ptr_ct1 = limits.get_ptr();
+            auto squishSpots_ptr_ct1 = squishSpots.get_ptr();
+            auto nSquishSpots_ptr_ct1 = nSquishSpots.get_ptr();
             auto squishCeilings_ptr_ct1 = squishCeilings.get_ptr();
 
             auto preSquishCeilingTriangles_acc_ct1 =
@@ -12126,13 +12126,13 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
             auto squishCeilingNormals_acc_ct1 =
                 squishCeilingNormals.get_access(cgh);
             auto squishTriangles_acc_ct1 = squishTriangles.get_access(cgh);
-            auto squishNormals_acc_ct1   = squishNormals.get_access(cgh);
+            auto squishNormals_acc_ct1 = squishNormals.get_access(cgh);
             auto startCeilingTriangles_acc_ct1 =
                 startCeilingTriangles.get_access(cgh);
             auto startCeilingNormals_acc_ct1 =
                 startCeilingNormals.get_access(cgh);
 
-            short* p_dev_ceiling_tris_ct0  = p->dev_ceiling_tris;
+            short* p_dev_ceiling_tris_ct0 = p->dev_ceiling_tris;
             float* p_dev_ceiling_norms_ct1 = p->dev_ceiling_norms;
 
             cgh.parallel_for(
@@ -12165,14 +12165,14 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
         }
 
         if (squishCheck) {
-            fprintf(stderr, "Warning: Number of squish spots for this normal has been exceeded. No more squish spots for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+            fprintf(stderr, "Warning: Number of squish spots for this normal has been exceeded. No more squish spots for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
         }
     }
 
     struct SolCounts countsCPU;
 
     Vec3f postTiltNormal = { platform.normal[0], platform.normal[1], platform.normal[2] };
-                    
+
     for (int t = 0; t < 4; t++) {
         platform.normal[0] = postTiltNormal[0] + normal_offsets_cpu[t][0];
         platform.normal[1] = postTiltNormal[1] + normal_offsets_cpu[t][1];
@@ -12193,7 +12193,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
             minZ = fminf(fminf(fminf(minZ, platform.triangles[k].vectors[0][2]), platform.triangles[k].vectors[1][2]), platform.triangles[k].vectors[2][2]);
             maxZ = fmaxf(fmaxf(fmaxf(maxZ, platform.triangles[k].vectors[0][2]), platform.triangles[k].vectors[1][2]), platform.triangles[k].vectors[2][2]);
         }
-                        
+
         int nX = round((maxX - minX) / o->deltaX) + 1;
         int nZ = round((maxZ - minZ) / o->deltaZ) + 1;
 
@@ -12202,8 +12202,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
         dpct::get_in_order_queue()
             .memcpy(
-                (char*) (counts.get_ptr()) +
-                    offsetof(struct SolCounts, nPlatSolutions),
+                (char*)(counts.get_ptr()) +
+                offsetof(struct SolCounts, nPlatSolutions),
                 &(countsCPU.nPlatSolutions), sizeof(int))
             .wait();
 
@@ -12221,22 +12221,22 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
             platform_pos.init();
 
             dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                auto limits_ptr_ct1       = limits.get_ptr();
-                auto solutions_ptr_ct1    = solutions.get_ptr();
-                auto counts_ptr_ct1       = counts.get_ptr();
+                auto limits_ptr_ct1 = limits.get_ptr();
+                auto solutions_ptr_ct1 = solutions.get_ptr();
+                auto counts_ptr_ct1 = counts.get_ptr();
                 auto platform_pos_ptr_ct1 = platform_pos.get_ptr();
 
-                const float o_deltaX_ct1  = o->deltaX;
-                const float o_deltaZ_ct3  = o->deltaZ;
+                const float o_deltaX_ct1 = o->deltaX;
+                const float o_deltaZ_ct3 = o->deltaZ;
                 float platform_normal_ct6 = platform.normal[0];
                 float platform_normal_ct7 = platform.normal[1];
                 float platform_normal_ct8 = platform.normal[2];
-                int o_maxFrames_ct9       = o->maxFrames;
+                int o_maxFrames_ct9 = o->maxFrames;
 
                 cgh.parallel_for(
                     sycl::nd_range<3>(
                         sycl::range<3>(1, 1, nBlocks) *
-                            sycl::range<3>(1, 1, o->nThreads),
+                        sycl::range<3>(1, 1, o->nThreads),
                         sycl::range<3>(1, 1, o->nThreads)),
                     [=](sycl::nd_item<3> item_ct1) {
                     simulate_tilts(
@@ -12252,14 +12252,14 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
         dpct::get_in_order_queue()
             .memcpy(
                 &(countsCPU.nPlatSolutions),
-                (char*) (counts.get_ptr()) +
-                    offsetof(struct SolCounts, nPlatSolutions),
+                (char*)(counts.get_ptr()) +
+                offsetof(struct SolCounts, nPlatSolutions),
                 sizeof(int))
             .wait();
 
         if (countsCPU.nPlatSolutions > 0) {
             if (countsCPU.nPlatSolutions > o->limits.MAX_PLAT_SOLUTIONS) {
-                if (!o->silent) fprintf(stderr, "Warning: Number of platform tilt solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                if (!o->silent) fprintf(stderr, "Warning: Number of platform tilt solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                 countsCPU.nPlatSolutions = o->limits.MAX_PLAT_SOLUTIONS;
             }
 
@@ -12270,8 +12270,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
             dpct::get_in_order_queue()
                 .memcpy(
-                    (char*) (counts.get_ptr()) +
-                        offsetof(struct SolCounts, nUpwarpSolutions),
+                    (char*)(counts.get_ptr()) +
+                    offsetof(struct SolCounts, nUpwarpSolutions),
                     &(countsCPU.nUpwarpSolutions), sizeof(int))
                 .wait();
 
@@ -12297,19 +12297,19 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                 dpct::has_capability_or_fail(
                     dpct::get_in_order_queue().get_device(),
-                    {sycl::aspect::fp64});
+                    { sycl::aspect::fp64 });
 
                 dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-                    auto n_y_ranges_ptr_ct1     = n_y_ranges.get_ptr();
-                    auto lower_y_ptr_ct1        = lower_y.get_ptr();
-                    auto upper_y_ptr_ct1        = upper_y.get_ptr();
+                    auto n_y_ranges_ptr_ct1 = n_y_ranges.get_ptr();
+                    auto lower_y_ptr_ct1 = lower_y.get_ptr();
+                    auto upper_y_ptr_ct1 = upper_y.get_ptr();
                     auto n_floor_ranges_ptr_ct1 = n_floor_ranges.get_ptr();
-                    auto lower_floor_ptr_ct1    = lower_floor.get_ptr();
-                    auto upper_floor_ptr_ct1    = upper_floor.get_ptr();
-                    auto limits_ptr_ct1         = limits.get_ptr();
-                    auto solutions_ptr_ct1      = solutions.get_ptr();
-                    auto counts_ptr_ct1         = counts.get_ptr();
-                    auto platform_pos_ptr_ct1   = platform_pos.get_ptr();
+                    auto lower_floor_ptr_ct1 = lower_floor.get_ptr();
+                    auto upper_floor_ptr_ct1 = upper_floor.get_ptr();
+                    auto limits_ptr_ct1 = limits.get_ptr();
+                    auto solutions_ptr_ct1 = solutions.get_ptr();
+                    auto counts_ptr_ct1 = counts.get_ptr();
+                    auto platform_pos_ptr_ct1 = platform_pos.get_ptr();
 
                     auto default_triangles_acc_ct1 =
                         default_triangles.get_access(cgh);
@@ -12319,7 +12319,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     cgh.parallel_for(
                         sycl::nd_range<3>(
                             sycl::range<3>(1, 1, nBlocks) *
-                                sycl::range<3>(1, 1, o->nThreads),
+                            sycl::range<3>(1, 1, o->nThreads),
                             sycl::range<3>(1, 1, o->nThreads)),
                         [=](sycl::nd_item<3> item_ct1) {
                         find_upwarp_solutions(
@@ -12337,15 +12337,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
             dpct::get_in_order_queue()
                 .memcpy(
                     &(countsCPU.nUpwarpSolutions),
-                    (char*) (counts.get_ptr()) +
-                        offsetof(struct SolCounts, nUpwarpSolutions),
+                    (char*)(counts.get_ptr()) +
+                    offsetof(struct SolCounts, nUpwarpSolutions),
                     sizeof(int))
                 .wait();
         }
 
         if (countsCPU.nUpwarpSolutions > 0) {
             if (countsCPU.nUpwarpSolutions > o->limits.MAX_UPWARP_SOLUTIONS) {
-                if (!o->silent) fprintf(stderr, "Warning: Number of upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                if (!o->silent) fprintf(stderr, "Warning: Number of upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                 countsCPU.nUpwarpSolutions = o->limits.MAX_UPWARP_SOLUTIONS;
             }
 
@@ -12397,14 +12397,14 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 dpct::get_in_order_queue()
                     .memcpy(
                         &(countsCPU.nSK6Solutions),
-                        (char*) (counts.get_ptr()) +
-                            offsetof(struct SolCounts, nSK6Solutions),
+                        (char*)(counts.get_ptr()) +
+                        offsetof(struct SolCounts, nSK6Solutions),
                         sizeof(int))
                     .wait();
 
                 if (countsCPU.nSK6Solutions > 0) {
                     if (countsCPU.nSK6Solutions > o->limits.MAX_SK_PHASE_SIX) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of phase 6 solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of phase 6 solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSK6Solutions = o->limits.MAX_SK_PHASE_SIX;
                     }
 
@@ -12414,8 +12414,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSKUWSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSKUWSolutions),
                             &(countsCPU.nSKUWSolutions), sizeof(int))
                         .wait();
 
@@ -12460,13 +12460,13 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1    = limits.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
                             auto solutions_ptr_ct1 = solutions.get_ptr();
-                            auto counts_ptr_ct1    = counts.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
                             auto maxFSpeedLevels_ptr_ct1 =
                                 maxFSpeedLevels.get_ptr();
                             auto maxSSpeedLevels_ptr_ct1 =
@@ -12483,7 +12483,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_sk_upwarp_solutions(
@@ -12500,15 +12500,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nSKUWSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSKUWSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSKUWSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nSKUWSolutions > 0) {
                     if (countsCPU.nSKUWSolutions > o->limits.MAX_SK_UPWARP_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of slide kick upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of slide kick upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);;
                         countsCPU.nSKUWSolutions = o->limits.MAX_SK_UPWARP_SOLUTIONS;
                     }
 
@@ -12523,7 +12523,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1       = limits.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
                             auto strainSetups_ptr_ct1 = strainSetups.get_ptr();
                             auto nStrainSetups_ptr_ct1 =
                                 nStrainSetups.get_ptr();
@@ -12553,16 +12553,16 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                         .wait();
 
                     if (nStrainSetupsCPU > o->limits.MAX_STRAIN_SETUPS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of strain setups for this normal has been exceeded. No more setups for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of strain setups for this normal has been exceeded. No more setups for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         nStrainSetupsCPU = o->limits.MAX_STRAIN_SETUPS;
                     }
 
-                    nBlocks = (((long long int)countsCPU.nSKUWSolutions*(long long int)nStrainSetupsCPU) + o->nThreads - 1) / o->nThreads;
+                    nBlocks = (((long long int)countsCPU.nSKUWSolutions * (long long int)nStrainSetupsCPU) + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSpeedSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSpeedSolutions),
                             &(countsCPU.nSpeedSolutions), sizeof(int))
                         .wait();
 
@@ -12589,13 +12589,13 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1       = limits.get_ptr();
-                            auto solutions_ptr_ct1    = solutions.get_ptr();
-                            auto counts_ptr_ct1       = counts.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
+                            auto solutions_ptr_ct1 = solutions.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
                             auto strainSetups_ptr_ct1 = strainSetups.get_ptr();
                             auto nStrainSetups_ptr_ct1 =
                                 nStrainSetups.get_ptr();
@@ -12618,7 +12618,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_speed_solutions(
@@ -12638,15 +12638,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nSpeedSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSpeedSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSpeedSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nSpeedSolutions > 0) {
                     if (countsCPU.nSpeedSolutions > o->limits.MAX_SPEED_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of speed solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of speed solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSpeedSolutions = o->limits.MAX_SPEED_SOLUTIONS;
                     }
 
@@ -12656,8 +12656,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, n10KSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, n10KSolutions),
                             &(countsCPU.n10KSolutions), sizeof(int))
                         .wait();
 
@@ -12689,16 +12689,16 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1       = limits.get_ptr();
-                            auto solutions_ptr_ct1    = solutions.get_ptr();
-                            auto counts_ptr_ct1       = counts.get_ptr();
-                            auto squishSpots_ptr_ct1  = squishSpots.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
+                            auto solutions_ptr_ct1 = solutions.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
+                            auto squishSpots_ptr_ct1 = squishSpots.get_ptr();
                             auto nSquishSpots_ptr_ct1 = nSquishSpots.get_ptr();
-                            auto gSineTableG_ptr_ct1  = gSineTableG.get_ptr();
+                            auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                             auto gCosineTableG_ptr_ct1 =
                                 gCosineTableG.get_ptr();
                             auto gArctanTableG_ptr_ct1 =
@@ -12732,7 +12732,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 test_speed_solution(
@@ -12759,15 +12759,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.n10KSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, n10KSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, n10KSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.n10KSolutions > 0) {
                     if (countsCPU.n10KSolutions > o->limits.MAX_10K_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.n10KSolutions = o->limits.MAX_10K_SOLUTIONS;
                     }
 
@@ -12802,22 +12802,22 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
                             auto slideAngleSampleRate_ptr_ct1 =
                                 slideAngleSampleRate.get_ptr();
-                            auto limits_ptr_ct1    = limits.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
                             auto solutions_ptr_ct1 = solutions.get_ptr();
-                            auto counts_ptr_ct1    = counts.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
                             auto maxAngleRange_ptr_ct1 =
                                 maxAngleRange.get_ptr();
 
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_slide_solutions(
@@ -12838,8 +12838,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSlideSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSlideSolutions),
                             &(countsCPU.nSlideSolutions), sizeof(int))
                         .wait();
                     /*
@@ -12866,22 +12866,22 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
                             auto slideAngleSampleRate_ptr_ct1 =
                                 slideAngleSampleRate.get_ptr();
                             auto n_y_ranges_ptr_ct1 = n_y_ranges.get_ptr();
-                            auto lower_y_ptr_ct1    = lower_y.get_ptr();
-                            auto upper_y_ptr_ct1    = upper_y.get_ptr();
-                            auto limits_ptr_ct1     = limits.get_ptr();
-                            auto solutions_ptr_ct1  = solutions.get_ptr();
-                            auto counts_ptr_ct1     = counts.get_ptr();
+                            auto lower_y_ptr_ct1 = lower_y.get_ptr();
+                            auto upper_y_ptr_ct1 = upper_y.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
+                            auto solutions_ptr_ct1 = solutions.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
                             auto maxAngleRange_ptr_ct1 =
                                 maxAngleRange.get_ptr();
-                            auto magSet_ptr_ct1      = magSet.get_ptr();
-                            auto magCount_ptr_ct1    = magCount.get_ptr();
+                            auto magSet_ptr_ct1 = magSet.get_ptr();
+                            auto magCount_ptr_ct1 = magCount.get_ptr();
                             auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                             auto gCosineTableG_ptr_ct1 =
                                 gCosineTableG.get_ptr();
@@ -12892,7 +12892,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 test_slide_angle(
@@ -12911,15 +12911,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nSlideSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nSlideSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nSlideSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nSlideSolutions > 0) {
                     if (countsCPU.nSlideSolutions > o->limits.MAX_SLIDE_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of slide solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of slide solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSlideSolutions = o->limits.MAX_SLIDE_SOLUTIONS;
                     }
 
@@ -12936,8 +12936,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nBDSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nBDSolutions),
                             &(countsCPU.nBDSolutions), sizeof(int))
                         .wait();
 
@@ -12963,9 +12963,9 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1    = limits.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
                             auto solutions_ptr_ct1 = solutions.get_ptr();
-                            auto counts_ptr_ct1    = counts.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
                             auto nUniqueSticks_ptr_ct1 =
                                 nUniqueSticks.get_ptr();
                             auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
@@ -12987,7 +12987,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_breakdance_solutions(
@@ -13007,15 +13007,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nBDSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nBDSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nBDSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nBDSolutions > 0) {
                     if (countsCPU.nBDSolutions > o->limits.MAX_BD_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of breakdance solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of breakdance solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nBDSolutions = o->limits.MAX_BD_SOLUTIONS;
                     }
 
@@ -13025,8 +13025,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nDouble10KSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nDouble10KSolutions),
                             &(countsCPU.nDouble10KSolutions), sizeof(int))
                         .wait();
 
@@ -13047,13 +13047,13 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::has_capability_or_fail(
                             dpct::get_in_order_queue().get_device(),
-                            {sycl::aspect::fp64});
+                            { sycl::aspect::fp64 });
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1    = limits.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
                             auto solutions_ptr_ct1 = solutions.get_ptr();
-                            auto counts_ptr_ct1    = counts.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
 
                             auto squishTriangles_acc_ct1 =
                                 squishTriangles.get_access(cgh);
@@ -13067,7 +13067,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_double_10k_solutions(
@@ -13084,15 +13084,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nDouble10KSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nDouble10KSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nDouble10KSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nDouble10KSolutions > 0) {
                     if (countsCPU.nDouble10KSolutions > o->limits.MAX_DOUBLE_10K_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of double 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of double 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nDouble10KSolutions = o->limits.MAX_DOUBLE_10K_SOLUTIONS;
                     }
 
@@ -13102,8 +13102,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     dpct::get_in_order_queue()
                         .memcpy(
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nBullyPushSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nBullyPushSolutions),
                             &(countsCPU.nBullyPushSolutions), sizeof(int))
                         .wait();
 
@@ -13129,12 +13129,12 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                         dpct::get_in_order_queue().submit(
                             [&](sycl::handler& cgh) {
-                            auto limits_ptr_ct1       = limits.get_ptr();
-                            auto solutions_ptr_ct1    = solutions.get_ptr();
-                            auto counts_ptr_ct1       = counts.get_ptr();
-                            auto squishSpots_ptr_ct1  = squishSpots.get_ptr();
+                            auto limits_ptr_ct1 = limits.get_ptr();
+                            auto solutions_ptr_ct1 = solutions.get_ptr();
+                            auto counts_ptr_ct1 = counts.get_ptr();
+                            auto squishSpots_ptr_ct1 = squishSpots.get_ptr();
                             auto nSquishSpots_ptr_ct1 = nSquishSpots.get_ptr();
-                            auto gSineTableG_ptr_ct1  = gSineTableG.get_ptr();
+                            auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
                             auto gCosineTableG_ptr_ct1 =
                                 gCosineTableG.get_ptr();
                             auto gArctanTableG_ptr_ct1 =
@@ -13156,7 +13156,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                             cgh.parallel_for(
                                 sycl::nd_range<3>(
                                     sycl::range<3>(1, 1, nBlocks) *
-                                        sycl::range<3>(1, 1, o->nThreads),
+                                    sycl::range<3>(1, 1, o->nThreads),
                                     sycl::range<3>(1, 1, o->nThreads)),
                                 [=](sycl::nd_item<3> item_ct1) {
                                 find_bully_positions(
@@ -13178,15 +13178,15 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     dpct::get_in_order_queue()
                         .memcpy(
                             &(countsCPU.nBullyPushSolutions),
-                            (char*) (counts.get_ptr()) +
-                                offsetof(struct SolCounts, nBullyPushSolutions),
+                            (char*)(counts.get_ptr()) +
+                            offsetof(struct SolCounts, nBullyPushSolutions),
                             sizeof(int))
                         .wait();
                 }
 
                 if (countsCPU.nBullyPushSolutions > 0) {
                     if (countsCPU.nBullyPushSolutions > o->limits.MAX_BULLY_PUSH_SOLUTIONS) {
-                        if (!o->silent) fprintf(stderr, "Warning: Number of bully push solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening.\n");
+                        if (!o->silent) fprintf(stderr, "Warning: Number of bully push solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nBullyPushSolutions = o->limits.MAX_BULLY_PUSH_SOLUTIONS;
                     }
 
@@ -13233,7 +13233,7 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
         gReverseArctanTableG.init();
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-            auto gArctanTableG_ptr_ct1        = gArctanTableG.get_ptr();
+            auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
             auto gReverseArctanTableG_ptr_ct1 = gReverseArctanTableG.get_ptr();
 
             cgh.parallel_for(
@@ -13252,9 +13252,9 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
         validCameraAngle.init();
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-            auto gSineTableG_ptr_ct1      = gSineTableG.get_ptr();
-            auto gCosineTableG_ptr_ct1    = gCosineTableG.get_ptr();
-            auto gArctanTableG_ptr_ct1    = gArctanTableG.get_ptr();
+            auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
+            auto gCosineTableG_ptr_ct1 = gCosineTableG.get_ptr();
+            auto gArctanTableG_ptr_ct1 = gArctanTableG.get_ptr();
             auto validCameraAngle_ptr_ct1 = validCameraAngle.get_ptr();
 
             cgh.parallel_for(
@@ -13272,7 +13272,7 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
         magCount.init();
 
         dpct::get_in_order_queue().submit([&](sycl::handler& cgh) {
-            auto magSet_ptr_ct1   = magSet.get_ptr();
+            auto magSet_ptr_ct1 = magSet.get_ptr();
             auto magCount_ptr_ct1 = magCount.get_ptr();
 
             cgh.parallel_for(
@@ -13329,7 +13329,7 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
             8 * o->limits.MAX_SQUISH_SPOTS, dpct::get_in_order_queue()));
     cudaError |= DPCT_CHECK_ERROR(
         p->devNSquishSpots =
-            sycl::malloc_device<int>(4, dpct::get_in_order_queue()));
+        sycl::malloc_device<int>(4, dpct::get_in_order_queue()));
 
     p->hostNSquishSpots = (int*)std::malloc(4 * sizeof(int));
 
@@ -13354,30 +13354,30 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
 
     cudaError |= DPCT_CHECK_ERROR(
         p->dev_tris =
-            sycl::malloc_device<short>(36, dpct::get_in_order_queue()));
+        sycl::malloc_device<short>(36, dpct::get_in_order_queue()));
     cudaError |= DPCT_CHECK_ERROR(
         p->dev_norms =
-            sycl::malloc_device<float>(12, dpct::get_in_order_queue()));
+        sycl::malloc_device<float>(12, dpct::get_in_order_queue()));
 
     p->host_ceiling_tris = (short*)std::malloc(108 * sizeof(short));
     p->host_ceiling_norms = (float*)std::malloc(36 * sizeof(float));
 
     cudaError |= DPCT_CHECK_ERROR(
         p->dev_ceiling_tris =
-            sycl::malloc_device<short>(108, dpct::get_in_order_queue()));
+        sycl::malloc_device<short>(108, dpct::get_in_order_queue()));
     cudaError |= DPCT_CHECK_ERROR(
         p->dev_ceiling_norms =
-            sycl::malloc_device<float>(36, dpct::get_in_order_queue()));
+        sycl::malloc_device<float>(36, dpct::get_in_order_queue()));
 
     p->floorPoints = (short*)std::malloc(4 * 3 * sizeof(short));
     cudaError |= DPCT_CHECK_ERROR(
         p->devFloorPoints =
-            sycl::malloc_device<short>(4 * 3, dpct::get_in_order_queue()));
+        sycl::malloc_device<short>(4 * 3, dpct::get_in_order_queue()));
 
     p->squishEdges = (int*)std::malloc(4 * sizeof(int));
     cudaError |= DPCT_CHECK_ERROR(
         p->devSquishEdges =
-            sycl::malloc_device<int>(4, dpct::get_in_order_queue()));
+        sycl::malloc_device<int>(4, dpct::get_in_order_queue()));
 
     if (cudaError != 0) {
         if (cudaError & 2) {
@@ -13393,9 +13393,9 @@ int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o) try {
     return cudaError;
 }
 catch (sycl::exception const& exc) {
-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-            << ", line:" << __LINE__ << std::endl;
-  std::exit(1);
+    std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+        << ", line:" << __LINE__ << std::endl;
+    std::exit(1);
 }
 
 void free_fst_vars(struct FSTData* p) {
@@ -13417,7 +13417,7 @@ void free_fst_vars(struct FSTData* p) {
     free_solution_pointers_gpu(&(p->s));
 }
 
-void cuda_print_success(const sycl::stream &stream_ct1) {
+void cuda_print_success(const sycl::stream& stream_ct1) {
     stream_ct1 << "SYCL code completed successfully.\n";
 }
 
