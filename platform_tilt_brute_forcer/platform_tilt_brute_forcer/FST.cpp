@@ -6242,6 +6242,7 @@ void find_sk_upwarp_solutions(
                     float xVel = minPre10KSpeed * sinsG(sol2->f2Angle);
                     float zVel = minPre10KSpeed * cossG(sol2->f2Angle);
 
+                    const int minStrainPrecision = -6;
                     /*
                     DPCT1017:43: The sycl::frexp call is used instead of the
                     frexpf call. These two calls do not provide exactly the same
@@ -6249,7 +6250,7 @@ void find_sk_upwarp_solutions(
                     performance issues for the generated code.
                     */
                     sycl::frexp(xVel, &precision);
-                    float xVelRange = dpct::pow(2.0f, precision - 24);
+                    float xVelRange = dpct::pow(2.0f, max(minStrainPrecision, precision - 24));
                     int nXSpeedLevels = (int)sycl::ceil(
                         sycl::fabs(10.0f * cossG(sol2->f2Angle)) / xVelRange);
 
@@ -6260,7 +6261,7 @@ void find_sk_upwarp_solutions(
                     performance issues for the generated code.
                     */
                     sycl::frexp(zVel, &precision);
-                    float zVelRange = dpct::pow(2.0f, precision - 24);
+                    float zVelRange = dpct::pow(2.0f, max(minStrainPrecision, precision - 24));
                     int nZSpeedLevels = (int)sycl::ceil(
                         sycl::fabs(10.0f * -sinsG(sol2->f2Angle)) / zVelRange);
 
