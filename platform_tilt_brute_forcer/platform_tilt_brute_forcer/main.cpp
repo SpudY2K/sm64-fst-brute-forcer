@@ -413,7 +413,7 @@ int main(int argc, char* argv[]) {
     for (int j = 0; j < s.nSamplesNXZ; j++) {
         for (int h = 0; h < s.nSamplesNY; h++) {
             for (int i = 0; i < s.nSamplesNX; i++) {
-                printf("Searching: Z=%d/%d Y=%d%/%d\n", j+1, s.nSamplesNXZ, h+1, s.nSamplesNY);
+                printf("Searching: Z=%d/%d Y=%d/%d\n", j+1, s.nSamplesNXZ, h+1, s.nSamplesNY);
                 for (int quad = 0; quad < (s.quadMode ? 8 : 1); quad++) {
                     float normX;
                     float normY;
