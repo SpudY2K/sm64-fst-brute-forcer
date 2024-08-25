@@ -3,8 +3,6 @@ A GPU-based brute forcing tool to search for working setups for the FST step of 
 
 This tool evolved out of Tyler Kehne's platform max tilt brute forcer, but has since come to encompass many other aspects of the FST setup.
 
-This branch is a port of the CUDA code to SYCL, which is compatible with Intel and AMD GPUs.
-
 ## Options ##
 This program accepts the following options:
 
@@ -41,6 +39,8 @@ This program accepts the following options:
 </pre>
 #### Output Settings ####
 <pre>
+-l &lt;path&gt;:                                  Path to the log file.
+  
 -o &lt;path&gt;:                                  Path to the output file.
 
 -m:                                         Output mode. The amount of detail provided in the output file.
@@ -52,7 +52,7 @@ This program accepts the following options:
 <pre>
 -d &lt;device_id&gt;:                             The SYCL device used to run the program.
   
--t &lt;threads&gt;:                               Number of SYCL threads to assign to the program.
+-t &lt;threads&gt;:                               Size of SYCL work group to assign to the program.
   
 -lsk1 &lt;n_solutions&gt;:                        Maximum number of phase 1 solutions for 10k setup search.
   
@@ -104,10 +104,16 @@ This program accepts the following options:
 </pre>
 
 ## Dependencies ##
-To build this program you will need to install the Intel oneAPI Base Toolkit (v2024.1.0 or later is recommended).
+To maximise throughput, this program has been written in CUDA to allow for processing on the GPU. Therefore, to build this program you will need to install CUDA Toolkit (v11.7 or later is recommended).  
+
+In addition, to run the program you will need a computer with CUDA compatible GPU. A GPU with compute capability 5.2 or higher and at least 4GB of RAM is recommended. Lower powered GPUs may still be able to run this program, but some tweaking of the build configuration may be necessary.
 
 ## Building Instructions ##
 This program can be built with Visual Studio or CMake using the included config files. 
+
+For Visual Studio builds, you might need to link CUDA Build Customizations to the project before building. Instructions for doing that can be found here:
+
+https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html#compiling-cuda-programs
 
 For CMake builds, use the following commands:
 
@@ -126,16 +132,22 @@ The brute forcer includes a basic API to run the program from external projects.
 #include <string>
 #include "FST.hpp"
   
+std::string outFile = "logFile.log"; // Path to log file
 std::string outFile = "outData.csv"; // Path to solution csv file
 std::ofstream wf; // Output stream for solution csv file
+std::ofstream logf; // Output stream for log file
 struct FSTData p; // Pointers to structures used by brute forcer
 struct FSTOptions o; // Options for the brute forcer
+
+// Open log file
+// You can skip this if you don't want to output to a log file
+logf.open(s.logFile);
 
 // Set any options you want to change
 o.nThreads = 128;
 
 // Allocate memory and initialise the brute forcer structures
-int error = initialise_fst_vars(&p, &o);
+int error = initialise_fst_vars(&p, &o, logf);
 
 // You may get errors if you don't have enough memory
 // Check output variable for no errors
@@ -148,13 +160,14 @@ if (error == 0) {
     float testNormal[3] = {0.1808f, 0.87768f, -0.396f};
   
     // Check if the normal has any solutions
-    if (check_normal(testNormal, &o, &p, wf)) {
+    if (check_normal(testNormal, &o, &p, wf, logf)) {
           // Do stuff with successful normals
     }
 
     // When you're done, release the memory assigned to the brute forcer
     free_fst_vars(&p);
     wf.close();
+    logf.close();
 } else {
       // Report errors
 }
