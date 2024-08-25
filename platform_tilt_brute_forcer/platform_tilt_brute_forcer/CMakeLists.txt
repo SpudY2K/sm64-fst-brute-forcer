@@ -23,7 +23,7 @@ set_target_properties(fst-brute-forcer-sycl PROPERTIES
   PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl -fsycl-unnamed-lambda -fsycl-targets=amdgcn-amd-amdhsa,spir64 -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=gfx1030 -Wno-c++11-narrowing")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sycl-id-queries-fit-in-int -fsycl -fsycl-unnamed-lambda -fsycl-targets=amdgcn-amd-amdhsa,spir64 -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=gfx1030 -Wno-c++11-narrowing")
 
 if (SUPPORTS_MARCH_NATIVE)
   if (SUPPORTS_FFP_CONTRACT)
