@@ -120,8 +120,9 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>-fp=strict -fno-sycl-id-queries-fit-in-int %(AdditionalOptions)</AdditionalOptions>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Intel\oneAPI\dpcpp-ct\2024.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>-fp=strict %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,8 +139,9 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>-fp=strict %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Intel\oneAPI\dpcpp-ct\2024.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <AdditionalOptions>-fp=strict -fno-sycl-id-queries-fit-in-int %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
