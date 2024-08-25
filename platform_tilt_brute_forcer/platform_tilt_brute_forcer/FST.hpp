@@ -3,10 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
-#include "cuda.h"
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include "device_atomic_functions.h"
 #include "vmath.hpp"
 
 struct GPULimits {
@@ -306,14 +302,23 @@ enum SolutionStage {
     STAGE_COMPLETE = 11
 };
 
+enum LogType {
+    LOG_INFO = 'I',
+    LOG_WARNING = 'W',
+    LOG_ERROR = 'E'
+};
+
 void initialise_solution_file_stream(std::ofstream& wf, std::string outPath, struct FSTOptions* o);
-int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o);
+int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o, std::ofstream& logf);
 void copy_solution_counts_to_cpu(struct SolCounts* countsCPU);
 void copy_solutions_to_cpu(struct FSTData* p, struct SolStruct* solutionsCPU, struct SolCounts* countsCPU);
 void write_solution_file_header(int outputLevel, std::ofstream& wf);
 void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FSTData* p, struct SolCounts* counts, int floorIdx, std::ofstream& wf);
+void write_line_to_log_file(LogType type, std::string content, std::ofstream& logf);
 bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf);
+bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf, std::ofstream& logf);
 void free_fst_vars(struct FSTData* p);
 void free_solution_pointers_cpu(SolStruct* s);
 void free_solution_pointers_gpu(SolStruct* s);
 void print_success();
+bool test_device();

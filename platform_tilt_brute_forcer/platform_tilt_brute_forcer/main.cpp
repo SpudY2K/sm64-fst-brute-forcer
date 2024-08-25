@@ -4,6 +4,7 @@
 
 struct SearchOptions {
     std::string outFile = "outData.csv";
+    std::string logFile = "";
 
     float minNX = 0.1808f;
     float maxNX = 0.1808f;
@@ -91,6 +92,9 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("         Position of the pyramid platform.\n");
     printf("             Default: %g %g %g\n\n", o->platformPos[0], o->platformPos[1], o->platformPos[2]);
     printf("  Output settings:\n");
+    printf("    -l <path>\n");
+    printf("         Path to the log file.\n");
+    printf("             Default: %s\n\n", s->logFile.c_str());
     printf("    -o <path>\n");
     printf("         Path to the output file.\n");
     printf("             Default: %s\n\n", s->outFile.c_str());
@@ -102,10 +106,10 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("             Default: %d\n\n", o->outputLevel);
     printf("  GPU settings:\n");
     printf("    -d <device_id>\n");
-    printf("         The CUDA device used to run the program.\n");
+    printf("         The SYCL device used to run the program.\n");
     printf("             Default: %d\n\n", o->cudaDevice);
     printf("    -t <threads>\n");
-    printf("         Number of CUDA threads to assign to the program.\n");
+    printf("         Size of SYCL work group to assign to the program.\n");
     printf("             Default: %d\n\n", o->nThreads);
     printf("    -lsk1 <n_solutions>\n");
     printf("         Maximum number of phase 1 solutions for 10k setup search.\n");
@@ -272,6 +276,10 @@ bool parse_inputs(int argc, char* argv[], struct SearchOptions* s, struct FSTOpt
                 s->outFile = argv[i + 1];
                 i += 1;
             }
+            else if (!strcmp(argv[i], "-l")) {
+                s->logFile = argv[i + 1];
+                i += 1;
+            }
             else if (!strcmp(argv[i], "-m")) {
                 o->outputLevel = std::stof(argv[i + 1]);
                 i += 1;
@@ -377,10 +385,20 @@ int main(int argc, char* argv[]) {
     struct FSTOptions o;
     struct FSTData p;
     std::ofstream wf;
+    std::ofstream logf;
 
     if (!parse_inputs(argc, argv, &s, &o)) {
         return -1;
     }
+
+    logf.open(s.logFile);
+
+    if (!s.logFile.empty() && !logf.is_open()) {
+        if (!o.silent) fprintf(stderr, "Warning: ofstream is not open. No logging data will be written to the log file.\n");
+        if (!o.silent) fprintf(stderr, "         This may be due to an invalid log file path.\n");
+    }
+
+    write_line_to_log_file(LOG_INFO, "FST Brute Forcer Started", logf);
 
     s.nSamplesNX = s.minNX == s.maxNX ? 1 : s.nSamplesNX;
     s.nSamplesNY = s.minNY == s.maxNY ? 1 : s.nSamplesNY;
@@ -389,10 +407,13 @@ int main(int argc, char* argv[]) {
 
     if (o.nPUFrames != 3) {
         if (!o.silent) fprintf(stderr, "Error: This brute forcer currently only supports 3 frame 10k routes. Value selected: %d.", o.nPUFrames);
+        write_line_to_log_file(LOG_ERROR, "Invalid Number of Frames Specified for 10K PU Route", logf);
         return 1;
     }
 
-    int err = initialise_fst_vars(&p, &o);
+    write_line_to_log_file(LOG_INFO, "Allocating Device Memory", logf);
+
+    int err = initialise_fst_vars(&p, &o, logf);
 
     if (err != 0) {
         if (!o.silent && (err & 0x2)) fprintf(stderr, "       Run this program with --help for details on how to change internal memory limits.\n");
@@ -400,11 +421,15 @@ int main(int argc, char* argv[]) {
         return err;
     }
 
+    write_line_to_log_file(LOG_INFO, "Device Memory Allocation Successful", logf);
+
     if (s.verbose) {
         print_options(&s, &o);
     }
 
     initialise_solution_file_stream(wf, s.outFile, &o);
+
+    write_line_to_log_file(LOG_INFO, "Starting Search", logf);
 
     const float deltaNX = (s.nSamplesNX > 1) ? (s.maxNX - s.minNX) / (s.nSamplesNX - 1) : 0;
     const float deltaNY = (s.nSamplesNY > 1) ? (s.maxNY - s.minNY) / (s.nSamplesNY - 1) : 0;
@@ -412,8 +437,8 @@ int main(int argc, char* argv[]) {
 
     for (int j = 0; j < s.nSamplesNXZ; j++) {
         for (int h = 0; h < s.nSamplesNY; h++) {
+            printf("Searching: Z=%.10g (%d/%d), Y=%.10g (%d/%d)\n", s.minNXZ + h * deltaNXZ, j + 1, s.nSamplesNXZ, s.minNY + h * deltaNY, h + 1, s.nSamplesNY);
             for (int i = 0; i < s.nSamplesNX; i++) {
-                printf("Searching: Z=%d/%d Y=%d/%d\n", j+1, s.nSamplesNXZ, h+1, s.nSamplesNY);
                 for (int quad = 0; quad < (s.quadMode ? 8 : 1); quad++) {
                     float normX;
                     float normY;
@@ -453,15 +478,32 @@ int main(int argc, char* argv[]) {
 
                     float testNormal[3] = { normX, normY, normZ };
 
-                    if (check_normal(testNormal, &o, &p, wf)) {
+                    if (check_normal(testNormal, &o, &p, wf, logf)) {
                     }
                 }
             }
         }
     }
 
-    if (!o.silent) print_success();
+    write_line_to_log_file(LOG_INFO, "Search Completed", logf);
+
+    if (test_device()) {
+        if (!o.silent) print_success();
+
+        write_line_to_log_file(LOG_INFO, "SYCL Device Test Successful", logf);
+    }
+    else {
+        if (!o.silent) printf("Error: SYCL device test failed.\nThis run may have encountered an error on a previous normal check.");
+
+        write_line_to_log_file(LOG_ERROR, "SYCL Device Test Failed", logf);
+    }
+
+    write_line_to_log_file(LOG_INFO, "Deallocating Device Memory", logf);
 
     free_fst_vars(&p);
+
+    write_line_to_log_file(LOG_INFO, "FST Brute Forcer Finished", logf);
+
     wf.close();
+    logf.close();
 }
