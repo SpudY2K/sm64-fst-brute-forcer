@@ -35,7 +35,12 @@ void print_options(struct SearchOptions* s, struct FSTOptions* o) {
     }
     printf("Y Normal Range: (%g, %g)\n", s->minNY, s->maxNY);
     printf("X Normal Samples: %d\n", s->nSamplesNX);
-    printf("Z Normal Samples: %d\n", s->nSamplesNXZ);
+    if (s->zMode) {
+        printf("Z Normal Samples: %d\n", s->nSamplesNXZ);
+    }
+    else {
+        printf("XZ Sum Samples: %d\n", s->nSamplesNXZ);
+    }
     printf("Y Normal Samples: %d\n", s->nSamplesNY);
     printf("X Spacing: %g\n", o->deltaX);
     printf("Z Spacing: %g\n", o->deltaZ);
@@ -45,6 +50,51 @@ void print_options(struct SearchOptions* s, struct FSTOptions* o) {
     else {
         printf("Platform Position: (%g, %g, %g)\n", o->platformPos[0], o->platformPos[1], o->platformPos[2]);
         printf("Quadrant Search: off\n");
+    }
+    printf("\n");
+}
+
+void write_options_to_log_file(struct SearchOptions* s, struct FSTOptions* o, std::ofstream& logf) {
+    char logContent[200];
+    sprintf(logContent, "Option - Max_Tilt_Frames = %d", o->maxFrames);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    sprintf(logContent, "Option - Off_Platform_Frames = %d", o->nPUFrames);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    sprintf(logContent, "Option - X_Normal_Range = [%.10g, %.10g]", s->minNX, s->maxNX);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    if (s->zMode) {
+        sprintf(logContent, "Option - Z_Normal_Range = [%.10g, %.10g]", s->minNXZ, s->maxNXZ);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+    }
+    else {
+        sprintf(logContent, "Option - XZ_Sum_Range = [%.10g, %.10g]", s->minNXZ, s->maxNXZ);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+    }
+    sprintf(logContent, "Option - Y_Normal_Range = [%.10g, %.10g]", s->minNY, s->maxNY);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    sprintf(logContent, "Option - X_Normal_Samples = %d", s->nSamplesNX);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    if (s->zMode) {
+        sprintf(logContent, "Option - Z_Normal_Samples = %d", s->nSamplesNXZ);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+    }
+    else {
+        sprintf(logContent, "Option - XZ_Sum_Samples = %d", s->nSamplesNXZ);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+    }
+    sprintf(logContent, "Option - Y_Normal_Samples = %d", s->nSamplesNY);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    sprintf(logContent, "Option - X_Spacing = %.10g", o->deltaX);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    sprintf(logContent, "Option - Z_Spacing = %.10g", o->deltaZ);
+    write_line_to_log_file(LOG_INFO, logContent, logf);
+    if (s->quadMode) {
+        write_line_to_log_file(LOG_INFO, "Option - Quadrant_Search = on", logf);
+    }
+    else {
+        sprintf(logContent, "Option - Platform_Position = (%.10g, %.10g, %.10g)", o->platformPos[0], o->platformPos[1], o->platformPos[2]);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+        write_line_to_log_file(LOG_INFO, "Option - Quadrant_Search = off", logf);
     }
     printf("\n");
 }
@@ -106,10 +156,10 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("             Default: %d\n\n", o->outputLevel);
     printf("  GPU settings:\n");
     printf("    -d <device_id>\n");
-    printf("         The SYCL device used to run the program.\n");
+    printf("         The CUDA device used to run the program.\n");
     printf("             Default: %d\n\n", o->cudaDevice);
     printf("    -t <threads>\n");
-    printf("         Size of SYCL work group to assign to the program.\n");
+    printf("         Number of CUDA threads to assign to the program.\n");
     printf("             Default: %d\n\n", o->nThreads);
     printf("    -lsk1 <n_solutions>\n");
     printf("         Maximum number of phase 1 solutions for 10k setup search.\n");
@@ -427,6 +477,8 @@ int main(int argc, char* argv[]) {
         print_options(&s, &o);
     }
 
+    write_options_to_log_file(&s, &o, logf);
+
     initialise_solution_file_stream(wf, s.outFile, &o);
 
     write_line_to_log_file(LOG_INFO, "Starting Search", logf);
@@ -435,9 +487,14 @@ int main(int argc, char* argv[]) {
     const float deltaNY = (s.nSamplesNY > 1) ? (s.maxNY - s.minNY) / (s.nSamplesNY - 1) : 0;
     const float deltaNXZ = (s.nSamplesNXZ > 1) ? (s.maxNXZ - s.minNXZ) / (s.nSamplesNXZ - 1) : 0;
 
+    char logContent[200];
+
     for (int j = 0; j < s.nSamplesNXZ; j++) {
+        sprintf(logContent, "Searching - %s = %.10g (%d/%d)", s.zMode ? "Z" : "XZ", s.minNXZ + j * deltaNXZ, j + 1, s.nSamplesNXZ);
+        write_line_to_log_file(LOG_INFO, logContent, logf);
+
         for (int h = 0; h < s.nSamplesNY; h++) {
-            printf("Searching: Z=%.10g (%d/%d), Y=%.10g (%d/%d)\n", s.minNXZ + h * deltaNXZ, j + 1, s.nSamplesNXZ, s.minNY + h * deltaNY, h + 1, s.nSamplesNY);
+            if (!o.silent) printf("Searching: %s=%.10g (%d/%d), Y=%.10g (%d/%d)\n", s.zMode ? "Z" : "XZ", s.minNXZ + j * deltaNXZ, j + 1, s.nSamplesNXZ, s.minNY + h * deltaNY, h + 1, s.nSamplesNY);
             for (int i = 0; i < s.nSamplesNX; i++) {
                 for (int quad = 0; quad < (s.quadMode ? 8 : 1); quad++) {
                     float normX;
