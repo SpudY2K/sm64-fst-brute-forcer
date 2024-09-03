@@ -1,4 +1,5 @@
-# Add new source files here
+link_directories("/opt/intel/oneapi/2024.2/lib/")
+
 add_executable(fst-brute-forcer-sycl
   "main.cpp"
   "FST.cpp"
@@ -15,6 +16,8 @@ add_executable(fst-brute-forcer-sycl
 
 target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/)
 target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/sycl)
+
+target_link_libraries(fst-brute-forcer-sycl PRIVATE "-lsycl")
 
 set_target_properties(fst-brute-forcer-sycl PROPERTIES
   CXX_STANDARD 17
