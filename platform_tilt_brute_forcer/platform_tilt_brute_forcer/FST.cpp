@@ -11774,42 +11774,20 @@ SolutionStage get_best_stage(struct SolCounts* countsCPU) {
     else if (countsCPU->nBullyPushSolutions == 0) {
         return STAGE_DOUBLE_TEN_K;
     }
-    else {
+    else if (countsCPU->nFullSolutions == 0) {
         return STAGE_BULLY_PUSH;
+    }
+    else {
+        return STAGE_COMPLETE;
     }
 }
 
-void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FSTData* p, struct SolCounts* countsCPU, int floorIdx, std::ofstream& wf) {
-    struct SolStruct solutionsCPU;
-
-    copy_solutions_to_cpu(p, &solutionsCPU, countsCPU);
-
-    int bdRunningSum = 0;
-    int bpRunningSum = 0;
-
-    int solTotal = 0;
-
+void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FSTData* p, struct SolStruct* solutionsCPU, struct SolCounts* countsCPU, int floorIdx, std::ofstream& wf) {
     int bestStage = get_best_stage(countsCPU);
-
-    if (bestStage == STAGE_BULLY_PUSH) {
-        for (int l = 0; l < countsCPU->n10KSolutions; l++) {
-            solTotal += solutionsCPU.tenKSolutions[l].bdSetups * solutionsCPU.tenKSolutions[l].bpSetups;
-            bdRunningSum += solutionsCPU.tenKSolutions[l].bdSetups;
-            solutionsCPU.tenKSolutions[l].bdSetups = bdRunningSum - solutionsCPU.tenKSolutions[l].bdSetups;
-            bpRunningSum += solutionsCPU.tenKSolutions[l].bpSetups;
-            solutionsCPU.tenKSolutions[l].bpSetups = bpRunningSum - solutionsCPU.tenKSolutions[l].bpSetups;
-        }
-
-        if (!o->silent) printf("        # Full Solutions: %d\n", solTotal);
-
-        if (solTotal > 0) {
-            bestStage = STAGE_COMPLETE;
-        }
-    }
 
     if (o->outputLevel == 0) {
         if (bestStage == STAGE_COMPLETE) {
-            wf << startNormal[0] << "," << startNormal[1] << "," << startNormal[2] << "," << solTotal << endl;
+            wf << startNormal[0] << "," << startNormal[1] << "," << startNormal[2] << "," << countsCPU->nFullSolutions << endl;
         }
     }
     else if (o->outputLevel == 1) {
@@ -11819,71 +11797,71 @@ void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FS
     }
     else {
         for (int l = 0; l < countsCPU->nBDSolutions; l++) {
-            if (solutionsCPU.bdSolutions[l].slideSolutionIdx >= 0) {
-                int tenKIdx = solutionsCPU.slideSolutions[solutionsCPU.bdSolutions[l].slideSolutionIdx].tenKSolutionIdx;
+            if (solutionsCPU->bdSolutions[l].slideSolutionIdx >= 0) {
+                int tenKIdx = solutionsCPU->slideSolutions[solutionsCPU->bdSolutions[l].slideSolutionIdx].tenKSolutionIdx;
 
-                int newIdx = solutionsCPU.tenKSolutions[tenKIdx].bdSetups;
-                solutionsCPU.tenKSolutions[tenKIdx].bdSetups++;
+                int newIdx = solutionsCPU->tenKSolutions[tenKIdx].bdSetups;
+                solutionsCPU->tenKSolutions[tenKIdx].bdSetups++;
 
                 if (l != newIdx) {
-                    struct BDSolution temp = solutionsCPU.bdSolutions[l];
+                    struct BDSolution temp = solutionsCPU->bdSolutions[l];
                     temp.slideSolutionIdx = -temp.slideSolutionIdx - 1;
-                    solutionsCPU.bdSolutions[l] = solutionsCPU.bdSolutions[newIdx];
-                    solutionsCPU.bdSolutions[newIdx] = temp;
+                    solutionsCPU->bdSolutions[l] = solutionsCPU->bdSolutions[newIdx];
+                    solutionsCPU->bdSolutions[newIdx] = temp;
                     l--;
                 }
             }
             else {
-                solutionsCPU.bdSolutions[l].slideSolutionIdx = -solutionsCPU.bdSolutions[l].slideSolutionIdx - 1;
+                solutionsCPU->bdSolutions[l].slideSolutionIdx = -solutionsCPU->bdSolutions[l].slideSolutionIdx - 1;
             }
         }
 
         for (int l = 0; l < countsCPU->nBullyPushSolutions; l++) {
-            if (solutionsCPU.bullyPushSolutions[l].doubleTenKSolutionIdx >= 0) {
-                int tenKIdx = solutionsCPU.doubleTenKSolutions[solutionsCPU.bullyPushSolutions[l].doubleTenKSolutionIdx].tenKSolutionIdx;
+            if (solutionsCPU->bullyPushSolutions[l].doubleTenKSolutionIdx >= 0) {
+                int tenKIdx = solutionsCPU->doubleTenKSolutions[solutionsCPU->bullyPushSolutions[l].doubleTenKSolutionIdx].tenKSolutionIdx;
 
-                int newIdx = solutionsCPU.tenKSolutions[tenKIdx].bpSetups;
-                solutionsCPU.tenKSolutions[tenKIdx].bpSetups++;
+                int newIdx = solutionsCPU->tenKSolutions[tenKIdx].bpSetups;
+                solutionsCPU->tenKSolutions[tenKIdx].bpSetups++;
 
                 if (l != newIdx) {
-                    struct BullyPushSolution temp = solutionsCPU.bullyPushSolutions[l];
+                    struct BullyPushSolution temp = solutionsCPU->bullyPushSolutions[l];
                     temp.doubleTenKSolutionIdx = -temp.doubleTenKSolutionIdx - 1;
-                    solutionsCPU.bullyPushSolutions[l] = solutionsCPU.bullyPushSolutions[newIdx];
-                    solutionsCPU.bullyPushSolutions[newIdx] = temp;
+                    solutionsCPU->bullyPushSolutions[l] = solutionsCPU->bullyPushSolutions[newIdx];
+                    solutionsCPU->bullyPushSolutions[newIdx] = temp;
                     l--;
                 }
             }
             else {
-                solutionsCPU.bullyPushSolutions[l].doubleTenKSolutionIdx = -solutionsCPU.bullyPushSolutions[l].doubleTenKSolutionIdx - 1;
+                solutionsCPU->bullyPushSolutions[l].doubleTenKSolutionIdx = -solutionsCPU->bullyPushSolutions[l].doubleTenKSolutionIdx - 1;
             }
         }
 
         int m = 0;
 
         for (int l = 0; l < countsCPU->nBDSolutions; l++) {
-            struct BDSolution* bdSol = &(solutionsCPU.bdSolutions[l]);
-            struct SlideSolution* slideSol = &(solutionsCPU.slideSolutions[bdSol->slideSolutionIdx]);
-            struct TenKSolution* tenKSol = &(solutionsCPU.tenKSolutions[slideSol->tenKSolutionIdx]);
-            struct SpeedSolution* speedSol = &(solutionsCPU.speedSolutions[tenKSol->speedSolutionIdx]);
-            struct SKUpwarpSolution* skuwSol = &(solutionsCPU.skuwSolutions[speedSol->skuwSolutionIdx]);
-            struct UpwarpSolution* uwSol = &(solutionsCPU.upwarpSolutions[skuwSol->uwIdx]);
-            struct PlatformSolution* platSol = &(solutionsCPU.platSolutions[uwSol->platformSolutionIdx]);
-            struct SKPhase6* p6Sol = &(solutionsCPU.sk6Solutions[skuwSol->skIdx]);
-            struct SKPhase5* p5Sol = &(solutionsCPU.sk5Solutions[p6Sol->p5Idx]);
-            struct SKPhase4* p4Sol = &(solutionsCPU.sk4Solutions[p5Sol->p4Idx]);
-            struct SKPhase3* p3Sol = &(solutionsCPU.sk3Solutions[p4Sol->p3Idx]);
-            struct SKPhase2* p2Sol = (p3Sol->p2Type / 2 == 0) ? ((p3Sol->p2Type % 2 == 0) ? &(solutionsCPU.sk2ASolutions[p3Sol->p2Idx]) : &(solutionsCPU.sk2BSolutions[p3Sol->p2Idx])) : ((p3Sol->p2Type % 2 == 0) ? &(solutionsCPU.sk2CSolutions[p3Sol->p2Idx]) : &(solutionsCPU.sk2DSolutions[p3Sol->p2Idx]));
-            struct SKPhase1* p1Sol = &(solutionsCPU.sk1Solutions[p2Sol->p1Idx]);
+            struct BDSolution* bdSol = &(solutionsCPU->bdSolutions[l]);
+            struct SlideSolution* slideSol = &(solutionsCPU->slideSolutions[bdSol->slideSolutionIdx]);
+            struct TenKSolution* tenKSol = &(solutionsCPU->tenKSolutions[slideSol->tenKSolutionIdx]);
+            struct SpeedSolution* speedSol = &(solutionsCPU->speedSolutions[tenKSol->speedSolutionIdx]);
+            struct SKUpwarpSolution* skuwSol = &(solutionsCPU->skuwSolutions[speedSol->skuwSolutionIdx]);
+            struct UpwarpSolution* uwSol = &(solutionsCPU->upwarpSolutions[skuwSol->uwIdx]);
+            struct PlatformSolution* platSol = &(solutionsCPU->platSolutions[uwSol->platformSolutionIdx]);
+            struct SKPhase6* p6Sol = &(solutionsCPU->sk6Solutions[skuwSol->skIdx]);
+            struct SKPhase5* p5Sol = &(solutionsCPU->sk5Solutions[p6Sol->p5Idx]);
+            struct SKPhase4* p4Sol = &(solutionsCPU->sk4Solutions[p5Sol->p4Idx]);
+            struct SKPhase3* p3Sol = &(solutionsCPU->sk3Solutions[p4Sol->p3Idx]);
+            struct SKPhase2* p2Sol = (p3Sol->p2Type / 2 == 0) ? ((p3Sol->p2Type % 2 == 0) ? &(solutionsCPU->sk2ASolutions[p3Sol->p2Idx]) : &(solutionsCPU->sk2BSolutions[p3Sol->p2Idx])) : ((p3Sol->p2Type % 2 == 0) ? &(solutionsCPU->sk2CSolutions[p3Sol->p2Idx]) : &(solutionsCPU->sk2DSolutions[p3Sol->p2Idx]));
+            struct SKPhase1* p1Sol = &(solutionsCPU->sk1Solutions[p2Sol->p1Idx]);
 
-            while (m < countsCPU->nBullyPushSolutions && solutionsCPU.doubleTenKSolutions[solutionsCPU.bullyPushSolutions[m].doubleTenKSolutionIdx].tenKSolutionIdx < slideSol->tenKSolutionIdx) {
+            while (m < countsCPU->nBullyPushSolutions && solutionsCPU->doubleTenKSolutions[solutionsCPU->bullyPushSolutions[m].doubleTenKSolutionIdx].tenKSolutionIdx < slideSol->tenKSolutionIdx) {
                 m++;
             }
 
             int n = m;
 
-            while (n < countsCPU->nBullyPushSolutions && solutionsCPU.doubleTenKSolutions[solutionsCPU.bullyPushSolutions[n].doubleTenKSolutionIdx].tenKSolutionIdx == slideSol->tenKSolutionIdx) {
-                struct BullyPushSolution* bpSol = &(solutionsCPU.bullyPushSolutions[n]);
-                struct DoubleTenKSolution* doubleTenKSol = &(solutionsCPU.doubleTenKSolutions[bpSol->doubleTenKSolutionIdx]);
+            while (n < countsCPU->nBullyPushSolutions && solutionsCPU->doubleTenKSolutions[solutionsCPU->bullyPushSolutions[n].doubleTenKSolutionIdx].tenKSolutionIdx == slideSol->tenKSolutionIdx) {
+                struct BullyPushSolution* bpSol = &(solutionsCPU->bullyPushSolutions[n]);
+                struct DoubleTenKSolution* doubleTenKSol = &(solutionsCPU->doubleTenKSolutions[bpSol->doubleTenKSolutionIdx]);
 
                 //if (!o->silent) printf("---------------------------------------\nFound Solution:\n---------------------------------------\n    Start Position Range: [%.10g, %.10g], [%.10g, %.10g]\n    Frame 1 Position: %.10g, %.10g, %.10g\n    Frame 2 Position: %.10g, %.10g, %.10g\n    Return Position: %.10g, %.10g, %.10g\n    PU Departure Speed: %.10g (x=%.10g, z=%.10g)\n    PU Strain Speed: (x=%.10g, z=%.10g, fwd=%.10g)\n    Pre-10K Speed: (x=%.10g, z=%.10g)\n    PU Return Speed: %.10g (x=%.10g, z=%.10g)\n    Frame 1 Q-steps: %d\n    Frame 2 Q-steps: %d\n    Frame 3 Q-steps: %d\n", doubleTenKSol->minStartX, doubleTenKSol->maxStartX, doubleTenKSol->minStartZ, doubleTenKSol->maxStartZ, tenKSol->frame1Position[0], tenKSol->frame1Position[1], tenKSol->frame1Position[2], tenKSol->frame2Position[0], tenKSol->frame2Position[1], tenKSol->frame2Position[2], platSol->returnPosition[0], platSol->returnPosition[1], platSol->returnPosition[2], tenKSol->departureSpeed, doubleTenKSol->post10KXVel, doubleTenKSol->post10KZVel, speedSol->xStrain, speedSol->zStrain, speedSol->forwardStrain, tenKSol->pre10KVel[0], tenKSol->pre10KVel[1], speedSol->returnSpeed, tenKSol->returnVel[0], tenKSol->returnVel[1], 4, p1Sol->q2, 1);
                 //if (!o->silent) printf("    10k Stick X: %d\n    10k Stick Y: %d\n    Frame 2 HAU: %d\n    10k Camera Yaw: %d\n    Start Floor Normal: %.10g, %.10g, %.10g\n", ((p5Sol->stickX == 0) ? 0 : ((p5Sol->stickX < 0) ? p5Sol->stickX - 6 : p5Sol->stickX + 6)), ((p5Sol->stickY == 0) ? 0 : ((p5Sol->stickY < 0) ? p5Sol->stickY - 6 : p5Sol->stickY + 6)), p2Sol->f2Angle, p4Sol->cameraYaw, host_norms[3 * x], host_norms[3 * x + 1], host_norms[3 * x + 2]);
@@ -11924,8 +11902,6 @@ void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FS
             }
         }
     }
-
-    free_solution_pointers_cpu(&solutionsCPU);
 }
 
 void write_line_to_log_file(LogType type, std::string content, std::ofstream& logf) {
@@ -11989,14 +11965,14 @@ void write_solution_file_header(int outputLevel, std::ofstream& wf) {
     wf << endl;
 }
 
-bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf) {
+SolutionStage check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf) {
     std::ofstream logf;
 
     return check_normal(startNormal, o, p, wf, logf);
 }
 
-bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf, std::ofstream& logf) {
-    bool foundSolution = false;
+SolutionStage check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf, std::ofstream& logf) {
+    SolutionStage bestStage = STAGE_NOTHING;
 
     const float normal_offsets_cpu[4][3] = { {0.01f, -0.01f, 0.01f}, {-0.01f, -0.01f, 0.01f}, {-0.01f, -0.01f, -0.01f}, {0.01f, -0.01f, -0.01f} };
 
@@ -12058,7 +12034,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
     bool squishTest = (ceilingNormals[0] > -0.5f) || (ceilingNormals[1] > -0.5f) || (ceilingNormals[2] > -0.5f) || (ceilingNormals[3] > -0.5f);
 
     if (!squishTest) {
-        return false;
+        return bestStage;
     }
 
     int uphillAngle = (unsigned short)atan2s(-platform1.normal[2], -platform1.normal[0]);
@@ -12212,6 +12188,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
         }
     }
 
+    struct SolStruct solutionsCPU;
     struct SolCounts countsCPU;
 
     Vec3f postTiltNormal = { platform.normal[0], platform.normal[1], platform.normal[2] };
@@ -12301,6 +12278,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
             .wait();
 
         if (countsCPU.nPlatSolutions > 0) {
+            bestStage = max(bestStage, STAGE_PLATFORM);
+
             if (countsCPU.nPlatSolutions > o->limits.MAX_PLAT_SOLUTIONS) {
                 if (!o->silent) fprintf(stderr, "Warning: Number of platform tilt solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                 countsCPU.nPlatSolutions = o->limits.MAX_PLAT_SOLUTIONS;
@@ -12390,6 +12369,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
         }
 
         if (countsCPU.nUpwarpSolutions > 0) {
+            bestStage = max(bestStage, STAGE_UPWARP);
+
             if (countsCPU.nUpwarpSolutions > o->limits.MAX_UPWARP_SOLUTIONS) {
                 if (!o->silent) fprintf(stderr, "Warning: Number of upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                 countsCPU.nUpwarpSolutions = o->limits.MAX_UPWARP_SOLUTIONS;
@@ -12438,6 +12419,7 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 countsCPU.nBullyPushSolutions = 0;
                 countsCPU.nSlideSolutions = 0;
                 countsCPU.nBDSolutions = 0;
+                countsCPU.nFullSolutions = 0;
 
                 int nStrainSetupsCPU = 0;
 
@@ -12452,6 +12434,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                     .wait();
 
                 if (countsCPU.nSK6Solutions > 0) {
+                    bestStage = max(bestStage, STAGE_SLIDE_KICK);
+
                     if (countsCPU.nSK6Solutions > o->limits.MAX_SK_PHASE_SIX) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of phase 6 solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSK6Solutions = o->limits.MAX_SK_PHASE_SIX;
@@ -12559,6 +12543,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nSKUWSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_SKUW);
+
                     if (countsCPU.nSKUWSolutions > o->limits.MAX_SK_UPWARP_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of slide kick upwarp solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);;
                         countsCPU.nSKUWSolutions = o->limits.MAX_SK_UPWARP_SOLUTIONS;
@@ -12703,6 +12689,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nSpeedSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_SPEED);
+
                     if (countsCPU.nSpeedSolutions > o->limits.MAX_SPEED_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of speed solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSpeedSolutions = o->limits.MAX_SPEED_SOLUTIONS;
@@ -12827,6 +12815,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.n10KSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_TEN_K);
+
                     if (countsCPU.n10KSolutions > o->limits.MAX_10K_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.n10KSolutions = o->limits.MAX_10K_SOLUTIONS;
@@ -12982,6 +12972,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nSlideSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_SLIDE);
+
                     if (countsCPU.nSlideSolutions > o->limits.MAX_SLIDE_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of slide solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nSlideSolutions = o->limits.MAX_SLIDE_SOLUTIONS;
@@ -13081,6 +13073,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nBDSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_BREAKDANCE);
+
                     if (countsCPU.nBDSolutions > o->limits.MAX_BD_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of breakdance solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nBDSolutions = o->limits.MAX_BD_SOLUTIONS;
@@ -13161,6 +13155,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nDouble10KSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_DOUBLE_TEN_K);
+
                     if (countsCPU.nDouble10KSolutions > o->limits.MAX_DOUBLE_10K_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of double 10K solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nDouble10KSolutions = o->limits.MAX_DOUBLE_10K_SOLUTIONS;
@@ -13258,6 +13254,8 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
                 }
 
                 if (countsCPU.nBullyPushSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_BULLY_PUSH);
+
                     if (countsCPU.nBullyPushSolutions > o->limits.MAX_BULLY_PUSH_SOLUTIONS) {
                         if (!o->silent) fprintf(stderr, "Warning: Number of bully push solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
                         countsCPU.nBullyPushSolutions = o->limits.MAX_BULLY_PUSH_SOLUTIONS;
@@ -13268,20 +13266,41 @@ bool check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, s
 
                     if (!o->silent) printf("        # Bully Push Solutions: %d\n", countsCPU.nBullyPushSolutions);
 
-                    foundSolution = true;
+                    int bdRunningSum = 0;
+                    int bpRunningSum = 0;
+
+                    copy_solutions_to_cpu(p, &solutionsCPU, &countsCPU);
+
+                    for (int l = 0; l < countsCPU.n10KSolutions; l++) {
+                        countsCPU.nFullSolutions += solutionsCPU.tenKSolutions[l].bdSetups * solutionsCPU.tenKSolutions[l].bpSetups;
+                        bdRunningSum += solutionsCPU.tenKSolutions[l].bdSetups;
+                        solutionsCPU.tenKSolutions[l].bdSetups = bdRunningSum - solutionsCPU.tenKSolutions[l].bdSetups;
+                        bpRunningSum += solutionsCPU.tenKSolutions[l].bpSetups;
+                        solutionsCPU.tenKSolutions[l].bpSetups = bpRunningSum - solutionsCPU.tenKSolutions[l].bpSetups;
+                    }
+                }
+
+                if (countsCPU.nFullSolutions > 0) {
+                    bestStage = max(bestStage, STAGE_COMPLETE);
+
+                    if (!o->silent) printf("        # Full Solutions: %d\n", countsCPU.nFullSolutions);
                 }
 
                 if (wf.is_open()) {
-                    write_solutions_to_file(startNormal, o, p, &countsCPU, x, wf);
+                    write_solutions_to_file(startNormal, o, p, &solutionsCPU, &countsCPU, x, wf);
                 }
                 else {
                     if (!o->silent) fprintf(stderr, "Warning: ofstream is not open. No solutions will be written to the output file.\n");
+                }
+
+                if (countsCPU.nBullyPushSolutions > 0) {
+                    free_solution_pointers_cpu(&solutionsCPU);
                 }
             }
         }
     }
 
-    return foundSolution;
+    return bestStage;
 }
 
 int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o, std::ofstream& logf) try {

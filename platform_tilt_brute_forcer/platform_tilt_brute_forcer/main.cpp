@@ -487,6 +487,9 @@ int main(int argc, char* argv[]) {
     const float deltaNY = (s.nSamplesNY > 1) ? (s.maxNY - s.minNY) / (s.nSamplesNY - 1) : 0;
     const float deltaNXZ = (s.nSamplesNXZ > 1) ? (s.maxNXZ - s.minNXZ) / (s.nSamplesNXZ - 1) : 0;
 
+    int fullSolutionCount = 0;
+    int partialSolutionCount = 0;
+
     char logContent[200];
 
     for (int j = 0; j < s.nSamplesNXZ; j++) {
@@ -535,7 +538,13 @@ int main(int argc, char* argv[]) {
 
                     float testNormal[3] = { normX, normY, normZ };
 
-                    if (check_normal(testNormal, &o, &p, wf, logf)) {
+                    SolutionStage stage = check_normal(testNormal, &o, &p, wf, logf);
+
+                    if (stage == STAGE_COMPLETE) {
+                        fullSolutionCount++;
+                    }
+                    else if (stage >= STAGE_TEN_K) {
+                        partialSolutionCount++;
                     }
                 }
             }
@@ -543,6 +552,12 @@ int main(int argc, char* argv[]) {
     }
 
     write_line_to_log_file(LOG_INFO, "Search Completed", logf);
+
+    if (!o.silent) printf("\n");
+    if (!o.silent) printf("Search found %d normal%s with full solutions and %d normal%s with partial solutions.\n\n", fullSolutionCount, fullSolutionCount == 1 ? "" : "s", partialSolutionCount, partialSolutionCount == 1 ? "" : "s");
+
+    sprintf(logContent, "Search Found %d Normal%s with Full Solutions and %d Normal%s with Partial Solutions", fullSolutionCount, fullSolutionCount == 1 ? "" : "s", partialSolutionCount, partialSolutionCount == 1 ? "" : "s");
+    write_line_to_log_file(LOG_INFO, logContent, logf);
 
     if (test_device()) {
         if (!o.silent) print_success();
