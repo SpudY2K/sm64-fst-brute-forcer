@@ -160,7 +160,7 @@ if (error == 0) {
     float testNormal[3] = {0.1808f, 0.87768f, -0.396f};
   
     // Check if the normal has any solutions
-    if (check_normal(testNormal, &o, &p, wf, logf)) {
+    if (check_normal(testNormal, &o, &p, wf, logf) == STAGE_COMPLETE) {
           // Do stuff with successful normals
     }
 
