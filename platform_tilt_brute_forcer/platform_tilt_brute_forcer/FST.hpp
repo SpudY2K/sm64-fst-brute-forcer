@@ -309,6 +309,7 @@ enum LogType {
     LOG_ERROR = 'E'
 };
 
+void initialise_solution_file_stream(std::ofstream& wf, std::string outPath, struct FSTOptions* o, bool resume);
 void initialise_solution_file_stream(std::ofstream& wf, std::string outPath, struct FSTOptions* o);
 int initialise_fst_vars(struct FSTData* p, struct FSTOptions* o, std::ofstream& logf);
 void copy_solution_counts_to_cpu(struct SolCounts* countsCPU);

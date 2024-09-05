@@ -2,9 +2,28 @@
 #include <string>
 #include "FST.hpp"
 
+enum CheckpointLoad {
+    LOAD_SUCCESSFUL = 0,
+    CREATED_NEW = 1,
+    CREATED_OVERWRITE = 2,
+    WRITE_FAILED = 3,
+    OPEN_FAILED = 4
+};
+
+struct CheckpointData {
+    int version = 3355;
+    int startX = 0;
+    int startY = 0;
+    int startXZ = 0;
+    int startQuad = 0;
+    int fullSolutionCount = 0;
+    int partialSolutionCount = 0;
+};
+
 struct SearchOptions {
     std::string outFile = "outData.csv";
     std::string logFile = "";
+    std::string checkpointFile = "";
 
     float minNX = 0.1808f;
     float maxNX = 0.1808f;
@@ -22,6 +41,232 @@ struct SearchOptions {
 
     bool verbose = false;
 };
+
+bool try_read_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o, std::ifstream& cf) {
+    if (!cf.good()) return false;
+
+    int saveVersion;
+    cf.read((char*)(&saveVersion), sizeof saveVersion);
+    if (!cf.good()) return false;
+
+    if (c->version == saveVersion) {
+        struct CheckpointData newC = (*c);
+        struct SearchOptions newS = (*s);
+        struct FSTOptions newO = (*o);
+
+        cf.read((char*)(&newC.startX), sizeof newC.startX);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newC.startY), sizeof newC.startY);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newC.startXZ), sizeof newC.startXZ);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newC.startQuad), sizeof newC.startQuad);
+        if (!cf.good()) return false;
+        if (newC.startX == 0 && newC.startY == 0 && newC.startXZ == 0 && newC.startQuad == 0) return false;
+        cf.read((char*)(&newC.fullSolutionCount), sizeof newC.fullSolutionCount);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newC.partialSolutionCount), sizeof newC.partialSolutionCount);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.minNX), sizeof newS.minNX);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.maxNX), sizeof newS.maxNX);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.minNY), sizeof newS.minNY);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.maxNY), sizeof newS.maxNY);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.minNXZ), sizeof newS.minNXZ);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.maxNXZ), sizeof newS.maxNXZ);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.nSamplesNX), sizeof newS.nSamplesNX);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.nSamplesNY), sizeof newS.nSamplesNY);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.nSamplesNXZ), sizeof newS.nSamplesNXZ);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.zMode), sizeof newS.zMode);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newS.quadMode), sizeof newS.quadMode);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.platformPos[0]), sizeof newO.platformPos[0]);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.platformPos[1]), sizeof newO.platformPos[1]);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.platformPos[2]), sizeof newO.platformPos[2]);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.deltaX), sizeof newO.deltaX);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.deltaZ), sizeof newO.deltaZ);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.nPUFrames), sizeof newO.nPUFrames);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.maxFrames), sizeof newO.maxFrames);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.maxSpeed), sizeof newO.maxSpeed);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.maxSlidingSpeed), sizeof newO.maxSlidingSpeed);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.maxSlidingSpeedToPlatform), sizeof newO.maxSlidingSpeedToPlatform);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newO.outputLevel), sizeof newO.outputLevel);
+        if (!cf.good()) return false;
+        int stringSize;
+        cf.read((char*)(&stringSize), sizeof stringSize);
+        if (!cf.good()) return false;
+        newS.outFile = "";
+        newS.outFile.resize(stringSize);
+        cf.read((char*)(newS.outFile.c_str()), stringSize);
+        if (!cf.good()) return false;
+        cf.read((char*)(&stringSize), sizeof stringSize);
+        if (!cf.good()) return false;
+        newS.logFile = "";
+        newS.logFile.resize(stringSize);
+        cf.read((char*)(newS.logFile.c_str()), stringSize);
+        if (!cf.good()) return false;
+
+        (*c) = newC;
+        (*s) = newS;
+        (*o) = newO;
+
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o, std::ofstream& cf) {
+    cf.write((char*)(&c->version), sizeof c->version);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->startX), sizeof c->startX);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->startY), sizeof c->startY);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->startXZ), sizeof c->startXZ);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->startQuad), sizeof c->startQuad);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->fullSolutionCount), sizeof c->fullSolutionCount);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->partialSolutionCount), sizeof c->partialSolutionCount);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->minNX), sizeof s->minNX);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->maxNX), sizeof s->maxNX);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->minNY), sizeof s->minNY);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->maxNY), sizeof s->maxNY);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->minNXZ), sizeof s->minNXZ);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->maxNXZ), sizeof s->maxNXZ);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->nSamplesNX), sizeof s->nSamplesNX);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->nSamplesNY), sizeof s->nSamplesNY);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->nSamplesNXZ), sizeof s->nSamplesNXZ);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->zMode), sizeof s->zMode);
+    if (!cf.good()) return false;
+    cf.write((char*)(&s->quadMode), sizeof s->quadMode);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->platformPos[0]), sizeof o->platformPos[0]);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->platformPos[1]), sizeof o->platformPos[1]);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->platformPos[2]), sizeof o->platformPos[2]);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->deltaX), sizeof o->deltaX);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->deltaZ), sizeof o->deltaZ);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->nPUFrames), sizeof o->nPUFrames);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->maxFrames), sizeof o->maxFrames);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->maxSpeed), sizeof o->maxSpeed);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->maxSlidingSpeed), sizeof o->maxSlidingSpeed);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->maxSlidingSpeedToPlatform), sizeof o->maxSlidingSpeedToPlatform);
+    if (!cf.good()) return false;
+    cf.write((char*)(&o->outputLevel), sizeof o->outputLevel);
+    if (!cf.good()) return false;
+    int stringSize = s->outFile.size();
+    cf.write((char*)(&stringSize), sizeof stringSize);
+    if (!cf.good()) return false;
+    cf.write((char*)(s->outFile.c_str()), stringSize);
+    if (!cf.good()) return false;
+    stringSize = s->logFile.size();
+    cf.write((char*)(&stringSize), sizeof stringSize);
+    if (!cf.good()) return false;
+    cf.write((char*)(s->logFile.c_str()), stringSize);
+    if (!cf.good()) return false;
+
+    return true;
+}
+
+CheckpointLoad load_from_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o) {
+    std::ifstream cfIn(s->checkpointFile, std::ios::in | std::ios::binary);
+    bool fileExists = cfIn.is_open();
+
+    if (fileExists) {
+        if (try_read_checkpoint(c, s, o, cfIn)) {
+            cfIn.close();
+            return LOAD_SUCCESSFUL;
+        }
+        else {
+            cfIn.close();
+        }
+    }
+
+    std::ofstream cfOut(s->checkpointFile, std::ios::out | std::ios::binary | std::ios::trunc);
+
+    if (cfOut.is_open()) {
+        if (write_new_checkpoint(c, s, o, cfOut)) {
+            cfOut.close();
+            if (fileExists) {
+                return CREATED_OVERWRITE;
+            } else {
+                return CREATED_NEW;
+            }
+        }
+        else {
+            cfOut.close();
+            return WRITE_FAILED;
+        }
+    }
+    else {
+        return OPEN_FAILED;
+    }
+}
+
+bool update_checkpoint(struct CheckpointData* c, std::ofstream& cf) {
+    if (cf.is_open()) {
+        cf.seekp(sizeof c->version);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->startX), sizeof c->startX);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->startY), sizeof c->startY);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->startXZ), sizeof c->startXZ);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->startQuad), sizeof c->startQuad);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->fullSolutionCount), sizeof c->fullSolutionCount);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->partialSolutionCount), sizeof c->partialSolutionCount);
+        if (!cf.good()) return false;
+
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 void print_options(struct SearchOptions* s, struct FSTOptions* o) {
     printf("Max Tilt Frames: %d\n", o->maxFrames);
@@ -142,6 +387,9 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("         Position of the pyramid platform.\n");
     printf("             Default: %g %g %g\n\n", o->platformPos[0], o->platformPos[1], o->platformPos[2]);
     printf("  Output settings:\n");
+    printf("    -c <path>\n");
+    printf("         Path to the checkpoint file.\n");
+    printf("             Default: %s\n\n", s->outFile.c_str());
     printf("    -l <path>\n");
     printf("         Path to the log file.\n");
     printf("             Default: %s\n\n", s->logFile.c_str());
@@ -203,6 +451,9 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("    -l10k <n_solutions>\n");
     printf("         Maximum number of 10k solutions.\n");
     printf("             Default: %d\n\n", o->limits.MAX_10K_SOLUTIONS);
+    printf("    -lsl <n_solutions>\n");
+    printf("         Maximum number of slide solutions.\n");
+    printf("             Default: %d\n\n", o->limits.MAX_SLIDE_SOLUTIONS);
     printf("    -lbd <n_solutions>\n");
     printf("         Maximum number of breakdance solutions.\n");
     printf("             Default: %d\n\n", o->limits.MAX_BD_SOLUTIONS);
@@ -330,6 +581,10 @@ bool parse_inputs(int argc, char* argv[], struct SearchOptions* s, struct FSTOpt
                 s->logFile = argv[i + 1];
                 i += 1;
             }
+            else if (!strcmp(argv[i], "-c")) {
+                s->checkpointFile = argv[i + 1];
+                i += 1;
+            }
             else if (!strcmp(argv[i], "-m")) {
                 o->outputLevel = std::stof(argv[i + 1]);
                 i += 1;
@@ -390,6 +645,10 @@ bool parse_inputs(int argc, char* argv[], struct SearchOptions* s, struct FSTOpt
                 o->limits.MAX_10K_SOLUTIONS = std::stof(argv[i + 1]);
                 i += 1;
             }
+            else if (!strcmp(argv[i], "-lsl")) {
+                o->limits.MAX_SLIDE_SOLUTIONS = std::stof(argv[i + 1]);
+                i += 1;
+            }
             else if (!strcmp(argv[i], "-lbd")) {
                 o->limits.MAX_BD_SOLUTIONS = std::stof(argv[i + 1]);
                 i += 1;
@@ -434,21 +693,57 @@ int main(int argc, char* argv[]) {
     struct SearchOptions s;
     struct FSTOptions o;
     struct FSTData p;
+    struct CheckpointData c;
     std::ofstream wf;
     std::ofstream logf;
+    std::ofstream cf;
 
     if (!parse_inputs(argc, argv, &s, &o)) {
         return -1;
     }
 
-    logf.open(s.logFile);
+    CheckpointLoad loadStatus = load_from_checkpoint(&c, &s, &o);
+    bool resume = (loadStatus == LOAD_SUCCESSFUL);
+
+    if (resume) {
+        logf.open(s.logFile, std::ofstream::app);
+    }
+    else {
+        logf.open(s.logFile, std::ofstream::trunc);
+    }
+
+    write_line_to_log_file(LOG_INFO, "FST Brute Forcer Started", logf);
+
+    switch (loadStatus) {
+    case LOAD_SUCCESSFUL:
+        if (!o.silent) printf("Progress restored from checkpoint file.\n");
+        write_line_to_log_file(LOG_INFO, "Checkpoint Loaded", logf);
+        break;
+    case CREATED_NEW:
+        write_line_to_log_file(LOG_INFO, "New Checkpoint File Created", logf);
+        break;
+    case CREATED_OVERWRITE:
+        if (!o.silent) fprintf(stderr, "Warning: Could not read checkpoint file. Search will start from the beginning.\n");;
+        write_line_to_log_file(LOG_WARNING, "Could Not Read Checkpoint File - Search Will Start From Beginning", logf);
+        break;
+    case WRITE_FAILED:
+        if (!o.silent) fprintf(stderr, "Warning: Could not write to checkpoint file. Progress from this run cannot be resumed.\n");
+        if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
+        write_line_to_log_file(LOG_WARNING, "Could Not Write New Checkpoint File", logf);
+        break;
+    case OPEN_FAILED:
+        if (!s.checkpointFile.empty()) {
+            if (!o.silent) fprintf(stderr, "Warning: Could not open checkpoint file. Progress from this run cannot be resumed.\n");
+            if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
+            write_line_to_log_file(LOG_WARNING, "Could Not Open Checkpoint File", logf);
+        }
+        break;
+    }
 
     if (!s.logFile.empty() && !logf.is_open()) {
         if (!o.silent) fprintf(stderr, "Warning: ofstream is not open. No logging data will be written to the log file.\n");
         if (!o.silent) fprintf(stderr, "         This may be due to an invalid log file path.\n");
     }
-
-    write_line_to_log_file(LOG_INFO, "FST Brute Forcer Started", logf);
 
     s.nSamplesNX = s.minNX == s.maxNX ? 1 : s.nSamplesNX;
     s.nSamplesNY = s.minNY == s.maxNY ? 1 : s.nSamplesNY;
@@ -477,29 +772,41 @@ int main(int argc, char* argv[]) {
         print_options(&s, &o);
     }
 
-    write_options_to_log_file(&s, &o, logf);
+    if (!resume) {
+        write_options_to_log_file(&s, &o, logf);
+    }
 
-    initialise_solution_file_stream(wf, s.outFile, &o);
+    initialise_solution_file_stream(wf, s.outFile, &o, resume);
 
-    write_line_to_log_file(LOG_INFO, "Starting Search", logf);
+    if (loadStatus == LOAD_SUCCESSFUL || loadStatus == CREATED_NEW || loadStatus == CREATED_OVERWRITE) {
+        cf.open(s.checkpointFile, std::ios::out | std::ios::binary | std::ios::in);
+    }
+
+    if (resume) {
+        write_line_to_log_file(LOG_INFO, "Resuming Search", logf);
+    } else {
+        write_line_to_log_file(LOG_INFO, "Starting Search", logf);
+    }
 
     const float deltaNX = (s.nSamplesNX > 1) ? (s.maxNX - s.minNX) / (s.nSamplesNX - 1) : 0;
     const float deltaNY = (s.nSamplesNY > 1) ? (s.maxNY - s.minNY) / (s.nSamplesNY - 1) : 0;
     const float deltaNXZ = (s.nSamplesNXZ > 1) ? (s.maxNXZ - s.minNXZ) / (s.nSamplesNXZ - 1) : 0;
 
-    int fullSolutionCount = 0;
-    int partialSolutionCount = 0;
-
     char logContent[200];
 
-    for (int j = 0; j < s.nSamplesNXZ; j++) {
+    for (int j = c.startXZ; j < s.nSamplesNXZ; j++) {
+        c.startXZ = j;
         sprintf(logContent, "Searching - %s = %.10g (%d/%d)", s.zMode ? "Z" : "XZ", s.minNXZ + j * deltaNXZ, j + 1, s.nSamplesNXZ);
         write_line_to_log_file(LOG_INFO, logContent, logf);
 
-        for (int h = 0; h < s.nSamplesNY; h++) {
+        for (int h = c.startY; h < s.nSamplesNY; h++) {
+            c.startY = h;
             if (!o.silent) printf("Searching: %s=%.10g (%d/%d), Y=%.10g (%d/%d)\n", s.zMode ? "Z" : "XZ", s.minNXZ + j * deltaNXZ, j + 1, s.nSamplesNXZ, s.minNY + h * deltaNY, h + 1, s.nSamplesNY);
-            for (int i = 0; i < s.nSamplesNX; i++) {
-                for (int quad = 0; quad < (s.quadMode ? 8 : 1); quad++) {
+            for (int i = c.startX; i < s.nSamplesNX; i++) {
+                c.startX = i;
+                for (int quad = c.startQuad; quad < (s.quadMode ? 8 : 1); quad++) {
+                    c.startQuad = quad;
+
                     float normX;
                     float normY;
                     float normZ;
@@ -541,27 +848,35 @@ int main(int argc, char* argv[]) {
                     SolutionStage stage = check_normal(testNormal, &o, &p, wf, logf);
 
                     if (stage == STAGE_COMPLETE) {
-                        fullSolutionCount++;
+                        c.fullSolutionCount++;
                     }
                     else if (stage >= STAGE_TEN_K) {
-                        partialSolutionCount++;
+                        c.partialSolutionCount++;
                     }
+
+                    c.startQuad = quad + 1;
+                    update_checkpoint(&c, cf);
                 }
+
+                c.startQuad = 0;
             }
+
+            c.startX = 0;
         }
+
+        c.startY = 0;
     }
 
     write_line_to_log_file(LOG_INFO, "Search Completed", logf);
 
     if (!o.silent) printf("\n");
-    if (!o.silent) printf("Search found %d normal%s with full solutions and %d normal%s with partial solutions.\n\n", fullSolutionCount, fullSolutionCount == 1 ? "" : "s", partialSolutionCount, partialSolutionCount == 1 ? "" : "s");
+    if (!o.silent) printf("Search found %d normal%s with full solutions and %d normal%s with partial solutions.\n\n", c.fullSolutionCount, c.fullSolutionCount == 1 ? "" : "s", c.partialSolutionCount, c.partialSolutionCount == 1 ? "" : "s");
 
-    sprintf(logContent, "Search Found %d Normal%s with Full Solutions and %d Normal%s with Partial Solutions", fullSolutionCount, fullSolutionCount == 1 ? "" : "s", partialSolutionCount, partialSolutionCount == 1 ? "" : "s");
+    sprintf(logContent, "Search Found %d Normal%s with Full Solutions and %d Normal%s with Partial Solutions", c.fullSolutionCount, c.fullSolutionCount == 1 ? "" : "s", c.partialSolutionCount, c.partialSolutionCount == 1 ? "" : "s");
     write_line_to_log_file(LOG_INFO, logContent, logf);
 
     if (test_device()) {
         if (!o.silent) print_success();
-
         write_line_to_log_file(LOG_INFO, "SYCL Device Test Successful", logf);
     }
     else {
@@ -573,6 +888,11 @@ int main(int argc, char* argv[]) {
     write_line_to_log_file(LOG_INFO, "Deallocating Device Memory", logf);
 
     free_fst_vars(&p);
+
+    if (cf.is_open()) {
+        cf.close();
+        std::remove(s.checkpointFile.c_str());
+    }
 
     write_line_to_log_file(LOG_INFO, "FST Brute Forcer Finished", logf);
 

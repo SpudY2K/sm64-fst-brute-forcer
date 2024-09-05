@@ -11910,11 +11910,23 @@ void write_line_to_log_file(LogType type, std::string content, std::ofstream& lo
 }
 
 void initialise_solution_file_stream(std::ofstream& wf, std::string outFile, struct FSTOptions* o) {
-    wf.open(outFile);
+    initialise_solution_file_stream(wf, outFile, o, false);
+}
+
+void initialise_solution_file_stream(std::ofstream& wf, std::string outFile, struct FSTOptions* o, bool resume) {
+    if (resume) {
+        wf.open(outFile, std::ofstream::app);
+    }
+    else {
+        wf.open(outFile, std::ofstream::trunc);
+    }
 
     if (wf.is_open()) {
         wf << std::fixed;
-        write_solution_file_header(o->outputLevel, wf);
+
+        if (!resume) {
+            write_solution_file_header(o->outputLevel, wf);
+        }
     }
     else {
         if (!o->silent) fprintf(stderr, "Warning: ofstream is not open. No solutions will be written to the output file.\n");
