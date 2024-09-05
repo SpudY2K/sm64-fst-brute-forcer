@@ -3,6 +3,8 @@ A GPU-based brute forcing tool to search for working setups for the FST step of 
 
 This tool evolved out of Tyler Kehne's platform max tilt brute forcer, but has since come to encompass many other aspects of the FST setup.
 
+This is a SYCL port of the original CUDA version.
+
 ## Options ##
 This program accepts the following options:
 
@@ -43,6 +45,8 @@ This program accepts the following options:
   
 -o &lt;path&gt;:                                  Path to the output file.
 
+-c &lt;path&gt;:                                  Path to the checkpoint file.
+
 -m:                                         Output mode. The amount of detail provided in the output file.
                                               0: Minimal output. Prints all normals with full solutions, along with number of full solutions found.
                                               1: Minimal output with partial solutions. Prints all normals with 10k partial solutions or better, along with the latest stage with solutions.
@@ -82,6 +86,8 @@ This program accepts the following options:
   
 -l10k &lt;n_solutions&gt;:                        Maximum number of 10k solutions.
   
+-lsl &lt;n_solutions&gt;:                         Maximum number of slide solutions.
+  
 -lbd &lt;n_solutions&gt;:                         Maximum number of breakdance solutions.
   
 -ld10k &lt;n_solutions&gt;:                       Maximum number of double 10k solutions.
@@ -104,9 +110,9 @@ This program accepts the following options:
 </pre>
 
 ## Dependencies ##
-To maximise throughput, this program has been written in CUDA to allow for processing on the GPU. Therefore, to build this program you will need to install CUDA Toolkit (v11.7 or later is recommended).  
+To maximise throughput, this program has been written in SYCL to allow for processing on the GPU. Therefore, to build this program you will need to install the Intel oneAPI BaseKit.  
 
-In addition, to run the program you will need a computer with CUDA compatible GPU. A GPU with compute capability 5.2 or higher and at least 4GB of RAM is recommended. Lower powered GPUs may still be able to run this program, but some tweaking of the build configuration may be necessary.
+In addition, to run the program you will need a computer with a SYCL compatible GPU. For AMD GPUs you will also need to install the oneAPI for AMD GPUs plugin (currently only available on Linux systems).
 
 ## Building Instructions ##
 This program can be built with Visual Studio or CMake using the included config files. 
