@@ -303,10 +303,42 @@ enum SolutionStage {
     STAGE_COMPLETE = 11
 };
 
+enum SolutionWarningFlags {
+    SW_FLAG_SLIDE_KICK_1 = 0x00001,
+    SW_FLAG_SLIDE_KICK_2A = 0x00002,
+    SW_FLAG_SLIDE_KICK_2B = 0x00004,
+    SW_FLAG_SLIDE_KICK_2C = 0x00008,
+    SW_FLAG_SLIDE_KICK_2D = 0x00010,
+    SW_FLAG_SLIDE_KICK_3 = 0x00020,
+    SW_FLAG_SLIDE_KICK_4 = 0x00040,
+    SW_FLAG_SLIDE_KICK_5 = 0x00080,
+    SW_FLAG_SLIDE_KICK_6 = 0x00100,
+    SW_FLAG_PLATFORM = 0x00200,
+    SW_FLAG_UPWARP = 0x00400,
+    SW_FLAG_SKUW = 0x00800,
+    SW_FLAG_SPEED = 0x01000,
+    SW_FLAG_TEN_K = 0x02000,
+    SW_FLAG_SLIDE = 0x04000,
+    SW_FLAG_BREAKDANCE = 0x08000,
+    SW_FLAG_DOUBLE_TEN_K = 0x10000,
+    SW_FLAG_BULLY_PUSH = 0x20000,
+    SW_FLAG_SQUISH_SPOT = 0x40000,
+    SW_FLAG_STRAIN_SETUP = 0x80000,
+    SW_FLAG_ALL = (SW_FLAG_SLIDE_KICK_1 | SW_FLAG_SLIDE_KICK_2A | SW_FLAG_SLIDE_KICK_2B | SW_FLAG_SLIDE_KICK_2C | SW_FLAG_SLIDE_KICK_2D
+    | SW_FLAG_SLIDE_KICK_3 | SW_FLAG_SLIDE_KICK_4 | SW_FLAG_SLIDE_KICK_5 | SW_FLAG_SLIDE_KICK_6 | SW_FLAG_PLATFORM | SW_FLAG_UPWARP
+        | SW_FLAG_SKUW | SW_FLAG_SPEED | SW_FLAG_TEN_K | SW_FLAG_SLIDE | SW_FLAG_BREAKDANCE | SW_FLAG_DOUBLE_TEN_K | SW_FLAG_BULLY_PUSH
+        | SW_FLAG_SQUISH_SPOT | SW_FLAG_STRAIN_SETUP)
+};
+
 enum LogType {
     LOG_INFO = 'I',
     LOG_WARNING = 'W',
     LOG_ERROR = 'E'
+};
+
+struct FSTOutput {
+    SolutionStage bestStage = STAGE_NOTHING;
+    int flags = 0;
 };
 
 void initialise_solution_file_stream(std::ofstream& wf, std::string outPath, struct FSTOptions* o, bool resume);
@@ -316,8 +348,8 @@ void copy_solution_counts_to_cpu(struct SolCounts* countsCPU);
 void copy_solutions_to_cpu(struct FSTData* p, struct SolStruct* solutionsCPU, struct SolCounts* countsCPU);
 void write_solution_file_header(int outputLevel, std::ofstream& wf); void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FSTData* p, struct SolStruct* solutionsCPU, struct SolCounts* countsCPU, int floorIdx, std::ofstream& wf);
 void write_line_to_log_file(LogType type, std::string content, std::ofstream& logf);
-SolutionStage check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf);
-SolutionStage check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf, std::ofstream& logf);
+FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf);
+FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData* p, std::ofstream& wf, std::ofstream& logf);
 void free_fst_vars(struct FSTData* p);
 void free_solution_pointers_cpu(SolStruct* s);
 void free_solution_pointers_gpu(SolStruct* s);

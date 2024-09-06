@@ -4,20 +4,22 @@
 
 enum CheckpointLoad {
     LOAD_SUCCESSFUL = 0,
-    CREATED_NEW = 1,
-    CREATED_OVERWRITE = 2,
-    WRITE_FAILED = 3,
-    OPEN_FAILED = 4
+    LOAD_FAILED = 1,
+    OPEN_FAILED = 2,
+    CREATED_NEW = 3,
+    CREATED_OVERWRITE = 4,
+    WRITE_FAILED = 5,
 };
 
 struct CheckpointData {
-    int version = 3355;
+    int version = 3356;
     int startX = 0;
     int startY = 0;
     int startXZ = 0;
     int startQuad = 0;
     int fullSolutionCount = 0;
     int partialSolutionCount = 0;
+    int warningNormalCount = 0;
 };
 
 struct SearchOptions {
@@ -66,6 +68,8 @@ bool try_read_checkpoint(struct CheckpointData* c, struct SearchOptions* s, stru
         cf.read((char*)(&newC.fullSolutionCount), sizeof newC.fullSolutionCount);
         if (!cf.good()) return false;
         cf.read((char*)(&newC.partialSolutionCount), sizeof newC.partialSolutionCount);
+        if (!cf.good()) return false;
+        cf.read((char*)(&newC.warningNormalCount), sizeof newC.warningNormalCount);
         if (!cf.good()) return false;
         cf.read((char*)(&newS.minNX), sizeof newS.minNX);
         if (!cf.good()) return false;
@@ -136,7 +140,7 @@ bool try_read_checkpoint(struct CheckpointData* c, struct SearchOptions* s, stru
     }
 }
 
-bool write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o, std::ofstream& cf) {
+bool try_write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o, std::ofstream& cf) {
     cf.write((char*)(&c->version), sizeof c->version);
     if (!cf.good()) return false;
     cf.write((char*)(&c->startX), sizeof c->startX);
@@ -150,6 +154,8 @@ bool write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, str
     cf.write((char*)(&c->fullSolutionCount), sizeof c->fullSolutionCount);
     if (!cf.good()) return false;
     cf.write((char*)(&c->partialSolutionCount), sizeof c->partialSolutionCount);
+    if (!cf.good()) return false;
+    cf.write((char*)(&c->warningNormalCount), sizeof c->warningNormalCount);
     if (!cf.good()) return false;
     cf.write((char*)(&s->minNX), sizeof s->minNX);
     if (!cf.good()) return false;
@@ -209,28 +215,17 @@ bool write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, str
     return true;
 }
 
-CheckpointLoad load_from_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o) {
-    std::ifstream cfIn(s->checkpointFile, std::ios::in | std::ios::binary);
-    bool fileExists = cfIn.is_open();
-
-    if (fileExists) {
-        if (try_read_checkpoint(c, s, o, cfIn)) {
-            cfIn.close();
-            return LOAD_SUCCESSFUL;
-        }
-        else {
-            cfIn.close();
-        }
-    }
-
+CheckpointLoad write_new_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o, CheckpointLoad loadStatus) {
     std::ofstream cfOut(s->checkpointFile, std::ios::out | std::ios::binary | std::ios::trunc);
 
     if (cfOut.is_open()) {
-        if (write_new_checkpoint(c, s, o, cfOut)) {
+        if (try_write_new_checkpoint(c, s, o, cfOut)) {
             cfOut.close();
-            if (fileExists) {
+
+            if (loadStatus == LOAD_FAILED) {
                 return CREATED_OVERWRITE;
-            } else {
+            }
+            else {
                 return CREATED_NEW;
             }
         }
@@ -242,6 +237,24 @@ CheckpointLoad load_from_checkpoint(struct CheckpointData* c, struct SearchOptio
     else {
         return OPEN_FAILED;
     }
+}
+
+CheckpointLoad load_from_checkpoint(struct CheckpointData* c, struct SearchOptions* s, struct FSTOptions* o) {
+    std::ifstream cfIn(s->checkpointFile, std::ios::in | std::ios::binary);
+    bool fileExists = cfIn.is_open();
+
+    if (fileExists) {
+        if (try_read_checkpoint(c, s, o, cfIn)) {
+            cfIn.close();
+            return LOAD_SUCCESSFUL;
+        }
+        else {
+            cfIn.close();
+            return LOAD_FAILED;
+        }
+    }
+
+    return OPEN_FAILED;
 }
 
 bool update_checkpoint(struct CheckpointData* c, std::ofstream& cf) {
@@ -259,6 +272,8 @@ bool update_checkpoint(struct CheckpointData* c, std::ofstream& cf) {
         cf.write((char*)(&c->fullSolutionCount), sizeof c->fullSolutionCount);
         if (!cf.good()) return false;
         cf.write((char*)(&c->partialSolutionCount), sizeof c->partialSolutionCount);
+        if (!cf.good()) return false;
+        cf.write((char*)(&c->warningNormalCount), sizeof c->warningNormalCount);
         if (!cf.good()) return false;
 
         return true;
@@ -341,7 +356,6 @@ void write_options_to_log_file(struct SearchOptions* s, struct FSTOptions* o, st
         write_line_to_log_file(LOG_INFO, logContent, logf);
         write_line_to_log_file(LOG_INFO, "Option - Quadrant_Search = off", logf);
     }
-    printf("\n");
 }
 
 void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
@@ -714,30 +728,9 @@ int main(int argc, char* argv[]) {
 
     write_line_to_log_file(LOG_INFO, "FST Brute Forcer Started", logf);
 
-    switch (loadStatus) {
-    case LOAD_SUCCESSFUL:
+    if (resume) {
         if (!o.silent) printf("Progress restored from checkpoint file.\n");
         write_line_to_log_file(LOG_INFO, "Checkpoint Loaded", logf);
-        break;
-    case CREATED_NEW:
-        write_line_to_log_file(LOG_INFO, "New Checkpoint File Created", logf);
-        break;
-    case CREATED_OVERWRITE:
-        if (!o.silent) fprintf(stderr, "Warning: Could not read checkpoint file. Search will start from the beginning.\n");;
-        write_line_to_log_file(LOG_WARNING, "Could Not Read Checkpoint File - Search Will Start From Beginning", logf);
-        break;
-    case WRITE_FAILED:
-        if (!o.silent) fprintf(stderr, "Warning: Could not write to checkpoint file. Progress from this run cannot be resumed.\n");
-        if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
-        write_line_to_log_file(LOG_WARNING, "Could Not Write New Checkpoint File", logf);
-        break;
-    case OPEN_FAILED:
-        if (!s.checkpointFile.empty()) {
-            if (!o.silent) fprintf(stderr, "Warning: Could not open checkpoint file. Progress from this run cannot be resumed.\n");
-            if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
-            write_line_to_log_file(LOG_WARNING, "Could Not Open Checkpoint File", logf);
-        }
-        break;
     }
 
     if (!s.logFile.empty() && !logf.is_open()) {
@@ -778,6 +771,32 @@ int main(int argc, char* argv[]) {
 
     initialise_solution_file_stream(wf, s.outFile, &o, resume);
 
+    if (!resume) {
+        loadStatus = write_new_checkpoint(&c, &s, &o, loadStatus);
+
+        switch (loadStatus) {
+        case CREATED_NEW:
+            write_line_to_log_file(LOG_INFO, "New Checkpoint File Created", logf);
+            break;
+        case CREATED_OVERWRITE:
+            if (!o.silent) fprintf(stderr, "Warning: Could not read checkpoint file. Search will start from the beginning.\n");;
+            write_line_to_log_file(LOG_WARNING, "Could Not Read Checkpoint File - Search Will Start From Beginning", logf);
+            break;
+        case WRITE_FAILED:
+            if (!o.silent) fprintf(stderr, "Warning: Could not write to checkpoint file. Progress from this run cannot be resumed.\n");
+            if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
+            write_line_to_log_file(LOG_WARNING, "Could Not Write New Checkpoint File", logf);
+            break;
+        case OPEN_FAILED:
+            if (!s.checkpointFile.empty()) {
+                if (!o.silent) fprintf(stderr, "Warning: Could not open checkpoint file. Progress from this run cannot be resumed.\n");
+                if (!o.silent) fprintf(stderr, "         This may be due to an invalid checkpoint file path.\n");
+                write_line_to_log_file(LOG_WARNING, "Could Not Open Checkpoint File", logf);
+            }
+            break;
+        }
+    }
+
     if (loadStatus == LOAD_SUCCESSFUL || loadStatus == CREATED_NEW || loadStatus == CREATED_OVERWRITE) {
         cf.open(s.checkpointFile, std::ios::out | std::ios::binary | std::ios::in);
     }
@@ -806,6 +825,7 @@ int main(int argc, char* argv[]) {
                 c.startX = i;
                 for (int quad = c.startQuad; quad < (s.quadMode ? 8 : 1); quad++) {
                     c.startQuad = quad;
+                    update_checkpoint(&c, cf);
 
                     float normX;
                     float normY;
@@ -845,17 +865,18 @@ int main(int argc, char* argv[]) {
 
                     float testNormal[3] = { normX, normY, normZ };
 
-                    SolutionStage stage = check_normal(testNormal, &o, &p, wf, logf);
+                    FSTOutput output = check_normal(testNormal, &o, &p, wf, logf);
 
-                    if (stage == STAGE_COMPLETE) {
+                    if (output.flags & SW_FLAG_ALL) {
+                        c.warningNormalCount++;
+                    }
+
+                    if (output.bestStage == STAGE_COMPLETE) {
                         c.fullSolutionCount++;
                     }
-                    else if (stage >= STAGE_TEN_K) {
+                    else if (output.bestStage >= STAGE_TEN_K) {
                         c.partialSolutionCount++;
                     }
-
-                    c.startQuad = quad + 1;
-                    update_checkpoint(&c, cf);
                 }
 
                 c.startQuad = 0;
@@ -870,10 +891,19 @@ int main(int argc, char* argv[]) {
     write_line_to_log_file(LOG_INFO, "Search Completed", logf);
 
     if (!o.silent) printf("\n");
-    if (!o.silent) printf("Search found %d normal%s with full solutions and %d normal%s with partial solutions.\n\n", c.fullSolutionCount, c.fullSolutionCount == 1 ? "" : "s", c.partialSolutionCount, c.partialSolutionCount == 1 ? "" : "s");
+    if (!o.silent) printf("Search found %d normal%s with full solutions and %d normal%s with partial solutions.\n", c.fullSolutionCount, c.fullSolutionCount == 1 ? "" : "s", c.partialSolutionCount, c.partialSolutionCount == 1 ? "" : "s");
 
     sprintf(logContent, "Search Found %d Normal%s with Full Solutions and %d Normal%s with Partial Solutions", c.fullSolutionCount, c.fullSolutionCount == 1 ? "" : "s", c.partialSolutionCount, c.partialSolutionCount == 1 ? "" : "s");
     write_line_to_log_file(LOG_INFO, logContent, logf);
+
+    if (c.warningNormalCount > 0) {
+        if (!o.silent) printf("%d normal%s produced warnings.\n", c.warningNormalCount, c.warningNormalCount == 1 ? "" : "s");
+
+        sprintf(logContent, "%d Normal%s Produced Warnings", c.warningNormalCount, c.warningNormalCount == 1 ? "" : "s");
+        write_line_to_log_file(LOG_WARNING, logContent, logf);
+    }
+
+    if (!o.silent) printf("\n");
 
     if (test_device()) {
         if (!o.silent) print_success();
