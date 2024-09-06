@@ -10716,8 +10716,8 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
         .wait();
 
     if (countsCPU->nSK3Solutions > 0) {
-        output.flags |= SW_FLAG_SLIDE_KICK_3;
         if (countsCPU->nSK3Solutions > o->limits.MAX_SK_PHASE_THREE) {
+            output.flags |= SW_FLAG_SLIDE_KICK_3;
             if (!o->silent) fprintf(stderr, "Warning: Number of phase 3 solutions for this normal has been exceeded. No more solutions for this normal will be recorded. Increase the internal maximum to prevent this from happening. (Normal: %.10g, %.10g, %.10g)\n", startNormal[0], startNormal[1], startNormal[2]);
             countsCPU->nSK3Solutions = o->limits.MAX_SK_PHASE_THREE;
             char logContent[200];
