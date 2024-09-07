@@ -1,6 +1,7 @@
 #include <cstring>
 #include <string>
 #include "FST.hpp"
+#include "math.h"
 
 enum CheckpointLoad {
     LOAD_SUCCESSFUL = 0,
