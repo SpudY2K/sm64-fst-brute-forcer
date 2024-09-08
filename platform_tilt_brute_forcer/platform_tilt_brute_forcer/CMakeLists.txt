@@ -18,6 +18,7 @@ target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.
 target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/sycl)
 
 target_link_libraries(fst-brute-forcer-sycl PRIVATE "-lsycl")
+target_link_libraries(fst-brute-forcer-sycl PRIVATE "-Wl,--disable-new-dtags")
 
 set_target_properties(fst-brute-forcer-sycl PROPERTIES
   CXX_STANDARD 17
