@@ -419,10 +419,10 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("             Default: %d\n\n", o->outputLevel);
     printf("  GPU settings:\n");
     printf("    -d <device_id>\n");
-    printf("         The CUDA device used to run the program.\n");
+    printf("         The SYCL device used to run the program.\n");
     printf("             Default: %d\n\n", o->cudaDevice);
     printf("    -t <threads>\n");
-    printf("         Number of CUDA threads to assign to the program.\n");
+    printf("         Size of SYCL work group to assign to the program.\n");
     printf("             Default: %d\n\n", o->nThreads);
     printf("    -lsk1 <n_solutions>\n");
     printf("         Maximum number of phase 1 solutions for 10k setup search.\n");
@@ -868,15 +868,28 @@ int main(int argc, char* argv[]) {
 
                     FSTOutput output = check_normal(testNormal, &o, &p, wf, logf);
 
-                    if (output.flags & SW_FLAG_ALL) {
-                        c.warningNormalCount++;
-                    }
+                    if (output.cudaError == 0x0) {
+                        if (output.flags & SW_FLAG_ALL) {
+                            c.warningNormalCount++;
+                        }
 
-                    if (output.bestStage == STAGE_COMPLETE) {
-                        c.fullSolutionCount++;
+                        if (output.bestStage == STAGE_COMPLETE) {
+                            c.fullSolutionCount++;
+                        }
+                        else if (output.bestStage >= STAGE_TEN_K) {
+                            c.partialSolutionCount++;
+                        }
                     }
-                    else if (output.bestStage >= STAGE_TEN_K) {
-                        c.partialSolutionCount++;
+                    else {
+                        if (output.cudaError == 701) {
+                            if (!o.silent) fprintf(stderr, "Error: SYCL work group too large for the number of registers on your device.\n");
+                            if (!o.silent) fprintf(stderr, "       Run this program with --help for details on how to change number of threads.\n");
+                        }
+                        else {
+                            if (!o.silent) fprintf(stderr, "Error: Normal failed with the following error code: %d.\n", output.cudaError);
+                        }
+
+                        return output.cudaError;
                     }
                 }
 

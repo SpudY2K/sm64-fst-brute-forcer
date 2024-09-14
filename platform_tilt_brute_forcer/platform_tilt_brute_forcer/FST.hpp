@@ -337,6 +337,7 @@ enum LogType {
 
 struct FSTOutput {
     SolutionStage bestStage = STAGE_NOTHING;
+    int cudaError = 0;
     int flags = 0;
 };
 
