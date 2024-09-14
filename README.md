@@ -117,10 +117,6 @@ In addition, to run the program you will need a computer with a SYCL compatible 
 ## Building Instructions ##
 This program can be built with Visual Studio or CMake using the included config files. 
 
-For Visual Studio builds, you might need to link CUDA Build Customizations to the project before building. Instructions for doing that can be found here:
-
-https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html#compiling-cuda-programs
-
 For CMake builds, use the following commands:
 
 ```
