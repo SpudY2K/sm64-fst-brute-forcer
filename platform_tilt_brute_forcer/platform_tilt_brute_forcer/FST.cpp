@@ -11173,8 +11173,8 @@ float find_position_boundary(float minValue, float maxValue, float target, float
 }
 
 float find_speed_boundary_a(float startPos, float targetPos, float yNormal, int dir) {
-    float minVel = 0.0f;
-    float maxVel = 2.0f * (targetPos - startPos) / yNormal;
+    float minVel = (targetPos > startPos) ? 0.0f : 2.0f * (targetPos - startPos) / yNormal;
+    float maxVel = (targetPos > startPos) ? 2.0f * (targetPos - startPos) / yNormal : 0.0f;
 
     while (sycl::nextafter(minVel, INFINITY) < maxVel) {
         float midVel = sycl::fmax(
