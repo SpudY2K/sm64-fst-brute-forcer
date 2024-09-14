@@ -11139,7 +11139,7 @@ void find_bully_positions(
     }
 }
 
-float find_speed_boundary(float minValue, float maxValue, float target, float yNormal, float vel, int dir) {
+float find_position_boundary(float minValue, float maxValue, float target, float yNormal, float vel, int dir) {
     while (sycl::nextafter(minValue, INFINITY) < maxValue) {
         float midValue = sycl::fmax(
             sycl::nextafter(minValue, INFINITY), (minValue + maxValue) / 2.0f);
@@ -11172,146 +11172,228 @@ float find_speed_boundary(float minValue, float maxValue, float target, float yN
     }
 }
 
-bool search_xVel(float& xVel, float zVel, float targetSpeed, float* targetPosition, float yNormal, int idx,
+float find_speed_boundary_a(float startPos, float targetPos, float yNormal, int dir) {
+    float minVel = 0.0f;
+    float maxVel = 2.0f * (targetPos - startPos) / yNormal;
+
+    while (sycl::nextafter(minVel, INFINITY) < maxVel) {
+        float midVel = sycl::fmax(
+            sycl::nextafter(minVel, INFINITY), (minVel + maxVel) / 2.0f);
+
+        float pos = startPos;
+
+        for (int i = 0; i < 4; i++) {
+            pos = pos + yNormal * (midVel / 4.0f);
+        }
+
+        if (pos < targetPos) {
+            minVel = midVel;
+        }
+        else if (pos > targetPos) {
+            maxVel = midVel;
+        }
+        else if (dir > 0) {
+            minVel = midVel;
+        }
+        else {
+            maxVel = midVel;
+        }
+    }
+
+    if (dir > 0) {
+        return minVel;
+    }
+    else {
+        return maxVel;
+    }
+}
+
+float find_speed_boundary_b(float targetSpeed, float zVel, int dir) {
+    float minXVel = 0.0f;
+    float maxXVel = 2.0f * targetSpeed;
+
+    while (sycl::nextafter(minXVel, INFINITY) < maxXVel) {
+        float midXVel = sycl::fmax(
+            sycl::nextafter(minXVel, INFINITY), (minXVel + maxXVel) / 2.0f);
+
+        float speed = sycl::sqrt(midXVel * midXVel + zVel * zVel);
+
+        if (speed < targetSpeed) {
+            minXVel = midXVel;
+        }
+        else if (speed > targetSpeed) {
+            maxXVel = midXVel;
+        }
+        else if (dir > 0) {
+            minXVel = midXVel;
+        }
+        else {
+            maxXVel = midXVel;
+        }
+    }
+
+    if (dir > 0) {
+        return minXVel;
+    }
+    else {
+        return maxXVel;
+    }
+}
+
+bool search_xVel(float zVel, float targetSpeed, float* targetPosition, float yNormal, int idx, const float minSpeedDelta, 
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts,
+    float* platform_pos,
+    dpct::accessor<short, dpct::global, 3> squishCeilingTriangles,
     dpct::accessor<short, dpct::global, 3> squishTriangles,
     dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startCeilingTriangles,
     dpct::accessor<short, dpct::global, 3> startTriangles,
     dpct::accessor<float, dpct::global, 2> startNormals) {
-    float xDir = sign(xVel);
+    int ceilIdx = solutions.tenKSolutions[idx].squishCeiling;
 
-    float speed = sycl::sqrt(xVel * xVel + zVel * zVel);
+    float p[2][3];
+    float q[2][3];
+    int pIdx = 0;
 
-    float minXVel = xVel;
-    float maxXVel = xVel;
+    for (int i = 0; i < 3; i++) {
+        if (squishCeilingTriangles[ceilIdx][i][0] != platform_pos[0] || squishCeilingTriangles[ceilIdx][i][1] != platform_pos[1] || startCeilingTriangles[ceilIdx][i][2] != platform_pos[2]) {
+            p[pIdx][0] = squishCeilingTriangles[ceilIdx][i][0];
+            p[pIdx][1] = squishCeilingTriangles[ceilIdx][i][1];
+            p[pIdx][2] = squishCeilingTriangles[ceilIdx][i][2];
 
-    float minSpeed = speed;
+            q[pIdx][0] = startCeilingTriangles[ceilIdx][i][0];
+            q[pIdx][1] = startCeilingTriangles[ceilIdx][i][1];
+            q[pIdx][2] = startCeilingTriangles[ceilIdx][i][2];
 
-    if (xDir * minSpeed < xDir * targetSpeed) {
-        while (xDir * minSpeed < xDir * targetSpeed) {
-            minXVel = sycl::nextafter(minXVel, INFINITY);
-            minSpeed = sycl::sqrt(minXVel * minXVel + zVel * zVel);
+            pIdx++;
         }
     }
-    else {
-        while (xDir * minSpeed >= xDir * targetSpeed) {
-            minXVel = sycl::nextafter(minXVel, -INFINITY);
-            minSpeed = sycl::sqrt(minXVel * minXVel + zVel * zVel);
-        }
 
-        minXVel = sycl::nextafter(minXVel, INFINITY);
-    }
+    float z0 = sycl::nextafter(targetPosition[2], -INFINITY) - yNormal * zVel;
+    float z1 = sycl::nextafter(targetPosition[2], INFINITY) - yNormal * zVel;
 
-    float maxSpeed = speed;
+    float px0 = p[0][0] + (p[1][0] - p[0][0]) * (z0 - p[0][2]) / (p[1][2] - p[0][2]);
+    float px1 = p[0][0] + (p[1][0] - p[0][0]) * (z1 - p[0][2]) / (p[1][2] - p[0][2]);
+    float qx0 = q[0][0] + (q[1][0] - q[0][0]) * (z0 - q[0][2]) / (q[1][2] - q[0][2]);
+    float qx1 = q[0][0] + (q[1][0] - q[0][0]) * (z1 - q[0][2]) / (q[1][2] - q[0][2]);
 
-    if (xDir * maxSpeed > xDir * targetSpeed) {
-        while (xDir * maxSpeed > xDir * targetSpeed) {
-            maxXVel = sycl::nextafter(maxXVel, -INFINITY);
-            maxSpeed = sycl::sqrt(maxXVel * maxXVel + zVel * zVel);
-        }
-    }
-    else {
-        while (xDir * maxSpeed <= xDir * targetSpeed) {
-            maxXVel = sycl::nextafter(maxXVel, INFINITY);
-            maxSpeed = sycl::sqrt(maxXVel * maxXVel + zVel * zVel);
-        }
+    float minX = sycl::fmin(sycl::fmin(px0, px1), sycl::fmin(qx0, qx1));
+    float maxX = sycl::fmax(sycl::fmax(px0, px1), sycl::fmax(qx0, qx1));
+    minX = (minX > 0) ? sycl::ceil(minX) : sycl::nextafter(sycl::ceil(minX) - 1.0f, INFINITY);
+    maxX = (maxX > 0) ? sycl::nextafter(sycl::floor(maxX) + 1.0f, -INFINITY) : sycl::floor(maxX);
 
-        maxXVel = sycl::nextafter(maxXVel, -INFINITY);
-    }
+    float lowerXVel = find_speed_boundary_a(maxX, targetPosition[0], yNormal, -1);
+    float upperXVel = find_speed_boundary_a(minX, targetPosition[0], yNormal, 1);
 
-    bool foundSpeed = minXVel > maxXVel;
+    float vel1 = find_speed_boundary_b(targetSpeed, zVel, -1);
+    float vel2 = find_speed_boundary_b(targetSpeed, zVel, 1);
 
-    for (float xVel1 = minXVel; xVel1 <= maxXVel;
-        xVel1 = sycl::nextafter(xVel1, INFINITY)) {
-        float minX =
-            sycl::nextafter(targetPosition[0], -INFINITY) - yNormal * xVel1;
-        float maxX =
-            sycl::nextafter(targetPosition[0], INFINITY) - yNormal * xVel1;
-        float minZ =
-            sycl::nextafter(targetPosition[2], -INFINITY) - yNormal * zVel;
-        float maxZ =
-            sycl::nextafter(targetPosition[2], INFINITY) - yNormal * zVel;
+    for (int xDir = -1; xDir <= 1; xDir += 2) {
 
-        minX = find_speed_boundary(minX, maxX, targetPosition[0], yNormal, xVel1, -1);
-        maxX = find_speed_boundary(minX, maxX, targetPosition[0], yNormal, xVel1, 1);
-        minZ = find_speed_boundary(minZ, maxZ, targetPosition[2], yNormal, zVel, -1);
-        maxZ = find_speed_boundary(minZ, maxZ, targetPosition[2], yNormal, zVel, 1);
+        float minXVel = sycl::fmax(lowerXVel, xDir > 0 ? vel1 : -vel2);
+        float maxXVel = sycl::fmin(upperXVel, xDir > 0 ? vel2 : -vel1);
 
-        int minXI = (int)minX;
-        int maxXI = (int)maxX;
-        int minZI = (int)minZ;
-        int maxZI = (int)maxZ;
+        minXVel = (minSpeedDelta == 0) ? minXVel : sycl::ceil(minXVel / minSpeedDelta) * minSpeedDelta;
+        maxXVel = (minSpeedDelta == 0) ? maxXVel : sycl::floor(maxXVel / minSpeedDelta) * minSpeedDelta;
 
-        float minXF = INFINITY;
-        float maxXF = -INFINITY;
-        float minZF = INFINITY;
-        float maxZF = -INFINITY;
+        for (float xVel1 = minXVel; xVel1 <= maxXVel;
+            xVel1 = sycl::fmax(xVel1 + minSpeedDelta, sycl::nextafter(xVel1, INFINITY))) {
+            float minX =
+                sycl::nextafter(targetPosition[0], -INFINITY) - yNormal * xVel1;
+            float maxX =
+                sycl::nextafter(targetPosition[0], INFINITY) - yNormal * xVel1;
+            float minZ =
+                sycl::nextafter(targetPosition[2], -INFINITY) - yNormal * zVel;
+            float maxZ =
+                sycl::nextafter(targetPosition[2], INFINITY) - yNormal * zVel;
 
-        for (int x = minXI; x <= maxXI; x++) {
-            for (int z = minZI; z <= maxZI; z++) {
-                float squarePos[3] = { (float)x, 0.0f, (float)z };
-                float fHeight;
-                int fIdx1 = find_floor(squarePos, squishTriangles, squishNormals, &fHeight);
-                int fIdx2 = find_floor(squarePos, startTriangles, startNormals, &fHeight);
+            minX = find_position_boundary(minX, maxX, targetPosition[0], yNormal, xVel1, -1);
+            maxX = find_position_boundary(minX, maxX, targetPosition[0], yNormal, xVel1, 1);
+            minZ = find_position_boundary(minZ, maxZ, targetPosition[2], yNormal, zVel, -1);
+            maxZ = find_position_boundary(minZ, maxZ, targetPosition[2], yNormal, zVel, 1);
 
-                if (fIdx1 == -1 && fIdx2 != -1) {
-                    minXF = sycl::fmin(
-                        minXF,
-                        (x < 0) ? sycl::nextafter((float)(x - 1), INFINITY) :
-                        (float)x);
-                    maxXF = sycl::fmax(
-                        maxXF,
-                        (x > 0) ? sycl::nextafter((float)(x + 1), -INFINITY) :
-                        (float)x);
-                    minZF = sycl::fmin(
-                        minZF,
-                        (z < 0) ? sycl::nextafter((float)(z - 1), INFINITY) :
-                        (float)z);
-                    maxZF = sycl::fmax(
-                        maxZF,
-                        (z > 0) ? sycl::nextafter((float)(z + 1), -INFINITY) :
-                        (float)z);
+            int minXI = (int)minX;
+            int maxXI = (int)maxX;
+            int minZI = (int)minZ;
+            int maxZI = (int)maxZ;
+
+            float minXF = INFINITY;
+            float maxXF = -INFINITY;
+            float minZF = INFINITY;
+            float maxZF = -INFINITY;
+
+            for (int x = minXI; x <= maxXI; x++) {
+                for (int z = minZI; z <= maxZI; z++) {
+                    float squarePos[3] = { (float)x, 0.0f, (float)z };
+                    float fHeight;
+                    int fIdx1 = find_floor(squarePos, squishTriangles, squishNormals, &fHeight);
+                    int fIdx2 = find_floor(squarePos, startTriangles, startNormals, &fHeight);
+
+                    if (fIdx1 == -1 && fIdx2 != -1) {
+                        minXF = sycl::fmin(
+                            minXF,
+                            (x < 0) ? sycl::nextafter((float)(x - 1), INFINITY) :
+                            (float)x);
+                        maxXF = sycl::fmax(
+                            maxXF,
+                            (x > 0) ? sycl::nextafter((float)(x + 1), -INFINITY) :
+                            (float)x);
+                        minZF = sycl::fmin(
+                            minZF,
+                            (z < 0) ? sycl::nextafter((float)(z - 1), INFINITY) :
+                            (float)z);
+                        maxZF = sycl::fmax(
+                            maxZF,
+                            (z > 0) ? sycl::nextafter((float)(z + 1), -INFINITY) :
+                            (float)z);
+                    }
+                }
+            }
+
+            minX = sycl::fmax(minX, minXF);
+            maxX = sycl::fmin(maxX, maxXF);
+            minZ = sycl::fmax(minZ, minZF);
+            maxZ = sycl::fmin(maxZ, maxZF);
+
+            if (minX <= maxX && minZ <= maxZ) {
+                int solIdx = dpct::atomic_fetch_add<
+                    sycl::access::address_space::generic_space>(
+                        &(counts.nDouble10KSolutions), 1);
+
+                if (solIdx < limits.MAX_DOUBLE_10K_SOLUTIONS) {
+                    struct DoubleTenKSolution* solution = &(solutions.doubleTenKSolutions[solIdx]);
+                    solution->tenKSolutionIdx = idx;
+                    solution->post10KXVel = xVel1;
+                    solution->post10KZVel = zVel;
+                    solution->minStartX = minX;
+                    solution->maxStartX = maxX;
+                    solution->minStartZ = minZ;
+                    solution->maxStartZ = maxZ;
                 }
             }
         }
-
-        minX = sycl::fmax(minX, minXF);
-        maxX = sycl::fmin(maxX, maxXF);
-        minZ = sycl::fmax(minZ, minZF);
-        maxZ = sycl::fmin(maxZ, maxZF);
-
-        if (minX <= maxX && minZ <= maxZ) {
-            int solIdx = dpct::atomic_fetch_add<
-                sycl::access::address_space::generic_space>(
-                    &(counts.nDouble10KSolutions), 1);
-
-            if (solIdx < limits.MAX_DOUBLE_10K_SOLUTIONS) {
-                struct DoubleTenKSolution* solution = &(solutions.doubleTenKSolutions[solIdx]);
-                solution->tenKSolutionIdx = idx;
-                solution->post10KXVel = xVel1;
-                solution->post10KZVel = zVel;
-                solution->minStartX = minX;
-                solution->maxStartX = maxX;
-                solution->minStartZ = minZ;
-                solution->maxStartZ = maxZ;
-            }
-
-            xVel = xVel1;
-        }
     }
-
-    return foundSpeed;
 }
 
 void find_double_10k_solutions(const sycl::nd_item<3>& item_ct1,
     struct GPULimits limits,
     struct SolStruct& solutions,
     struct SolCounts& counts,
+    float* platform_pos,
+    dpct::accessor<short, dpct::global, 3> squishCeilingTriangles,
     dpct::accessor<short, dpct::global, 3> squishTriangles,
     dpct::accessor<float, dpct::global, 2> squishNormals,
+    dpct::accessor<short, dpct::global, 3> startCeilingTriangles,
     dpct::accessor<short, dpct::global, 3> startTriangles,
     dpct::accessor<float, dpct::global, 2> startNormals) {
+    const float minSpeedDelta = dpct::pow(2.0f, -4);
+
+    float minPlatformZ = sycl::min(sycl::min(sycl::min(squishTriangles[0][0][2], squishTriangles[0][2][2]), sycl::min(squishTriangles[1][0][2], squishTriangles[1][1][2])), sycl::min(sycl::min(startTriangles[0][0][2], startTriangles[0][2][2]), sycl::min(startTriangles[1][0][2], startTriangles[1][1][2])));
+    float maxPlatformZ = sycl::max(sycl::max(sycl::max(squishTriangles[0][0][2], squishTriangles[0][2][2]), sycl::max(squishTriangles[1][0][2], squishTriangles[1][1][2])), sycl::max(sycl::max(startTriangles[0][0][2], startTriangles[0][2][2]), sycl::max(startTriangles[1][0][2], startTriangles[1][1][2])));
+    minPlatformZ = (minPlatformZ > 0) ? minPlatformZ : sycl::nextafter(minPlatformZ - 1.0f, INFINITY);
+    maxPlatformZ = (maxPlatformZ > 0) ? sycl::nextafter(maxPlatformZ + 1.0f, -INFINITY) : maxPlatformZ;
+
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
         item_ct1.get_local_id(2);
 
@@ -11329,33 +11411,19 @@ void find_double_10k_solutions(const sycl::nd_item<3>& item_ct1,
             double xDiff = tenKSol->frame1Position[0] - xPos;
             double zDiff = tenKSol->frame1Position[2] - zPos;
 
-            float xVel = xDiff / startNormals[floorIdx][1];
-            float zVel = zDiff / startNormals[floorIdx][1];
+            float minZVel = sycl::fmax(-tenKSol->departureSpeed, find_speed_boundary_a(maxPlatformZ, tenKSol->frame1Position[2], startNormals[floorIdx][1], -1));
+            float maxZVel = sycl::fmin(tenKSol->departureSpeed, find_speed_boundary_a(minPlatformZ, tenKSol->frame1Position[2], startNormals[floorIdx][1], 1));
 
-            bool searchLoop = true;
-            float xVel1 = xVel;
+            minZVel = (minSpeedDelta == 0) ? minZVel : sycl::ceil(minZVel / minSpeedDelta) * minSpeedDelta;
+            maxZVel = (minSpeedDelta == 0) ? maxZVel : sycl::floor(maxZVel / minSpeedDelta) * minSpeedDelta;
 
-            for (float zVel1 = zVel;
-                searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
-                zVel1 = sycl::nextafter(zVel1, -INFINITY)) {
-                searchLoop = search_xVel(
-                    xVel1, zVel1, tenKSol->departureSpeed,
-                    tenKSol->frame1Position, startNormals[floorIdx][1], idx,
-                    limits, solutions, counts, squishTriangles, squishNormals,
-                    startTriangles, startNormals);
-            }
-
-            searchLoop = true;
-            xVel1 = xVel;
-
-            for (float zVel1 = sycl::nextafter(zVel, INFINITY);
-                searchLoop && sycl::fabs(zVel1) <= tenKSol->departureSpeed;
-                zVel1 = sycl::nextafter(zVel1, INFINITY)) {
-                searchLoop = search_xVel(
-                    xVel1, zVel1, tenKSol->departureSpeed,
-                    tenKSol->frame1Position, startNormals[floorIdx][1], idx,
-                    limits, solutions, counts, squishTriangles, squishNormals,
-                    startTriangles, startNormals);
+            for (float zVel1 = minZVel; zVel1 <= maxZVel; 
+                zVel1 = sycl::fmax(zVel1 + minSpeedDelta, sycl::nextafter(zVel1, INFINITY))) {
+                search_xVel(zVel1, tenKSol->departureSpeed, 
+                    tenKSol->frame1Position, startNormals[floorIdx][1], idx, minSpeedDelta,
+                    limits, solutions, counts, platform_pos,
+                    squishCeilingTriangles, squishTriangles, squishNormals,
+                    startCeilingTriangles, startTriangles, startNormals);
             }
         }
     }
@@ -13149,10 +13217,15 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                             auto solutions_ptr_ct1 = solutions.get_ptr();
                             auto counts_ptr_ct1 = counts.get_ptr();
 
+                            auto platform_pos_ptr_ct1 = platform_pos.get_ptr();
+                            auto squishCeilingTriangles_acc_ct1 =
+                                squishCeilingTriangles.get_access(cgh);
                             auto squishTriangles_acc_ct1 =
                                 squishTriangles.get_access(cgh);
                             auto squishNormals_acc_ct1 =
                                 squishNormals.get_access(cgh);
+                            auto startCeilingTriangles_acc_ct1 =
+                                startCeilingTriangles.get_access(cgh);
                             auto startTriangles_acc_ct1 =
                                 startTriangles.get_access(cgh);
                             auto startNormals_acc_ct1 =
@@ -13167,8 +13240,11 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                                 find_double_10k_solutions(
                                     item_ct1, *limits_ptr_ct1,
                                     *solutions_ptr_ct1, *counts_ptr_ct1,
+                                    platform_pos_ptr_ct1,
+                                    squishCeilingTriangles_acc_ct1,
                                     squishTriangles_acc_ct1,
                                     squishNormals_acc_ct1,
+                                    startCeilingTriangles_acc_ct1,
                                     startTriangles_acc_ct1,
                                     startNormals_acc_ct1);
                             });
