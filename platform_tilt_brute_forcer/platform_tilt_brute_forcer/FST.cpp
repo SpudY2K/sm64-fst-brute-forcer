@@ -8839,17 +8839,17 @@ void try_position(
                 break;
             }
 
-            if (f < 3) {
+            if (f > 0 && f < 4) {
                 if (floor_idx == -1) {
-                    landingNormalsY[f] = 1.0;
+                    landingNormalsY[f - 1] = 1.0;
                 }
                 else {
-                    landingNormalsY[f] = triangleNormals[floor_idx][1];
+                    landingNormalsY[f - 1] = triangleNormals[floor_idx][1];
                 }
 
-                landingPositions[f][0] = marioPos[0];
-                landingPositions[f][1] = marioPos[1];
-                landingPositions[f][2] = marioPos[2];
+                landingPositions[f - 1][0] = marioPos[0];
+                landingPositions[f - 1][1] = marioPos[1];
+                landingPositions[f - 1][2] = marioPos[2];
             }
 
             bool oldOnPlatform = onPlatform;
@@ -12984,87 +12984,89 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                             sizeof(int))
                         .wait();
 
-                    nBlocks = ((maxAngleRangeCPU * countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
+                    if (maxAngleRangeCPU > 0) {
+                        nBlocks = ((maxAngleRangeCPU * countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
 
-                    dpct::get_in_order_queue()
-                        .memcpy(
-                            (char*)(counts.get_ptr()) +
-                            offsetof(struct SolCounts, nSlideSolutions),
-                            &(countsCPU.nSlideSolutions), sizeof(int))
-                        .wait();
-                    /*
-                    DPCT1049:36: The work-group size passed to the SYCL kernel
-                    may exceed the limit. To get the device limit, query
-                    info::device::max_work_group_size. Adjust the work-group
-                    size if needed.
-                    */
-                    {
-                        slideAngleSampleRate.init();
-                        n_y_ranges.init();
-                        lower_y.init();
-                        upper_y.init();
-                        limits.init();
-                        solutions.init();
-                        counts.init();
-                        maxAngleRange.init();
-                        magSet.init();
-                        magCount.init();
-                        gSineTableG.init();
-                        gCosineTableG.init();
-                        gArctanTableG.init();
-                        platform_pos.init();
+                        dpct::get_in_order_queue()
+                            .memcpy(
+                                (char*)(counts.get_ptr()) +
+                                offsetof(struct SolCounts, nSlideSolutions),
+                                &(countsCPU.nSlideSolutions), sizeof(int))
+                            .wait();
+                        /*
+                        DPCT1049:36: The work-group size passed to the SYCL kernel
+                        may exceed the limit. To get the device limit, query
+                        info::device::max_work_group_size. Adjust the work-group
+                        size if needed.
+                        */
+                        {
+                            slideAngleSampleRate.init();
+                            n_y_ranges.init();
+                            lower_y.init();
+                            upper_y.init();
+                            limits.init();
+                            solutions.init();
+                            counts.init();
+                            maxAngleRange.init();
+                            magSet.init();
+                            magCount.init();
+                            gSineTableG.init();
+                            gCosineTableG.init();
+                            gArctanTableG.init();
+                            platform_pos.init();
 
-                        dpct::has_capability_or_fail(
-                            dpct::get_in_order_queue().get_device(),
-                            { sycl::aspect::fp64 });
+                            dpct::has_capability_or_fail(
+                                dpct::get_in_order_queue().get_device(),
+                                { sycl::aspect::fp64 });
 
-                        dpct::get_in_order_queue().submit(
-                            [&](sycl::handler& cgh) {
-                            auto slideAngleSampleRate_ptr_ct1 =
-                                slideAngleSampleRate.get_ptr();
-                            auto n_y_ranges_ptr_ct1 = n_y_ranges.get_ptr();
-                            auto lower_y_ptr_ct1 = lower_y.get_ptr();
-                            auto upper_y_ptr_ct1 = upper_y.get_ptr();
-                            auto limits_ptr_ct1 = limits.get_ptr();
-                            auto solutions_ptr_ct1 = solutions.get_ptr();
-                            auto counts_ptr_ct1 = counts.get_ptr();
-                            auto maxAngleRange_ptr_ct1 =
-                                maxAngleRange.get_ptr();
-                            auto magSet_ptr_ct1 = magSet.get_ptr();
-                            auto magCount_ptr_ct1 = magCount.get_ptr();
-                            auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
-                            auto gCosineTableG_ptr_ct1 =
-                                gCosineTableG.get_ptr();
-                            auto gArctanTableG_ptr_ct1 =
-                                gArctanTableG.get_ptr();
-                            auto platform_pos_ptr_ct1 = platform_pos.get_ptr();
+                            dpct::get_in_order_queue().submit(
+                                [&](sycl::handler& cgh) {
+                                auto slideAngleSampleRate_ptr_ct1 =
+                                    slideAngleSampleRate.get_ptr();
+                                auto n_y_ranges_ptr_ct1 = n_y_ranges.get_ptr();
+                                auto lower_y_ptr_ct1 = lower_y.get_ptr();
+                                auto upper_y_ptr_ct1 = upper_y.get_ptr();
+                                auto limits_ptr_ct1 = limits.get_ptr();
+                                auto solutions_ptr_ct1 = solutions.get_ptr();
+                                auto counts_ptr_ct1 = counts.get_ptr();
+                                auto maxAngleRange_ptr_ct1 =
+                                    maxAngleRange.get_ptr();
+                                auto magSet_ptr_ct1 = magSet.get_ptr();
+                                auto magCount_ptr_ct1 = magCount.get_ptr();
+                                auto gSineTableG_ptr_ct1 = gSineTableG.get_ptr();
+                                auto gCosineTableG_ptr_ct1 =
+                                    gCosineTableG.get_ptr();
+                                auto gArctanTableG_ptr_ct1 =
+                                    gArctanTableG.get_ptr();
+                                auto platform_pos_ptr_ct1 = platform_pos.get_ptr();
 
-                            cgh.parallel_for(
-                                sycl::nd_range<3>(
-                                    sycl::range<3>(1, 1, nBlocks) *
-                                    sycl::range<3>(1, 1, o->nThreads),
-                                    sycl::range<3>(1, 1, o->nThreads)),
-                                [=](sycl::nd_item<3> item_ct1) {
-                                test_slide_angle(
-                                    item_ct1, *slideAngleSampleRate_ptr_ct1,
-                                    *n_y_ranges_ptr_ct1, lower_y_ptr_ct1,
-                                    upper_y_ptr_ct1, *limits_ptr_ct1,
-                                    *solutions_ptr_ct1, *counts_ptr_ct1,
-                                    *maxAngleRange_ptr_ct1, magSet_ptr_ct1,
-                                    *magCount_ptr_ct1, gSineTableG_ptr_ct1,
-                                    gCosineTableG_ptr_ct1,
-                                    gArctanTableG_ptr_ct1,
-                                    platform_pos_ptr_ct1);
+                                cgh.parallel_for(
+                                    sycl::nd_range<3>(
+                                        sycl::range<3>(1, 1, nBlocks) *
+                                        sycl::range<3>(1, 1, o->nThreads),
+                                        sycl::range<3>(1, 1, o->nThreads)),
+                                    [=](sycl::nd_item<3> item_ct1) {
+                                    test_slide_angle(
+                                        item_ct1, *slideAngleSampleRate_ptr_ct1,
+                                        *n_y_ranges_ptr_ct1, lower_y_ptr_ct1,
+                                        upper_y_ptr_ct1, *limits_ptr_ct1,
+                                        *solutions_ptr_ct1, *counts_ptr_ct1,
+                                        *maxAngleRange_ptr_ct1, magSet_ptr_ct1,
+                                        *magCount_ptr_ct1, gSineTableG_ptr_ct1,
+                                        gCosineTableG_ptr_ct1,
+                                        gArctanTableG_ptr_ct1,
+                                        platform_pos_ptr_ct1);
+                                });
                             });
-                        });
+                        }
+                        dpct::get_in_order_queue()
+                            .memcpy(
+                                &(countsCPU.nSlideSolutions),
+                                (char*)(counts.get_ptr()) +
+                                offsetof(struct SolCounts, nSlideSolutions),
+                                sizeof(int))
+                            .wait();
                     }
-                    dpct::get_in_order_queue()
-                        .memcpy(
-                            &(countsCPU.nSlideSolutions),
-                            (char*)(counts.get_ptr()) +
-                            offsetof(struct SolCounts, nSlideSolutions),
-                            sizeof(int))
-                        .wait();
                 }
 
                 if (countsCPU.nSlideSolutions > 0) {

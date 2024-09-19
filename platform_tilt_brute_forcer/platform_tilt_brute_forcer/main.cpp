@@ -884,9 +884,13 @@ int main(int argc, char* argv[]) {
                         if (output.cudaError == 701) {
                             if (!o.silent) fprintf(stderr, "Error: SYCL work group too large for the number of registers on your device.\n");
                             if (!o.silent) fprintf(stderr, "       Run this program with --help for details on how to change number of threads.\n");
+                            sprintf(logContent, "SYCL work group too large");
+                            write_line_to_log_file(LOG_ERROR, logContent, logf);
                         }
                         else {
-                            if (!o.silent) fprintf(stderr, "Error: Normal failed with the following error code: %d.\n", output.cudaError);
+                            if (!o.silent) fprintf(stderr, "Error: Normal (%.10g, %.10g, %.10g) failed with the following error code: %d.\n", testNormal[0], testNormal[1], testNormal[2], output.cudaError);
+                            sprintf(logContent, "Normal (%.10g, %.10g, %.10g) failed with error code %d", testNormal[0], testNormal[1], testNormal[2], output.cudaError);
+                            write_line_to_log_file(LOG_ERROR, logContent, logf);
                         }
 
                         return output.cudaError;
