@@ -156,6 +156,7 @@
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Surface.cpp" />
     <ClCompile Include="Trig.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="vmath.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="Surface.hpp" />
     <ClInclude Include="Trig.hpp" />
+    <ClInclude Include="utils.hpp" />
     <ClInclude Include="vmath.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

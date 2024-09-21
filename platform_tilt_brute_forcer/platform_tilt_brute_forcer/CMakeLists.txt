@@ -12,6 +12,8 @@ add_executable(fst-brute-forcer-sycl
   "Trig.hpp"
   "vmath.cpp"
   "vmath.hpp"
+  "utils.cpp"
+  "utils.hpp"
 )
 
 target_include_directories(fst-brute-forcer-sycl PRIVATE /opt/intel/oneapi/2024.2/include/)
