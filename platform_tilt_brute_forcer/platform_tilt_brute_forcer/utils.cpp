@@ -1,6 +1,7 @@
 #include "utils.hpp"
 #include <iomanip>
 #include <sstream>
+#include <math.h>
 
 int getMinPrecision(float num) {
     int precision;
