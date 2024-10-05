@@ -46,7 +46,7 @@ struct FSTOptions {
 
     double maxSpeed = 6553600.0;
 
-    float maxSlidingSpeed = 20.0f;
+    float maxSlidingSpeed = 26.0f;
     float maxSlidingSpeedToPlatform = 5.0f;
 
     int outputLevel = 1;
@@ -265,6 +265,11 @@ struct BullyPushSolution {
     float maxSpeed;
     float minSlidingSpeedX;
     float minSlidingSpeedZ;
+    float marioMinX;
+    float marioMaxX;
+    float marioMinZ;
+    float marioMaxZ;
+    float marioMaxY;
 };
 
 struct SlideSolution {

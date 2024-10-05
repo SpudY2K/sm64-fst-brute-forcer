@@ -4593,7 +4593,7 @@ void test_speed_solution(
                                                         .MAX_SQUISH_SPOTS);
                                                     l++) {
                                                     float signX = sign(squishSpots[(2 * intersectionIdxs[i] * limits.MAX_SQUISH_SPOTS) + (2 * l)]);
-                                                    float signZ = sign(squishSpots[(2 * l) + 1]);
+                                                    float signZ = sign(squishSpots[(2 * intersectionIdxs[i] * limits.MAX_SQUISH_SPOTS) + (2 * l) + 1]);
 
                                                     for (int m = 0; m < 4; m++) {
                                                         float xDist = bullyPushX - (squishSpots[(2 * intersectionIdxs[i] * limits.MAX_SQUISH_SPOTS) + (2 * l)] + signX * (m % 2));
@@ -6984,56 +6984,63 @@ void try_upwarp_slide(
             upwarpPositionTest = upwarpPositionTest && check_inbounds(mario_pos);
 
             if (upwarpPositionTest) {
-                int idx = dpct::atomic_fetch_add<
-                    sycl::access::address_space::generic_space>(
-                        &(counts.nSlideSolutions), 1);
+                int slideYaw = atan2sG(zVel1, xVel1, gArctanTableG);
 
-                if (idx < limits.MAX_SLIDE_SOLUTIONS) {
-                    int slideYaw = atan2sG(zVel1, xVel1, gArctanTableG);
+                int facingDYaw = angle - slideYaw;
 
-                    int facingDYaw = angle - slideYaw;
+                int newFacingDYaw = (short)facingDYaw;
 
-                    int newFacingDYaw = (short)facingDYaw;
-
-                    if (newFacingDYaw > 0 && newFacingDYaw <= 0x4000) {
-                        if ((newFacingDYaw -= 0x200) < 0) {
-                            newFacingDYaw = 0;
-                        }
+                if (newFacingDYaw > 0 && newFacingDYaw <= 0x4000) {
+                    if ((newFacingDYaw -= 0x200) < 0) {
+                        newFacingDYaw = 0;
                     }
-                    else if (newFacingDYaw > -0x4000 && newFacingDYaw < 0) {
-                        if ((newFacingDYaw += 0x200) > 0) {
-                            newFacingDYaw = 0;
-                        }
+                }
+                else if (newFacingDYaw > -0x4000 && newFacingDYaw < 0) {
+                    if ((newFacingDYaw += 0x200) > 0) {
+                        newFacingDYaw = 0;
                     }
-                    else if (newFacingDYaw > 0x4000 && newFacingDYaw < 0x8000) {
-                        if ((newFacingDYaw += 0x200) > 0x8000) {
-                            newFacingDYaw = 0x8000;
-                        }
+                }
+                else if (newFacingDYaw > 0x4000 && newFacingDYaw < 0x8000) {
+                    if ((newFacingDYaw += 0x200) > 0x8000) {
+                        newFacingDYaw = 0x8000;
                     }
-                    else if (newFacingDYaw > -0x8000 && newFacingDYaw < -0x4000) {
-                        if ((newFacingDYaw -= 0x200) < -0x8000) {
-                            newFacingDYaw = -0x8000;
-                        }
+                }
+                else if (newFacingDYaw > -0x8000 && newFacingDYaw < -0x4000) {
+                    if ((newFacingDYaw -= 0x200) < -0x8000) {
+                        newFacingDYaw = -0x8000;
                     }
+                }
 
-                    int postSlideAngle = (unsigned short)(slideYaw + newFacingDYaw);
+                int postSlideAngle = (unsigned short)(slideYaw + newFacingDYaw);
 
-                    float postSlideSpeed =
-                        -sycl::sqrt(xVel1 * xVel1 + zVel1 * zVel1);
+                float postSlideSpeed =
+                    -sycl::sqrt(xVel1 * xVel1 + zVel1 * zVel1);
 
-                    SlideSolution* solution = &(solutions.slideSolutions[idx]);
-                    solution->tenKSolutionIdx = solIdx;
-                    solution->preUpwarpPosition[0] = intendedPos[0];
-                    solution->preUpwarpPosition[1] = intendedPos[1];
-                    solution->preUpwarpPosition[2] = intendedPos[2];
-                    solution->upwarpPosition[0] = mario_pos[0];
-                    solution->upwarpPosition[1] = mario_pos[1];
-                    solution->upwarpPosition[2] = mario_pos[2];
-                    solution->angle = angle;
-                    solution->intendedDYaw = intendedDYaw;
-                    solution->stickMag = intendedMag;
-                    solution->postSlideAngle = postSlideAngle;
-                    solution->postSlideSpeed = postSlideSpeed;
+                float postSlideVelX = postSlideSpeed * sinsG(postSlideAngle);
+                float postSlideVelZ = postSlideSpeed * cossG(postSlideAngle);
+
+                float nextPosition[3] = { mario_pos[0] + (postSlideVelX / 4.0f), mario_pos[1], mario_pos[2] + (postSlideVelZ / 4.0f) };
+
+                if (!check_inbounds(nextPosition)) {
+                    int idx = dpct::atomic_fetch_add<
+                        sycl::access::address_space::generic_space>(
+                            &(counts.nSlideSolutions), 1);
+
+                    if (idx < limits.MAX_SLIDE_SOLUTIONS) {
+                        SlideSolution* solution = &(solutions.slideSolutions[idx]);
+                        solution->tenKSolutionIdx = solIdx;
+                        solution->preUpwarpPosition[0] = intendedPos[0];
+                        solution->preUpwarpPosition[1] = intendedPos[1];
+                        solution->preUpwarpPosition[2] = intendedPos[2];
+                        solution->upwarpPosition[0] = mario_pos[0];
+                        solution->upwarpPosition[1] = mario_pos[1];
+                        solution->upwarpPosition[2] = mario_pos[2];
+                        solution->angle = angle;
+                        solution->intendedDYaw = intendedDYaw;
+                        solution->stickMag = intendedMag;
+                        solution->postSlideAngle = postSlideAngle;
+                        solution->postSlideSpeed = postSlideSpeed;
+                    }
                 }
             }
         }
@@ -9380,6 +9387,10 @@ void try_slide_kick_routeG(
         double minF2Dist = INFINITY;
         double maxF2Dist = -INFINITY;
 
+        //const float cameraFocusSpeed = 0.8f;
+        const int nDiveFrames = 5;
+        const float cameraFocusSpeed = 0.8f - 0.73f * powf(0.95f, nDiveFrames - 1);
+
         for (int i = 0; i < nPoints; i++) {
             for (int j = 0; j < 4; j++) {
                 double PX = 65536.0 * sol1->x1 + pyramidFloorPoints[3 * i];
@@ -9608,8 +9619,8 @@ void try_slide_kick_routeG(
                         cameraFocus[1] /= nPoints;
                         cameraFocus[2] /= nPoints;
 
-                        cameraFocus[0] += 0.8 * 65536.0 * sol1->x1;
-                        cameraFocus[2] += 0.8 * 65536.0 * sol1->z1;
+                        cameraFocus[0] += cameraFocusSpeed * 65536.0 * sol1->x1;
+                        cameraFocus[2] += cameraFocusSpeed * 65536.0 * sol1->z1;
 
                         float distToCamera = sycl::sqrt(
                             cameraFocus[0] * cameraFocus[0] +
@@ -10918,6 +10929,7 @@ void find_bully_positions(
     int*& nSquishSpots, float* gSineTableG, float* gCosineTableG,
     int* gArctanTableG, int* gReverseArctanTableG,
     dpct::accessor<float, dpct::global, 2> squishCeilingNormals,
+    dpct::accessor<short, dpct::global, 3> squishTriangles,
     dpct::accessor<float, dpct::global, 2> squishNormals,
     dpct::accessor<float, dpct::global, 2> startNormals) {
     int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
@@ -10958,6 +10970,8 @@ void find_bully_positions(
         float slopeXVel = accel * steepness * sinsG(slopeAngle);
         float slopeZVel = accel * steepness * cossG(slopeAngle);
 
+        bool onFloor = false;
+
         float minBullyPushX = doubleTenKSol->minStartX;
         float maxBullyPushX = doubleTenKSol->maxStartX;
         float minBullyPushZ = doubleTenKSol->minStartZ;
@@ -10968,6 +10982,22 @@ void find_bully_positions(
             maxBullyPushX = maxBullyPushX - squishNormals[floorIdx][1] * xPushVel / 4.0f;
             minBullyPushZ = minBullyPushZ - squishNormals[floorIdx][1] * zPushVel / 4.0f;
             maxBullyPushZ = maxBullyPushZ - squishNormals[floorIdx][1] * zPushVel / 4.0f;
+
+            if (i == 0) {
+                float bpPos[3] = { 0.0f, 0.0f, 0.0f };
+
+                for (int j = 0; j < 4; j++) {
+                    bpPos[0] = (j % 2 == 0) ? minBullyPushX : maxBullyPushX;
+                    bpPos[2] = (j / 2 == 0) ? minBullyPushZ : maxBullyPushZ;
+
+                    float fHeight;
+                    int fIdx1 = find_floor(bpPos, squishTriangles, squishNormals, &fHeight);
+
+                    if (fIdx1 != -1) {
+                        onFloor = true;
+                    }
+                }
+            }
         }
 
         minBullyPushX = minBullyPushX - xPushVel / 4.0f;
@@ -10975,164 +11005,245 @@ void find_bully_positions(
         minBullyPushZ = minBullyPushZ - zPushVel / 4.0f;
         maxBullyPushZ = maxBullyPushZ - zPushVel / 4.0f;
 
-        int minAngle = INT_MAX;
-        int maxAngle = INT_MIN;
-        int refAngle = 65536;
+        if (onFloor) {
+            int minAngle = INT_MAX;
+            int maxAngle = INT_MIN;
+            int refAngle = 65536;
 
-        for (int j = 0; j < 4; j++) {
-            float bullyPushX = (j % 2 == 0) ? minBullyPushX : maxBullyPushX;
-            float bullyPushZ = (j / 2 == 0) ? minBullyPushZ : maxBullyPushZ;
+            for (int j = 0; j < 4; j++) {
+                float bullyPushX = (j % 2 == 0) ? minBullyPushX : maxBullyPushX;
+                float bullyPushZ = (j / 2 == 0) ? minBullyPushZ : maxBullyPushZ;
 
-            for (int k = 0; k < nSquishSpots[tenKSol->squishCeiling]; k++) {
-                float signX = sign(squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)]);
-                float signZ = sign(squishSpots[(2 * k) + 1]);
+                for (int k = 0; k < nSquishSpots[tenKSol->squishCeiling]; k++) {
+                    float signX = sign(squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)]);
+                    float signZ = sign(squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1]);
 
-                for (int l = 0; l < 4; l++) {
-                    float xDist = bullyPushX - (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2));
-                    float zDist = bullyPushZ - (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2));
+                    for (int l = 0; l < 4; l++) {
+                        float xDist = bullyPushX - (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2));
+                        float zDist = bullyPushZ - (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2));
 
-                    float dist = sycl::sqrt(xDist * xDist + zDist * zDist);
+                        float dist = sycl::sqrt(xDist * xDist + zDist * zDist);
 
-                    if (dist >= pushRadius - bullyHurtbox &&
-                        dist <= pushRadius -
-                        sycl::fmax(
-                            bullyHurtbox - 2.0f * maxSlidingSpeed -
-                            1.85f,
-                            0.0f)) {
-                        int angle = atan2sG(zDist, xDist, gArctanTableG);
+                        if (dist >= pushRadius - bullyHurtbox &&
+                            dist <= pushRadius -
+                            sycl::fmax(
+                                bullyHurtbox - 2.0f * maxSlidingSpeed -
+                                1.85f,
+                                0.0f)) {
+                            int angle = atan2sG(zDist, xDist, gArctanTableG);
 
-                        int angleDiff = (short)(angle - uphillAngle);
+                            int angleDiff = (short)(angle - uphillAngle);
 
-                        if (angleDiff < -0x4000 || angleDiff > 0x4000) {
-                            if (refAngle == 65536) {
-                                refAngle = angle;
+                            if (angleDiff < -0x4000 || angleDiff > 0x4000) {
+                                if (refAngle == 65536) {
+                                    refAngle = angle;
+                                }
+
+                                minAngle = sycl::min(
+                                    minAngle, (int)(short)(angle - refAngle));
+                                maxAngle = sycl::max(
+                                    maxAngle, (int)(short)(angle - refAngle));
                             }
-
-                            minAngle = sycl::min(
-                                minAngle, (int)(short)(angle - refAngle));
-                            maxAngle = sycl::max(
-                                maxAngle, (int)(short)(angle - refAngle));
                         }
                     }
                 }
             }
-        }
 
-        if (refAngle != 65536) {
-            minAngle = (unsigned short)(minAngle + refAngle);
-            maxAngle = (unsigned short)(maxAngle + refAngle);
+            if (refAngle != 65536) {
+                minAngle = (unsigned short)(minAngle + refAngle);
+                maxAngle = (unsigned short)(maxAngle + refAngle);
 
-            int minAngleIdx = revAtansG(minAngle);
-            int maxAngleIdx = revAtansG(maxAngle);
+                int minAngleIdx = revAtansG(minAngle);
+                int maxAngleIdx = revAtansG(maxAngle);
 
-            while ((short)(((gArctanTableG[minAngleIdx] >> 4) << 4) - minAngle) < 0) {
-                minAngleIdx = (minAngleIdx + 1) % 8192;
-            }
-
-            if (maxAngleIdx < minAngleIdx) {
-                maxAngleIdx = maxAngleIdx + 8192;
-            }
-
-            for (int j = minAngleIdx; j <= maxAngleIdx; j++) {
-                int angle = (unsigned short)(gArctanTableG[j % 8192]);
-
-                float minBullyX = minBullyPushX - pushRadius * sinsG(angle);
-                float maxBullyX = maxBullyPushX - pushRadius * sinsG(angle);
-                float minBullyZ = minBullyPushZ - pushRadius * cossG(angle);
-                float maxBullyZ = maxBullyPushZ - pushRadius * cossG(angle);
-
-                float xDiff2;
-
-                if (minBullyX == maxBullyX) {
-                    int precision;
-                    /*
-                    DPCT1017:45: The sycl::frexp call is used instead of the
-                    frexpf call. These two calls do not provide exactly the same
-                    functionality. Check the potential precision and/or
-                    performance issues for the generated code.
-                    */
-                    sycl::frexp(minBullyX, &precision);
-                    xDiff2 = dpct::pow(2.0f, precision - 24);
+                while ((short)(((gArctanTableG[minAngleIdx] >> 4) << 4) - minAngle) < 0) {
+                    minAngleIdx = (minAngleIdx + 1) % 8192;
                 }
-                else {
-                    xDiff2 = dpct::pow(
-                        2.0f, sycl::floor(sycl::log2(maxBullyX - minBullyX)));
 
-                    while (sycl::floor(maxBullyX / (2.0f * xDiff2)) >=
-                        sycl::ceil(minBullyX / (2.0f * xDiff2))) {
-                        xDiff2 = xDiff2 * 2.0f;
+                if (maxAngleIdx < minAngleIdx) {
+                    maxAngleIdx = maxAngleIdx + 8192;
+                }
+
+                for (int j = minAngleIdx; j <= maxAngleIdx; j++) {
+                    int angle = (unsigned short)(gArctanTableG[j % 8192]);
+
+                    float minBullyX = minBullyPushX - pushRadius * sinsG(angle);
+                    float maxBullyX = maxBullyPushX - pushRadius * sinsG(angle);
+                    float minBullyZ = minBullyPushZ - pushRadius * cossG(angle);
+                    float maxBullyZ = maxBullyPushZ - pushRadius * cossG(angle);
+
+                    float xDiff2;
+
+                    if (minBullyX == maxBullyX) {
+                        int precision;
+                        /*
+                        DPCT1017:45: The sycl::frexp call is used instead of the
+                        frexpf call. These two calls do not provide exactly the same
+                        functionality. Check the potential precision and/or
+                        performance issues for the generated code.
+                        */
+                        sycl::frexp(minBullyX, &precision);
+                        xDiff2 = dpct::pow(2.0f, precision - 24);
                     }
-                }
+                    else {
+                        xDiff2 = dpct::pow(
+                            2.0f, sycl::floor(sycl::log2(maxBullyX - minBullyX)));
 
-                float zDiff2;
-
-                if (minBullyZ == maxBullyZ) {
-                    int precision;
-                    /*
-                    DPCT1017:46: The sycl::frexp call is used instead of the
-                    frexpf call. These two calls do not provide exactly the same
-                    functionality. Check the potential precision and/or
-                    performance issues for the generated code.
-                    */
-                    sycl::frexp(minBullyZ, &precision);
-                    zDiff2 = dpct::pow(2.0f, precision - 24);
-                }
-                else {
-                    zDiff2 = dpct::pow(
-                        2.0f, sycl::floor(sycl::log2(maxBullyZ - minBullyZ)));
-
-                    while (sycl::floor(maxBullyZ / (2.0f * zDiff2)) >=
-                        sycl::ceil(minBullyZ / (2.0f * zDiff2))) {
-                        zDiff2 = zDiff2 * 2.0f;
+                        while (sycl::floor(maxBullyX / (2.0f * xDiff2)) >=
+                            sycl::ceil(minBullyX / (2.0f * xDiff2))) {
+                            xDiff2 = xDiff2 * 2.0f;
+                        }
                     }
-                }
 
-                float maxBullyXSpeed = sycl::fmin(
-                    sycl::nextafter(xDiff2 * baseBullySpeed, -INFINITY),
-                    (float)maxBullySpeed);
-                float maxBullyZSpeed = sycl::fmin(
-                    sycl::nextafter(zDiff2 * baseBullySpeed, -INFINITY),
-                    (float)maxBullySpeed);
+                    float zDiff2;
 
-                float maxPushSpeed =
-                    (sycl::fabs(maxBullyXSpeed * sinsG(angle)) +
-                        sycl::fabs(maxBullyZSpeed * cossG(angle))) *
-                    (73.0f / 53.0f) * 3.0f;
+                    if (minBullyZ == maxBullyZ) {
+                        int precision;
+                        /*
+                        DPCT1017:46: The sycl::frexp call is used instead of the
+                        frexpf call. These two calls do not provide exactly the same
+                        functionality. Check the potential precision and/or
+                        performance issues for the generated code.
+                        */
+                        sycl::frexp(minBullyZ, &precision);
+                        zDiff2 = dpct::pow(2.0f, precision - 24);
+                    }
+                    else {
+                        zDiff2 = dpct::pow(
+                            2.0f, sycl::floor(sycl::log2(maxBullyZ - minBullyZ)));
 
-                float maxLossFactor = (-1.0 * (0.5f + 0.5f * maxPushSpeed / 100.0f)) * 0.02 + 0.92;
-                float slidingSpeedX = (doubleTenKSol->post10KXVel / maxLossFactor) - slopeXVel;
-                float slidingSpeedZ = (doubleTenKSol->post10KZVel / maxLossFactor) - slopeZVel;
+                        while (sycl::floor(maxBullyZ / (2.0f * zDiff2)) >=
+                            sycl::ceil(minBullyZ / (2.0f * zDiff2))) {
+                            zDiff2 = zDiff2 * 2.0f;
+                        }
+                    }
 
-                float slidingSpeedToPlatformOptions[4] = { -slidingSpeedX, slidingSpeedZ, -slidingSpeedZ, slidingSpeedX };
+                    float maxBullyXSpeed = sycl::fmin(
+                        sycl::nextafter(xDiff2 * baseBullySpeed, -INFINITY),
+                        (float)maxBullySpeed);
+                    float maxBullyZSpeed = sycl::fmin(
+                        sycl::nextafter(zDiff2 * baseBullySpeed, -INFINITY),
+                        (float)maxBullySpeed);
 
-                float slidingSpeedToPlatform = slidingSpeedToPlatformOptions[tenKSol->squishCeiling];
+                    float maxPushSpeed =
+                        (sycl::fabs(maxBullyXSpeed * sinsG(angle)) +
+                            sycl::fabs(maxBullyZSpeed * cossG(angle))) *
+                        (73.0f / 53.0f) * 3.0f;
 
-                if (sycl::fabs(slidingSpeedX) <= maxSlidingSpeed &&
-                    sycl::fabs(slidingSpeedZ) <= maxSlidingSpeed &&
-                    slidingSpeedToPlatform <= maxSlidingSpeedToPlatform) {
-                    int solIdx = dpct::atomic_fetch_add<
-                        sycl::access::address_space::generic_space>(
-                            &(counts.nBullyPushSolutions), 1);
+                    float maxLossFactor = (-1.0 * (0.5f + 0.5f * maxPushSpeed / 100.0f)) * 0.02 + 0.92;
+                    float slidingSpeedX = (doubleTenKSol->post10KXVel / maxLossFactor) - slopeXVel;
+                    float slidingSpeedZ = (doubleTenKSol->post10KZVel / maxLossFactor) - slopeZVel;
 
-                    if (solIdx < limits.MAX_BULLY_PUSH_SOLUTIONS) {
-                        struct BullyPushSolution* solution = &(solutions.bullyPushSolutions[solIdx]);
-                        solution->doubleTenKSolutionIdx = idx;
-                        solution->bullyMinX = minBullyX;
-                        solution->bullyMaxX = maxBullyX;
-                        solution->bullyMinZ = minBullyZ;
-                        solution->bullyMaxZ = maxBullyZ;
-                        solution->pushAngle = angle;
-                        solution->maxSpeed = maxPushSpeed;
-                        solution->squishPushQF = squishPushFrames;
-                        solution->squishPushMinX = minBullyPushX;
-                        solution->squishPushMaxX = maxBullyPushX;
-                        solution->squishPushMinZ = minBullyPushZ;
-                        solution->squishPushMaxZ = maxBullyPushZ;
-                        solution->minSlidingSpeedX = slidingSpeedX;
-                        solution->minSlidingSpeedZ = slidingSpeedZ;
-                        dpct::atomic_fetch_add<
-                            sycl::access::address_space::generic_space>(
-                                &(tenKSol->bpSetups), 1);
+                    float slidingSpeedToPlatformOptions[4] = { -slidingSpeedX, slidingSpeedZ, -slidingSpeedZ, slidingSpeedX };
+
+                    float slidingSpeedToPlatform = slidingSpeedToPlatformOptions[tenKSol->squishCeiling];
+
+                    if (sycl::fabs(slidingSpeedX) <= maxSlidingSpeed &&
+                        sycl::fabs(slidingSpeedZ) <= maxSlidingSpeed &&
+                        slidingSpeedToPlatform <= maxSlidingSpeedToPlatform) {
+                        float minSquishSpotX = INFINITY;
+                        float maxSquishSpotX = -INFINITY;
+                        float minSquishSpotZ = INFINITY;
+                        float maxSquishSpotZ = -INFINITY;
+                        float maxSquishSpotY = -INFINITY;
+
+                        float squishSpotPos[3] = { 0.0f, 0.0f, 0.0f };
+
+                        for (int k = 0; k < nSquishSpots[tenKSol->squishCeiling]; k++) {
+                            int minAngleSpot = INT_MAX;
+                            int maxAngleSpot = INT_MIN;
+                            int refAngleSpot = angle;
+
+                            float signX = sign(squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)]);
+                            float signZ = sign(squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1]);
+
+                            for (int l = 0; l < 4; l++) {
+                                for (int j = 0; j < 4; j++) {
+                                    float bullyX = (j % 2 == 0) ? minBullyX : maxBullyX;
+                                    float bullyZ = (j / 2 == 0) ? minBullyZ : maxBullyZ;
+                                    float xDist = (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2)) - bullyX;
+                                    float zDist = (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2)) - bullyZ;
+
+                                    float dist = sycl::sqrt(xDist * xDist + zDist * zDist);
+
+                                    if (dist <= bullyHurtbox && dist >= bullyHurtbox - 2.0f * maxSlidingSpeed - 1.85f) {
+                                        int testAngle = atan2sG(zDist, xDist, gArctanTableG);
+
+                                        int angleDiff = (short)(testAngle - uphillAngle);
+
+                                        if (angleDiff < -0x4000 || angleDiff > 0x4000) {
+                                            minAngleSpot = sycl::min(minAngleSpot, (int)(short)(testAngle - refAngleSpot));
+                                            maxAngleSpot = sycl::max(maxAngleSpot, (int)(short)(testAngle - refAngleSpot));
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (minAngleSpot <= 0 && maxAngleSpot >= 0) {
+                                for (int l = 0; l < 4; l++) {
+                                    for (int j = 0; j < 4; j++) {
+                                        float bullyX = (j % 2 == 0) ? minBullyX : maxBullyX;
+                                        float bullyZ = (j / 2 == 0) ? minBullyZ : maxBullyZ;
+                                        float xDist = (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2)) - bullyX;
+                                        float zDist = (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2)) - bullyZ;
+
+                                        float dist = sycl::sqrt(xDist * xDist + zDist * zDist);
+
+                                        if (dist <= bullyHurtbox && dist >= bullyHurtbox - 2.0f * maxSlidingSpeed - 1.85f) {
+                                            minSquishSpotX = sycl::fmin(minSquishSpotX, (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2)));
+                                            maxSquishSpotX = sycl::fmax(maxSquishSpotX, (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)] + signX * (l % 2)));
+                                            minSquishSpotZ = sycl::fmin(minSquishSpotZ, (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2)));
+                                            maxSquishSpotZ = sycl::fmax(maxSquishSpotZ, (squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1] + signZ * (l / 2)));
+                                        }
+                                    }
+                                }
+
+                                squishSpotPos[0] = squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k)];
+                                squishSpotPos[2] = squishSpots[(2 * tenKSol->squishCeiling * limits.MAX_SQUISH_SPOTS) + (2 * k) + 1];
+
+                                float fHeight;
+                                int floor_idx = find_floor(squishSpotPos, squishTriangles, squishNormals, &fHeight);
+
+                                if (floor_idx == -1) {
+                                    maxSquishSpotY = INFINITY;
+                                }
+                                else {
+                                    maxSquishSpotY = sycl::fmax(maxSquishSpotY, fHeight - 78.0f);
+                                }
+                            }
+                        }
+
+                        if (minSquishSpotZ <= maxSquishSpotZ && minSquishSpotX <= maxSquishSpotX) {
+                            int solIdx = dpct::atomic_fetch_add<
+                                sycl::access::address_space::generic_space>(
+                                    &(counts.nBullyPushSolutions), 1);
+
+                            if (solIdx < limits.MAX_BULLY_PUSH_SOLUTIONS) {
+                                struct BullyPushSolution* solution = &(solutions.bullyPushSolutions[solIdx]);
+                                solution->doubleTenKSolutionIdx = idx;
+                                solution->bullyMinX = minBullyX;
+                                solution->bullyMaxX = maxBullyX;
+                                solution->bullyMinZ = minBullyZ;
+                                solution->bullyMaxZ = maxBullyZ;
+                                solution->pushAngle = angle;
+                                solution->maxSpeed = maxPushSpeed;
+                                solution->squishPushQF = squishPushFrames;
+                                solution->squishPushMinX = minBullyPushX;
+                                solution->squishPushMaxX = maxBullyPushX;
+                                solution->squishPushMinZ = minBullyPushZ;
+                                solution->squishPushMaxZ = maxBullyPushZ;
+                                solution->minSlidingSpeedX = slidingSpeedX;
+                                solution->minSlidingSpeedZ = slidingSpeedZ;
+                                solution->marioMinX = minSquishSpotX;
+                                solution->marioMaxX = maxSquishSpotX;
+                                solution->marioMinZ = minSquishSpotZ;
+                                solution->marioMaxZ = maxSquishSpotZ;
+                                solution->marioMaxY = maxSquishSpotY;
+                                dpct::atomic_fetch_add<
+                                    sycl::access::address_space::generic_space>(
+                                        &(tenKSol->bpSetups), 1);
+                            }
+                        }
                     }
                 }
             }
@@ -11504,7 +11615,7 @@ void set_squish_spots(short* tris, float* norms, struct GPULimits limits,
                     float ceilHeight;
                     int idx = find_ceil(pos, squishCeilingTriangles, squishCeilingNormals, &ceilHeight);
 
-                    if (idx != -1 && idx == ceilIdx && ceilHeight - -3071.0f < 150.0f) {
+                    if (idx == ceilIdx && ceilHeight - -3071.0f < 150.0f) {
                         float floorHeight;
                         int floorIdx = find_floor(pos, squishTriangles, squishNormals, &floorHeight);
 
@@ -11973,7 +12084,8 @@ void write_solutions_to_file(float* startNormal, struct FSTOptions* o, struct FS
                 wf << bdSol->postSlideSpeed << ",";
                 wf << bpSol->squishPushMinX << "," << bpSol->squishPushMaxX << "," << bpSol->squishPushMinZ << "," << bpSol->squishPushMaxZ << "," << bpSol->squishPushQF << ",";
                 wf << bpSol->bullyMinX << "," << bpSol->bullyMaxX << "," << bpSol->bullyMinZ << "," << bpSol->bullyMaxZ << "," << bpSol->pushAngle << ",";
-                wf << bpSol->maxSpeed << "," << bpSol->minSlidingSpeedX << "," << bpSol->minSlidingSpeedZ << endl;
+                wf << bpSol->maxSpeed << "," << bpSol->minSlidingSpeedX << "," << bpSol->minSlidingSpeedZ << ",";
+                wf << bpSol->marioMinX << "," << bpSol->marioMaxX << "," << bpSol->marioMinZ << "," << bpSol->marioMaxZ << "," << bpSol->marioMaxY << endl;
 
                 n++;
             }
@@ -12048,7 +12160,8 @@ void write_solution_file_header(int outputLevel, std::ofstream& wf) {
         wf << "Landing Speed,";
         wf << "Squish Push Min X,Squish Push Max X,Squish Push Min Z,Squish Push Max Z,Squish Push Q-steps,";
         wf << "Bully Min X,Bully Max X,Bully Min Z,Bully Max Z,Bully Push HAU,";
-        wf << "Max Bully Push Speed,Min X Sliding Speed,Min Z Sliding Speed";
+        wf << "Max Bully Push Speed,Min X Sliding Speed,Min Z Sliding Speed,";
+        wf << "Mario Min X,Mario Max X,Mario Min Z,Mario Max Z, Mario Max Y";
     }
 
     wf << endl;
@@ -13321,6 +13434,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                             auto gReverseArctanTableG_ptr_ct1 =
                                 gReverseArctanTableG.get_ptr();
 
+                            auto squishTriangles_acc_ct1 = squishTriangles.get_access(cgh);
                             auto squishCeilingNormals_acc_ct1 =
                                 squishCeilingNormals.get_access(cgh);
                             auto squishNormals_acc_ct1 =
@@ -13348,6 +13462,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                                     gArctanTableG_ptr_ct1,
                                     gReverseArctanTableG_ptr_ct1,
                                     squishCeilingNormals_acc_ct1,
+                                    squishTriangles_acc_ct1,
                                     squishNormals_acc_ct1,
                                     startNormals_acc_ct1);
                             });
