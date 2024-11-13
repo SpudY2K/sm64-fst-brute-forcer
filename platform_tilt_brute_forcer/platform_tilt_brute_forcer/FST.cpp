@@ -6625,15 +6625,15 @@ void find_breakdance_solutions(
     int& nUniqueSticks, float* gSineTableG, float* gCosineTableG,
     int* gArctanTableG, int* gReverseArctanTableG, bool* validCameraAngle,
     const int& total_floorsG, SurfaceG* floorsG) {
-    long long int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
     int stickIdx = idx % nUniqueSticks;
     int x = uniqueSticks[stickIdx][0];
     int y = uniqueSticks[stickIdx][1];
-    idx = idx / nUniqueSticks;
+    int slideIdx = idx / nUniqueSticks;
 
-    if (idx < sycl::min(counts.nSlideSolutions, limits.MAX_SLIDE_SOLUTIONS)) {
-        struct SlideSolution* slideSol = &(solutions.slideSolutions[idx]);
+    if (slideIdx < sycl::min(counts.nSlideSolutions, limits.MAX_SLIDE_SOLUTIONS)) {
+        struct SlideSolution* slideSol = &(solutions.slideSolutions[slideIdx]);
         struct TenKSolution* tenKSol = &(solutions.tenKSolutions[slideSol->tenKSolutionIdx]);
 
         SurfaceG* floor;
@@ -6867,7 +6867,7 @@ void find_breakdance_solutions(
 
                         if (solIdx < limits.MAX_BD_SOLUTIONS) {
                             BDSolution* solution = &(solutions.bdSolutions[solIdx]);
-                            solution->slideSolutionIdx = idx;
+                            solution->slideSolutionIdx = slideIdx;
                             solution->cameraYaw = cameraYaw;
                             solution->stickX = rawX;
                             solution->stickY = rawY;
@@ -13204,7 +13204,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                             sizeof(int))
                         .wait();
 
-                    nBlocks = (nUniqueSticksCPU * (long long int)countsCPU.nSlideSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)nUniqueSticksCPU * (long long int)countsCPU.nSlideSolutions + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
