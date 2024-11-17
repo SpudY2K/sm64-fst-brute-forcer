@@ -325,7 +325,7 @@ void write_options_to_log_file(struct SearchOptions* s, struct FSTOptions* o, st
     sprintf(logContent, "Option - X_Normal_Range = [%s, %s]", float2string_max(s->minNX, 1).c_str(), float2string_max(s->maxNX, 1).c_str());
     write_line_to_log_file(LOG_INFO, logContent, logf);
     if (s->zMode) {
-        sprintf(logContent, "Option - Z_Normal_Range = [%.10g, %.10g]", s->minNXZ, s->maxNXZ);
+        sprintf(logContent, "Option - Z_Normal_Range = [%s, %s]", float2string_max(s->minNXZ, 1).c_str(), float2string_max(s->maxNXZ, 1).c_str());
         write_line_to_log_file(LOG_INFO, logContent, logf);
     }
     else {
@@ -426,31 +426,31 @@ void print_help_text(struct SearchOptions* s, struct FSTOptions* o) {
     printf("         Size of SYCL work group to assign to the program.\n");
     printf("             Default: %d\n\n", o->nThreads);
     printf("    -lsk1 <n_solutions>\n");
-    printf("         Maximum number of phase 1 solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 1 solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_ONE);
     printf("    -lsk2a <n_solutions>\n");
-    printf("         Maximum number of phase 2a solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 2a solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_TWO_A);
     printf("    -lsk2b <n_solutions>\n");
-    printf("         Maximum number of phase 2b solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 2b solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_TWO_B);
     printf("    -lsk2c <n_solutions>\n");
-    printf("         Maximum number of phase 2c solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 2c solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_TWO_C);
     printf("    -lsk2d <n_solutions>\n");
-    printf("         Maximum number of phase 2d solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 2d solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_TWO_D);
     printf("    -lsk3 <n_solutions>\n");
-    printf("         Maximum number of phase 3 solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 3 solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_THREE);
     printf("    -lsk4 <n_solutions>\n");
-    printf("         Maximum number of phase 4 solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 4 solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_FOUR);
     printf("    -lsk5 <n_solutions>\n");
-    printf("         Maximum number of phase 5 solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 5 solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_FIVE);
     printf("    -lsk6 <n_solutions>\n");
-    printf("         Maximum number of phase 6 solutions for 10k setup search.\n");
+    printf("         Maximum number of slide kick phase 6 solutions for 10k setup search.\n");
     printf("             Default: %d\n\n", o->limits.MAX_SK_PHASE_SIX);
     printf("    -lp <n_solutions>\n");
     printf("         Maximum number of platform tilt solutions.\n");
