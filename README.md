@@ -58,23 +58,23 @@ This program accepts the following options:
   
 -t &lt;threads&gt;:                               Size of SYCL work group to assign to the program.
   
--lsk1 &lt;n_solutions&gt;:                        Maximum number of phase 1 solutions for 10k setup search.
+-lsk1 &lt;n_solutions&gt;:                        Maximum number of slide kick phase 1 solutions for 10k setup search.
   
--lsk2a &lt;n_solutions&gt;:                       Maximum number of phase 2a solutions for 10k setup search.
+-lsk2a &lt;n_solutions&gt;:                       Maximum number of slide kick phase 2a solutions for 10k setup search.
   
--lsk2b &lt;n_solutions&gt;:                       Maximum number of phase 2b solutions for 10k setup search.
+-lsk2b &lt;n_solutions&gt;:                       Maximum number of slide kick phase 2b solutions for 10k setup search.
   
--lsk2c &lt;n_solutions&gt;:                       Maximum number of phase 2c solutions for 10k setup search.
+-lsk2c &lt;n_solutions&gt;:                       Maximum number of slide kick phase 2c solutions for 10k setup search.
   
--lsk2d &lt;n_solutions&gt;:                       Maximum number of phase 2d solutions for 10k setup search.
+-lsk2d &lt;n_solutions&gt;:                       Maximum number of slide kick phase 2d solutions for 10k setup search.
   
--lsk3 &lt;n_solutions&gt;:                        Maximum number of phase 3 solutions for 10k setup search.
+-lsk3 &lt;n_solutions&gt;:                        Maximum number of slide kick phase 3 solutions for 10k setup search.
   
--lsk4 &lt;n_solutions&gt;:                        Maximum number of phase 4 solutions for 10k setup search.
+-lsk4 &lt;n_solutions&gt;:                        Maximum number of slide kick phase 4 solutions for 10k setup search.
   
--lsk5 &lt;n_solutions&gt;:                        Maximum number of phase 5 solutions for 10k setup search.
+-lsk5 &lt;n_solutions&gt;:                        Maximum number of slide kick phase 5 solutions for 10k setup search.
   
--lsk6 &lt;n_solutions&gt;:                        Maximum number of phase 6 solutions for 10k setup search.
+-lsk6 &lt;n_solutions&gt;:                        Maximum number of slide kick phase 6 solutions for 10k setup search.
   
 -lp &lt;n_solutions&gt;:                          Maximum number of platform tilt solutions.
   
