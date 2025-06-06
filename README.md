@@ -59,6 +59,6 @@ Tyler Kehne - Original max tilt brute forcer.
 AnthonyC4 - Original upwarp brute forcer. Implementations of platform, surface, trig, and math functions.  
 Modiseus - Boundary distance logic.  
 
-Additional thanks to Dan Park, Diffractor,  dtracers, TheLonelyPoire, and superminer for their help in optimisation and bug fixing.  
+Additional thanks to Diffractor,  dtracers, TheLonelyPoire, and superminer for their help in optimisation and bug fixing.  
 
 And a final special thanks to all contributors on the SM64 decompilation project. Without their excellent work this entire project would be impossible.
