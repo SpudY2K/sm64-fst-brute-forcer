@@ -4254,7 +4254,7 @@ void test_speed_solution(
     dpct::accessor<short, dpct::global, 3> startTriangles,
     dpct::accessor<float, dpct::global, 2> startNormals,
     const int& total_floorsG, SurfaceG* floorsG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSpeedSolutions, limits.MAX_SPEED_SOLUTIONS)) {
@@ -4948,7 +4948,7 @@ void find_speed_solutions(
     int& nStrainSetups, int& maxFSpeedLevels, int& maxSSpeedLevels,
     float* gSineTableG, float* gCosineTableG, int* gArctanTableG,
     const int& total_floorsG, SurfaceG* floorsG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
     int strainIdx = idx % sycl::min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
     idx = idx / sycl::min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
@@ -6170,7 +6170,7 @@ void find_sk_upwarp_solutions(
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, int& maxFSpeedLevels, int& maxSSpeedLevels,
     float* gSineTableG, float* gCosineTableG, int* gArctanTableG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nUpwarpSolutions, limits.MAX_UPWARP_SOLUTIONS)) {
@@ -7257,7 +7257,7 @@ void test_slide_angle(const sycl::nd_item<3>& item_ct1,
     float* magSet, int& magCount, float* gSineTableG,
     float* gCosineTableG, int* gArctanTableG,
     float* platform_pos) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     int angleIdx = idx % maxAngleRange;
@@ -7288,7 +7288,7 @@ void find_slide_solutions(
     const sycl::nd_item<3>& item_ct1, int slideAngleSampleRate,
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, int& maxAngleRange) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.n10KSolutions, limits.MAX_10K_SOLUTIONS)) {
@@ -8409,7 +8409,7 @@ void find_upwarp_solutions(float maxSpeed, const sycl::nd_item<3>& item_ct1,
     const double const* upper_floor,
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, float* platform_pos) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nPlatSolutions, limits.MAX_PLAT_SOLUTIONS)) {
@@ -8975,7 +8975,7 @@ void testEdge(const float x0, const float x1, const float z0, const float z1, fl
     const sycl::nd_item<3>& item_ct1, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
     int total = item_ct1.get_local_range(2) * item_ct1.get_group_range(2);
 
@@ -8992,7 +8992,7 @@ void simulate_tilts(const float minX, const float deltaX, const float minZ, cons
     const sycl::nd_item<3>& item_ct1, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts,
     float* platform_pos) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < width * height) {
@@ -9022,7 +9022,7 @@ void try_stick_positionG(
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, float* gSineTableG, float* gCosineTableG,
     int* gArctanTableG, int* gReverseArctanTableG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK5Solutions, limits.MAX_SK_PHASE_FIVE)) {
@@ -9180,7 +9180,7 @@ adjust the code, or use smaller sub-group size to avoid high register pressure.
 void try_slide_kick_routeG2(
     const sycl::nd_item<3>& item_ct1, struct GPULimits limits,
     struct SolStruct& solutions, struct SolCounts& counts, int* gArctanTableG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK4Solutions, limits.MAX_SK_PHASE_FOUR)) {
@@ -9376,7 +9376,7 @@ void try_slide_kick_routeG(
     struct SolCounts& counts, float* gSineTableG, float* gCosineTableG,
     int* gArctanTableG, int* gReverseArctanTableG, bool* validCameraAngle,
     const int& total_floorsG, SurfaceG* floorsG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK3Solutions, limits.MAX_SK_PHASE_THREE)) {
@@ -9695,7 +9695,7 @@ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ,
     struct GPULimits limits,
     struct SolStruct& solutions,
     struct SolCounts& counts) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK2ASolutions, limits.MAX_SK_PHASE_TWO_A)) {
@@ -9744,7 +9744,7 @@ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX,
     struct GPULimits limits,
     struct SolStruct& solutions,
     struct SolCounts& counts) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK2BSolutions, limits.MAX_SK_PHASE_TWO_B)) {
@@ -9792,7 +9792,7 @@ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float plat
     struct GPULimits limits,
     struct SolStruct& solutions,
     struct SolCounts& counts) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK2CSolutions, limits.MAX_SK_PHASE_TWO_C)) {
@@ -9892,7 +9892,7 @@ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float plat
     struct GPULimits limits,
     struct SolStruct& solutions,
     struct SolCounts& counts) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK2DSolutions, limits.MAX_SK_PHASE_TWO_D)) {
@@ -10001,7 +10001,7 @@ void find_slide_kick_setupG2(
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, float* gSineTableG, float* gCosineTableG,
     int* gArctanTableG, int* gReverseArctanTableG) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.nSK1Solutions, limits.MAX_SK_PHASE_ONE)) {
@@ -10216,7 +10216,7 @@ void find_slide_kick_setupG(
     struct GPULimits limits, struct SolStruct& solutions,
     struct SolCounts& counts, int* gArctanTableG, int* gReverseArctanTableG,
     float* platformNormal) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     int x1 = 4 * (idx % (2 * (maxF1PU / 4) + 1)) - maxF1PU;
@@ -10385,7 +10385,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
         .wait();
 
     int maxF1PU = (int)floor(yNormal * o->maxSpeed / (4.0 * 65536.0)) * 4;
-    int nBlocks = ((2 * (maxF1PU / 4) + 1) * (2 * (maxF1PU / 4) + 1) + o->nThreads - 1) / o->nThreads;
+    int nBlocks = ((2L * ((long long int)maxF1PU / 4L) + 1L) * (2L * ((long long int)maxF1PU / 4L) + 1L) + o->nThreads - 1) / o->nThreads;
 
     /*
     DPCT1049:20: The work-group size passed to the SYCL kernel may exceed the
@@ -10449,7 +10449,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK1Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK1Solutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:21: The work-group size passed to the SYCL kernel may exceed
@@ -10537,7 +10537,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2ASolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2ASolutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:22: The work-group size passed to the SYCL kernel may exceed
@@ -10585,7 +10585,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2BSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2BSolutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:23: The work-group size passed to the SYCL kernel may exceed
@@ -10633,7 +10633,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2CSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2CSolutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:24: The work-group size passed to the SYCL kernel may exceed
@@ -10681,7 +10681,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2DSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2DSolutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:25: The work-group size passed to the SYCL kernel may exceed
@@ -10737,7 +10737,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK3Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK3Solutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:26: The work-group size passed to the SYCL kernel may exceed
@@ -10813,7 +10813,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK4Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK4Solutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:27: The work-group size passed to the SYCL kernel may exceed
@@ -10867,7 +10867,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK5Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK5Solutions + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:28: The work-group size passed to the SYCL kernel may exceed
@@ -10932,7 +10932,7 @@ void find_bully_positions(
     dpct::accessor<short, dpct::global, 3> squishTriangles,
     dpct::accessor<float, dpct::global, 2> squishNormals,
     dpct::accessor<float, dpct::global, 2> startNormals) {
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
     int squishPushFrames = (idx % 3) + 2;
     idx = idx / 3;
@@ -11506,7 +11506,7 @@ void find_double_10k_solutions(const sycl::nd_item<3>& item_ct1,
     minPlatformZ = (minPlatformZ > 0) ? minPlatformZ : sycl::nextafter(minPlatformZ - 1.0f, INFINITY);
     maxPlatformZ = (maxPlatformZ > 0) ? sycl::nextafter(maxPlatformZ + 1.0f, -INFINITY) : maxPlatformZ;
 
-    int idx = item_ct1.get_group(2) * item_ct1.get_local_range(2) +
+    long long int idx = ((long long int)item_ct1.get_group(2) * (long long int)item_ct1.get_local_range(2)) +
         item_ct1.get_local_id(2);
 
     if (idx < sycl::min(counts.n10KSolutions, limits.MAX_10K_SOLUTIONS)) {
@@ -12430,7 +12430,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                 &(countsCPU.nPlatSolutions), sizeof(int))
             .wait();
 
-        long long int nBlocks = (nX * nZ + o->nThreads - 1) / o->nThreads;
+        long long int nBlocks = ((long long int)nX * (long long int)nZ + o->nThreads - 1) / o->nThreads;
 
         /*
         DPCT1049:30: The work-group size passed to the SYCL kernel may exceed
@@ -12495,7 +12495,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
             //if (!o->silent) printf("---------------------------------------\nTesting Normal: %.10g, %.10g, %.10g\n", startNormal[0], startNormal[1], startNormal[2]);
             //if (!o->silent) printf("        # Platform Solutions: %d\n", countsCPU.nPlatSolutions);
 
-            nBlocks = (countsCPU.nPlatSolutions + o->nThreads - 1) / o->nThreads;
+            nBlocks = ((long long int)countsCPU.nPlatSolutions + o->nThreads - 1) / o->nThreads;
 
             dpct::get_in_order_queue()
                 .memcpy(
@@ -12652,7 +12652,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     //if (!o->silent) printf("        # Slide Kick Routes: %d\n", countsCPU.nSK6Solutions);
 
-                    nBlocks = (countsCPU.nUpwarpSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.nUpwarpSolutions + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
@@ -12910,7 +12910,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     //if (!o->silent) printf("        # Speed Solutions: %d\n", countsCPU.nSpeedSolutions);
 
-                    nBlocks = (countsCPU.nSpeedSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.nSpeedSolutions + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
@@ -13051,6 +13051,8 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                             sizeof(int))
                         .wait();
 
+                    nBlocks = ((long long int)countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
+
                     /*
                     DPCT1049:35: The work-group size passed to the SYCL kernel
                     may exceed the limit. To get the device limit, query
@@ -13099,7 +13101,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                         .wait();
 
                     if (maxAngleRangeCPU > 0) {
-                        nBlocks = ((maxAngleRangeCPU * countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
+                        nBlocks = (((long long int)maxAngleRangeCPU * (long long int)countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
 
                         dpct::get_in_order_queue()
                             .memcpy(
@@ -13299,7 +13301,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     if (!o->silent) printf("        # Breakdance Solutions: %d\n", countsCPU.nBDSolutions);
 
-                    nBlocks = (countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
@@ -13390,7 +13392,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     if (!o->silent) printf("        # Double 10K Solutions: %d\n", countsCPU.nDouble10KSolutions);
 
-                    nBlocks = (3 * countsCPU.nDouble10KSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = (3L * (long long int)countsCPU.nDouble10KSolutions + o->nThreads - 1) / o->nThreads;
 
                     dpct::get_in_order_queue()
                         .memcpy(
