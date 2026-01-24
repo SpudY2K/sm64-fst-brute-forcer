@@ -971,7 +971,7 @@ __device__ void adjust_position_to_ints(float* a, float* b, float p[2][3]) {
 }
 
 __global__ void test_speed_solution(int* squishEdges, const int nPoints, float floorNormalY, int uphillAngle, float maxSlidingSpeed, float maxSlidingSpeedToPlatform) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSpeedSolutions, limits.MAX_SPEED_SOLUTIONS)) {
         struct SpeedSolution* sol = &(solutions.speedSolutions[idx]);
@@ -1429,7 +1429,7 @@ __global__ void test_speed_solution(int* squishEdges, const int nPoints, float f
 }
 
 __global__ void find_speed_solutions() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
     int strainIdx = idx % min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
     idx = idx / min(nStrainSetups, limits.MAX_STRAIN_SETUPS);
 
@@ -2347,7 +2347,7 @@ __device__ float next_in_bounds_speed(float currentSpeed, float floorNormalY, fl
 }
 
 __global__ void find_sk_upwarp_solutions() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nUpwarpSolutions, limits.MAX_UPWARP_SOLUTIONS)) {
         struct UpwarpSolution* uwSol = &(solutions.upwarpSolutions[idx]);
@@ -3273,7 +3273,7 @@ __device__ void try_pu_slide_angle(int solIdx, int angle, double minEndAngle, do
 }
 
 __global__ void test_slide_angle() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     int angleIdx = idx % maxAngleRange;
     idx = idx / maxAngleRange;
@@ -3289,7 +3289,7 @@ __global__ void test_slide_angle() {
 }
 
 __global__ void find_slide_solutions() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.n10KSolutions, limits.MAX_10K_SOLUTIONS)) {
         struct TenKSolution* tenKSol = &(solutions.tenKSolutions[idx]);
@@ -4135,7 +4135,7 @@ __device__ void try_normal(float* normal, float* position, int platSolIdx, doubl
 }
 
 __global__ void find_upwarp_solutions(float maxSpeed) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nPlatSolutions, limits.MAX_PLAT_SOLUTIONS)) {
         struct PlatformSolution* platSol = &(solutions.platSolutions[idx]);
@@ -4636,7 +4636,7 @@ __device__ void try_position(float* marioPos, float* normal, int maxFrames) {
 }
 
 __global__ void testEdge(const float x0, const float x1, const float z0, const float z1, float normalX, float normalY, float normalZ, int maxFrames) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
     int total = blockDim.x * gridDim.x;
 
     double t = (double)idx / (double)total;
@@ -4648,7 +4648,7 @@ __global__ void testEdge(const float x0, const float x1, const float z0, const f
 }
 
 __global__ void simulate_tilts(const float minX, const float deltaX, const float minZ, const float deltaZ, const int width, const int height, float normalX, float normalY, float normalZ, int maxFrames) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < width * height) {
         float marioPos[3] = { minX - fmodf(minX, deltaX) + deltaX * (idx % width), -2500.0f, minZ - fmodf(minZ, deltaZ) + deltaZ * (idx / width) };
@@ -4659,7 +4659,7 @@ __global__ void simulate_tilts(const float minX, const float deltaX, const float
 }
 
 __global__ void try_stick_positionG() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK5Solutions, limits.MAX_SK_PHASE_FIVE)) {
         struct SKPhase5* sol5 = &(solutions.sk5Solutions[idx]);
@@ -4804,7 +4804,7 @@ __global__ void try_stick_positionG() {
 }
 
 __global__ void try_slide_kick_routeG2() {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK4Solutions, limits.MAX_SK_PHASE_FOUR)) {
         struct SKPhase4* sol4 = &(solutions.sk4Solutions[idx]);
@@ -4955,7 +4955,7 @@ __global__ void try_slide_kick_routeG2() {
 }
 
 __global__ void try_slide_kick_routeG(short* pyramidFloorPoints, const int nPoints) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK3Solutions, limits.MAX_SK_PHASE_THREE)) {
         struct SKPhase3* sol3 = &(solutions.sk3Solutions[idx]);
@@ -5174,7 +5174,7 @@ __global__ void try_slide_kick_routeG(short* pyramidFloorPoints, const int nPoin
                         cameraPosition2[0] = 32768.0f * (32768.0f * cameraFocus[0] - distToCamera * cameraFocus[2]) / (distToCamera * distToCamera + 1073741824.0f);
                         cameraPosition2[1] = -2918.0f;
                         cameraPosition2[2] = 32768.0f * (distToCamera * cameraFocus[0] + 32768.0f * cameraFocus[2]) / (distToCamera * distToCamera + 1073741824.0f);
-
+                        
                         int minCameraYaw = calculate_camera_yaw(cameraFocus, cameraPosition1, sol2->f2Angle);
                         int maxCameraYaw = calculate_camera_yaw(cameraFocus, cameraPosition2, sol2->f2Angle);
 
@@ -5186,11 +5186,11 @@ __global__ void try_slide_kick_routeG(short* pyramidFloorPoints, const int nPoin
 
                         int minCameraIdx = revAtansG(minCameraYaw);
                         int maxCameraIdx = revAtansG(maxCameraYaw);
-
+                        
                         if (minCameraIdx > maxCameraIdx) {
                             maxCameraIdx += 8192;
                         }
-
+                        
                         for (int cIdx = minCameraIdx; cIdx <= maxCameraIdx; cIdx++) {
                             int cameraYaw = (unsigned short)gArctanTableG[(8192 + cIdx) % 8192];
 
@@ -5222,7 +5222,7 @@ __global__ void try_slide_kick_routeG(short* pyramidFloorPoints, const int nPoin
 }
 
 __global__ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK2ASolutions, limits.MAX_SK_PHASE_TWO_A)) {
         struct SKPhase2* sol2 = &(solutions.sk2CSolutions[idx]);
@@ -5254,8 +5254,9 @@ __global__ void find_slide_kick_setupG3a(float platformMinZ, float platformMaxZ)
 }
 
 
+
 __global__ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK2BSolutions, limits.MAX_SK_PHASE_TWO_B)) {
         struct SKPhase2* sol2 = &(solutions.sk2CSolutions[idx]);
@@ -5287,7 +5288,7 @@ __global__ void find_slide_kick_setupG3b(float platformMinX, float platformMaxX)
 }
 
 __global__ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX, float platformMinZ, float platformMaxZ) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK2CSolutions, limits.MAX_SK_PHASE_TWO_C)) {
         struct SKPhase2* sol2 = &(solutions.sk2CSolutions[idx]);
@@ -5351,7 +5352,7 @@ __global__ void find_slide_kick_setupG3c(float platformMinX, float platformMaxX,
 }
 
 __global__ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX, float platformMinZ, float platformMaxZ) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK2DSolutions, limits.MAX_SK_PHASE_TWO_D)) {
         struct SKPhase2* sol2 = &(solutions.sk2DSolutions[idx]);
@@ -5415,7 +5416,7 @@ __global__ void find_slide_kick_setupG3d(float platformMinX, float platformMaxX,
 }
 
 __global__ void find_slide_kick_setupG2(short* floorPoints, const int nPoints, float floorNormalY, float platformMinX, float platformMaxX, float platformMinZ, float platformMaxZ, float midPointX, float midPointZ) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.nSK1Solutions, limits.MAX_SK_PHASE_ONE)) {
         struct SKPhase1 *sol = &(solutions.sk1Solutions[idx]);
@@ -5592,7 +5593,7 @@ __global__ void find_slide_kick_setupG2(short* floorPoints, const int nPoints, f
 }
 
 __global__ void find_slide_kick_setupG(short* floorPoints, const int nPoints, float floorNormalY, double maxSpeed, int maxF1PU, int t) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     int x1 = 4 * (idx % (2 * (maxF1PU / 4) + 1)) - maxF1PU;
     int z1 = 4 * (idx / (2 * (maxF1PU / 4) + 1)) - maxF1PU;
@@ -5734,7 +5735,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
     cudaMemcpy(devFloorPoints, floorPoints, 3 * nPoints * sizeof(short), cudaMemcpyHostToDevice);
 
     int maxF1PU = (int)floor(yNormal * o->maxSpeed / (4.0 * 65536.0)) * 4;
-    int nBlocks = ((2 * (maxF1PU / 4) + 1) * (2 * (maxF1PU / 4) + 1) + o->nThreads - 1) / o->nThreads;
+    long long int nBlocks = ((2L * ((long long int)maxF1PU / 4L) + 1L) * (2L * ((long long int)maxF1PU / 4L) + 1L) + o->nThreads - 1) / o->nThreads;
 
     find_slide_kick_setupG<<<nBlocks, o->nThreads>>>(devFloorPoints, nPoints, yNormal, o->maxSpeed, maxF1PU, t);
     output.cudaError = cudaGetLastError();
@@ -5752,7 +5753,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK1Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK1Solutions + o->nThreads - 1) / o->nThreads;
 
         find_slide_kick_setupG2<<<nBlocks, o->nThreads>>>(devFloorPoints, nPoints, yNormal, platformMinX, platformMaxX, platformMinZ, platformMaxZ, midPointX, midPointZ);
         output.cudaError = cudaGetLastError();
@@ -5774,7 +5775,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2ASolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2ASolutions + o->nThreads - 1) / o->nThreads;
 
         find_slide_kick_setupG3a<<<nBlocks, o->nThreads>>>(platformMinZ, platformMaxZ);
         output.cudaError = cudaGetLastError();
@@ -5791,7 +5792,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2BSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2BSolutions + o->nThreads - 1) / o->nThreads;
 
         find_slide_kick_setupG3b<<<nBlocks, o->nThreads>>>(platformMinX, platformMaxX);
         output.cudaError = cudaGetLastError();
@@ -5808,7 +5809,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2CSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2CSolutions + o->nThreads - 1) / o->nThreads;
 
         find_slide_kick_setupG3c<<<nBlocks, o->nThreads>>>(platformMinX, platformMaxX, platformMinZ, platformMaxZ);
         output.cudaError = cudaGetLastError();
@@ -5825,7 +5826,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK2DSolutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK2DSolutions + o->nThreads - 1) / o->nThreads;
 
         find_slide_kick_setupG3d<<<nBlocks, o->nThreads>>>(platformMinX, platformMaxX, platformMinZ, platformMaxZ);
         output.cudaError = cudaGetLastError();
@@ -5844,7 +5845,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK3Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK3Solutions + o->nThreads - 1) / o->nThreads;
 
         try_slide_kick_routeG<<<nBlocks, o->nThreads>>>(devFloorPoints, nPoints);
         output.cudaError = cudaGetLastError();
@@ -5864,7 +5865,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK4Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK4Solutions + o->nThreads - 1) / o->nThreads;
 
         try_slide_kick_routeG2<<<nBlocks, o->nThreads>>>();
         output.cudaError = cudaGetLastError();
@@ -5883,7 +5884,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
             write_line_to_log_file(LOG_WARNING, logContent, logf);
         }
 
-        nBlocks = (countsCPU->nSK5Solutions + o->nThreads - 1) / o->nThreads;
+        nBlocks = ((long long int)countsCPU->nSK5Solutions + o->nThreads - 1) / o->nThreads;
 
         try_stick_positionG<<<nBlocks, o->nThreads>>>();
         output.cudaError = cudaGetLastError();
@@ -5892,7 +5893,7 @@ void find_slide_kick_setup_triangle(float* startNormal, short* floorPoints, shor
 }
 
 __global__ void find_bully_positions(int uphillAngle, float maxSlidingSpeed, float maxSlidingSpeedToPlatform) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
     int squishPushFrames = (idx % 3) + 2;
     idx = idx / 3;
 
@@ -6377,8 +6378,8 @@ __global__ void find_double_10k_solutions() {
     float maxPlatformZ = fmaxf(fmaxf(fmaxf(squishTriangles[0][0][2], squishTriangles[0][2][2]), fmaxf(squishTriangles[1][0][2], squishTriangles[1][1][2])), fmaxf(fmaxf(startTriangles[0][0][2], startTriangles[0][2][2]), fmaxf(startTriangles[1][0][2], startTriangles[1][1][2])));
     minPlatformZ = (minPlatformZ > 0) ? minPlatformZ : nextafterf(minPlatformZ - 1.0f, INFINITY);
     maxPlatformZ = (maxPlatformZ > 0) ? nextafterf(maxPlatformZ + 1.0f, -INFINITY) : maxPlatformZ;
-
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    long long int idx = ((long long int)blockIdx.x * (long long int)blockDim.x) + threadIdx.x;
 
     if (idx < min(counts.n10KSolutions, limits.MAX_10K_SOLUTIONS)) {
         struct TenKSolution* tenKSol = &(solutions.tenKSolutions[idx]);
@@ -7012,7 +7013,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
         cudaMemcpyToSymbol(counts, &(countsCPU.nPlatSolutions), sizeof(int), offsetof(struct SolCounts, nPlatSolutions), cudaMemcpyHostToDevice);
 
-        long long int nBlocks = (nX * nZ + o->nThreads - 1) / o->nThreads;
+        long long int nBlocks = ((long long int)nX * (long long int)nZ + o->nThreads - 1) / o->nThreads;
 
         simulate_tilts<<<nBlocks, o->nThreads>>>(minX, o->deltaX, minZ, o->deltaZ, nX, nZ, platform.normal[0], platform.normal[1], platform.normal[2], o->maxFrames);
         output.cudaError = cudaGetLastError();
@@ -7035,7 +7036,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
             //if (!o->silent) printf("---------------------------------------\nTesting Normal: %.10g, %.10g, %.10g\n", startNormal[0], startNormal[1], startNormal[2]);
             //if (!o->silent) printf("        # Platform Solutions: %d\n", countsCPU.nPlatSolutions);
 
-            nBlocks = (countsCPU.nPlatSolutions + o->nThreads - 1) / o->nThreads;
+            nBlocks = ((long long int)countsCPU.nPlatSolutions + o->nThreads - 1) / o->nThreads;
 
             cudaMemcpyToSymbol(counts, &(countsCPU.nUpwarpSolutions), sizeof(int), offsetof(struct SolCounts, nUpwarpSolutions), cudaMemcpyHostToDevice);
 
@@ -7118,7 +7119,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     //if (!o->silent) printf("        # Slide Kick Routes: %d\n", countsCPU.nSK6Solutions);
 
-                    nBlocks = (countsCPU.nUpwarpSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.nUpwarpSolutions + o->nThreads - 1) / o->nThreads;
 
                     cudaMemcpyToSymbol(counts, &(countsCPU.nSKUWSolutions), sizeof(int), offsetof(struct SolCounts, nSKUWSolutions), cudaMemcpyHostToDevice);
 
@@ -7184,7 +7185,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     //if (!o->silent) printf("        # Speed Solutions: %d\n", countsCPU.nSpeedSolutions);
 
-                    nBlocks = (countsCPU.nSpeedSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.nSpeedSolutions + o->nThreads - 1) / o->nThreads;
 
                     cudaMemcpyToSymbol(counts, &(countsCPU.n10KSolutions), sizeof(int), offsetof(struct SolCounts, n10KSolutions), cudaMemcpyHostToDevice);
 
@@ -7218,6 +7219,8 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                     int maxAngleRangeCPU = 0;
 
                     cudaMemcpyToSymbol(maxAngleRange, &maxAngleRangeCPU, sizeof(int), 0, cudaMemcpyHostToDevice);
+                    
+                    nBlocks = ((long long int)countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
 
                     find_slide_solutions<<<nBlocks, o->nThreads>>>();
                     output.cudaError = cudaGetLastError();
@@ -7226,7 +7229,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
                     cudaMemcpyFromSymbol(&maxAngleRangeCPU, maxAngleRange, sizeof(int), 0, cudaMemcpyDeviceToHost);
 
                     if (maxAngleRangeCPU > 0) {
-                        nBlocks = ((maxAngleRangeCPU * countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
+                        nBlocks = (((long long int)maxAngleRangeCPU * (long long int)countsCPU.n10KSolutions) + o->nThreads - 1) / o->nThreads;
 
                         cudaMemcpyToSymbol(counts, &(countsCPU.nSlideSolutions), sizeof(int), offsetof(struct SolCounts, nSlideSolutions), cudaMemcpyHostToDevice);
                         test_slide_angle<<<nBlocks, o->nThreads>>>();
@@ -7278,7 +7281,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     if (!o->silent) printf("        # Breakdance Solutions: %d\n", countsCPU.nBDSolutions);
 
-                    nBlocks = (countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = ((long long int)countsCPU.n10KSolutions + o->nThreads - 1) / o->nThreads;
 
                     cudaMemcpyToSymbol(counts, &(countsCPU.nDouble10KSolutions), sizeof(int), offsetof(struct SolCounts, nDouble10KSolutions), cudaMemcpyHostToDevice);
 
@@ -7303,7 +7306,7 @@ FSTOutput check_normal(float* startNormal, struct FSTOptions* o, struct FSTData*
 
                     if (!o->silent) printf("        # Double 10K Solutions: %d\n", countsCPU.nDouble10KSolutions);
 
-                    nBlocks = (3 * countsCPU.nDouble10KSolutions + o->nThreads - 1) / o->nThreads;
+                    nBlocks = (3L * (long long int)countsCPU.nDouble10KSolutions + o->nThreads - 1) / o->nThreads;
 
                     cudaMemcpyToSymbol(counts, &(countsCPU.nBullyPushSolutions), sizeof(int), offsetof(struct SolCounts, nBullyPushSolutions), cudaMemcpyHostToDevice);
 
